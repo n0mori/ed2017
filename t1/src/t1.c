@@ -1,135 +1,65 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#ifndef MAX_BUFFER
-#define MAX_BUFFER 80
-#endif
-
-char *le_linha(FILE *f);
-int interpreta(char *str);
-char *pega_string(char *str);
-char *concatena(char *inicio, char *fim);
-char *alloc_inicial();
-char *limpa(char *x);
-char *substitui_str(char *str, char *new) {
-  free(str);
-  str = malloc(sizeof(char) * (strlen(new) + 1));
-  strcpy(str, new);
-  return str;
-}
-
-char *limpa(char *str) {
-  free(str);
-  return alloc_inicial();
-}
-
-char *alloc_inicial() {
-  char *str = malloc(sizeof(char));
-  *str = 0;
-  return str;
-}
-
-char *concatena(char *inicio, char *fim) {
-  inicio = (char *) realloc(inicio, sizeof(char) * (strlen(inicio) + strlen(fim) + 1));
-  inicio = strcat(inicio, fim);
-  return inicio;
-}
-
-char *pega_string(char *str) {
-  char *buffer = malloc(MAX_BUFFER * sizeof(char));
-  sscanf(str, "%*c%*c\"%[^\"]", buffer);
-  return buffer;
-}
-
-int interpreta(char *str) {
-  //retorna a opcao
-  switch (str[0]) {
-    case 'x':
-      return 1;
-      break;
-    case 'y':
-      return 2;
-      break;
-    case 'z':
-      return 3;
-      break;
-    case 'l':
-      switch (str[1]) {
-        case 'x':
-          return 4;
-          break;
-        case 'y':
-          return 5;
-          break;
-        case 'z':
-          return 6;
-          break;
-      }
-      break;
-    case 'd':
-      return 7;
-      break;
-    case 'a':
-      return 8;
-      break;
-    case 'e':
-      return 9;
-      break;
-    case 'o':
-      return 10;
-      break;
-    case 'w':
-      return 11;
-      break;
-    case 'f':
-      return 12;
-      break;
-    default:
-      return 0;
-  }
-}
-
-char *le_linha(FILE *f) {
-  char *str = malloc(MAX_BUFFER * sizeof(char));
-  fgets(str, MAX_BUFFER, f);
-  return str;
-}
+#include "nick_string.h"
+#include "nick_string.c"
 
 int main(int argc, char *argv[]) {
-  if (argc < 5) {
-    printf("como executar: t1 -f arquivo -o dir\n");
-    return 0;
-  }
-
-  char *x, *y, *z, *f, *dir, *a, *e, *buffer, *str;
+  char *x, *y, *z, *dir, *a, *e, *buffer, *str, *entrada;
   x = alloc_inicial();
   y = alloc_inicial();
   z = alloc_inicial();
   a = alloc_inicial();
   e = alloc_inicial();
-  dir = malloc(sizeof(char) * (strlen(argv[4])) + 1);
-  f = argv[2];
+  dir = NULL;
+  entrada = NULL;
 
-  FILE *file = fopen(f, "r");
+  int i = 1;
+  while (i < argc) {
+    if (!strcmp("-f", argv[i])) {
+      i++;
+      entrada = argv[i];
+    } else if (!strcmp("-o", argv[i])) {
+      i++;
+      dir = malloc(sizeof(char) * (strlen(argv[i]) + 1));
+      strcpy(dir, argv[i]);
+    }
+    i++;
+  }
+
+  if (entrada == NULL) {
+    puts("Por favor escreva um arquivo de entrada após o -f ao executar o arquivo");
+    return 0;
+  }
+  if (dir == NULL) {
+    dir = alloc_inicial();
+  }
+
+  dir = arruma_dir(dir);
+
+  FILE *f = NULL;
+  FILE *file = fopen(entrada, "r");
   while (!feof(file)) {
     buffer = le_linha(file);
     int comando = interpreta(buffer);
-
     if (comando) {
       switch (comando) {
         case 1:
           str = pega_string(buffer);
           x = concatena(x, str);
+          //verifica_quebras(x);
           free(str);
           break;
         case 2:
           str = pega_string(buffer);
           y = concatena(y, str);
+          //verifica_quebras(y);
           free(str);
           break;
         case 3:
           str = pega_string(buffer);
           z = concatena(z, str);
+          //verifica_quebras(z);
           free(str);
           break;
         case 4:
@@ -142,11 +72,11 @@ int main(int argc, char *argv[]) {
           z = limpa(z);
           break;
         case 7:
-          if (buffer[2] == '"') {
-            str = pega_string(buffer);
+          if (buffer[2] != '#') {
+            str = pega_path(buffer);
             dir = substitui_str(dir, str);
             free(str);
-          } else if (buffer[2] == '#') {
+          } else {
             switch (buffer[3]) {
               case 'x':
                 dir = substitui_str(dir, x);
@@ -159,6 +89,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
           }
+          dir = arruma_dir(dir);
           break;
         case 8:
           if (buffer[2] == '"') {
@@ -199,20 +130,60 @@ int main(int argc, char *argv[]) {
           }
           break;
         case 10:
+          str = monta_arquivo(dir, a, e);
+          if (f != NULL) {
+            fclose(f);
+          }
+          f = fopen(str, "w+");
+          free(str);
           break;
         case 11:
+          str = monta_arquivo(dir, a, e);
+          if (f != NULL) {
+            fclose(f);
+          }
+          f = fopen(str, "a+");
           break;
         case 12:
+          if (f != NULL) {
+            if (buffer[2] != '#') {
+              fputs(buffer + 2, f);
+            } else {
+              switch (buffer[3]) {
+                case 'x':
+                  fputs(x, f);
+                  break;
+                case 'y':
+                  fputs(y, f);
+                  break;
+                case 'z':
+                  fputs(z, f);
+                  break;
+              }
+            }
+          } else {
+            puts("Erro! Não há nenhum arquivo aberto!");
+          }
+          break;
+        case 13:
+          if (f != NULL) fclose(f);
+          f = NULL;
           break;
       }
     }
     free(buffer);
   }
+  if (f != NULL) {
+    fclose(f);
+  }
   fclose(file);
 
+  /* para debug:
   puts(x);
   puts(y);
   puts(z);
-  printf("%s%s.%s", dir, a, e);
+  puts(dir);
+  puts(monta_arquivo(dir, a, e));
+  */
   return 0;
 }
