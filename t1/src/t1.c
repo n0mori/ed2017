@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
   FILE *file = fopen(entrada, "r");
   while (!feof(file)) {
     buffer = le_linha(file);
-    int comando = interpreta(buffer);
+    int comando = interpreta_t1(buffer);
     if (comando) {
       switch (comando) {
         case 1:
@@ -171,6 +171,7 @@ int main(int argc, char *argv[]) {
           break;
       }
     }
+    str = alloc_inicial();
     free(buffer);
   }
   if (f != NULL) {
