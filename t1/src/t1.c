@@ -171,13 +171,19 @@ int main(int argc, char *argv[]) {
           break;
       }
     }
-    str = alloc_inicial();
     free(buffer);
   }
   if (f != NULL) {
     fclose(f);
   }
   fclose(file);
+
+  free(x);
+  free(y);
+  free(z);
+  free(a);
+  free(e);
+  free(dir);
 
   /* para debug:
   puts(x);
