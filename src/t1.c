@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "nick_string.h"
-#include "nick_string.c"
+#include "modules/nick_string/nick_string.h"
 
 int main(int argc, char *argv[]) {
   char *x, *y, *z, *dir, *a, *e, *buffer, *str, *entrada;

@@ -1,3 +1,5 @@
+#include "nick_string.h"
+
 char *monta_arquivo(char *dir, char *a, char *e) {
   char *str = malloc(sizeof(char) * (strlen(dir) + strlen(a) + strlen(e) + 2));
   sprintf(str, "%s%s.%s", dir, a, e);
