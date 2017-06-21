@@ -8,6 +8,7 @@
 
 int main(int argc, char *argv[]) {
   int i, n;
+  n = 0;
   char *filein, *buffer;
   char *dir = alloc_inicial();
   char *nome = alloc_inicial();
@@ -22,6 +23,15 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-n", argv[i])) {
       n = atoi(argv[++i]);
     }
+  }
+
+  if (strlen(filein) == 0) {
+    puts("Digite o arquivo de entrada no argumento -f!");
+    exit(1);
+  }
+  if (strlen(dir) == 0) {
+    puts("Digite o diretorio no argumento -o!");
+    exit(1);
   }
 
   void *elementos[n];
@@ -47,9 +57,11 @@ int main(int argc, char *argv[]) {
 
   i = 0;
   FILE *in = fopen(filein, "r");
+  //FILE *ftxt = fopen(saida_txt, "w");
   while (!feof(in)) {
     buffer = le_linha(in);
     circ *aux_circ;
+    rect *aux_rect;
     switch (buffer[0]) {
       case 'c':
         aux_circ = alloc_circ();
@@ -58,10 +70,26 @@ int main(int argc, char *argv[]) {
         tipos[i] = 'c';
         i++;
         break;
+      case 'r':
+        aux_rect = alloc_rect();
+        sscanf(buffer, "r %d %lf %lf %lf %lf %s", &(aux_rect->id), &(aux_rect->width), &(aux_rect->height), &(aux_rect->ancora.x), &(aux_rect->ancora.y), aux_rect->cor);
+        elementos[i] = aux_rect;
+        tipos[i] = 'r';
+        i++;
+        break;
+      case 'o':
+        break;
+      case 'i':
+        break;
+      case 'd':
+        break;
+      case 'a':
+        break;
     }
 
     free(buffer);
   }
+  fclose(in);
 
   FILE *fsvg = fopen(saida_svg, "w");
   fprintf(fsvg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
@@ -69,9 +97,11 @@ int main(int argc, char *argv[]) {
     if (tipos[i] == 0) {
       break;
     } else if (tipos[i] == 'c') {
-      circ *c = ((circ*) elementos[i]);
-      puts("imprimi");
+      circ *c = (circ*) elementos[i];
       fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\"/>\n", c->ancora.x, c->ancora.y, c->raio, c->cor);
+    } else if (tipos[i] == 'r') {
+      rect *r = (rect*) elementos[i];
+      fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", r->ancora.x, r->ancora.y, r->width, r->height, r->cor);
     }
   }
   fprintf(fsvg, "</svg>");
@@ -81,11 +111,8 @@ int main(int argc, char *argv[]) {
     if (tipos[i]) {
       free(elementos[i]);
       tipos[i] = 0;
-    } else {
-      break;
     }
   }
-  printf("%s%s, n=%d\nnome=%s\nsaida_txt=%s\n", dir, filein, n, nome, saida_txt);
 
   free(dir);
   free(nome);

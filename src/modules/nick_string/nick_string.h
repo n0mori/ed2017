@@ -2,7 +2,7 @@
 #define MAX_BUFFER 100000
 #endif
 #ifndef NICK_STRING__H
-#define NICK_STRING__H value
+#define NICK_STRING__H
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

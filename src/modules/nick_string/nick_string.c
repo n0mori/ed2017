@@ -32,7 +32,7 @@ char *alloc_inicial() {
 
 char *concatena(char *inicio, char *fim) {
   inicio = (char *) realloc(inicio, sizeof(char) * (strlen(inicio) + strlen(fim) + 1));
-  inicio = strcat(inicio, fim);
+  strcat(inicio, fim);
   return inicio;
 }
 
