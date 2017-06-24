@@ -1,14 +1,39 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "modules/coord/coord.h"
-#include "modules/circ/circ.h"
-#include "modules/rect/rect.h"
+#include "modules/geo/geo.h"
 #include "modules/nick_string/nick_string.h"
 
+int busca_id(void **elementos, int n, int buscado) {
+  int i, id_atual;
+  int *p;
+  for (i = 0; i < n; i++) {
+    if (elementos[i] == NULL) {
+      break;
+    }
+    p = (int*) elementos[i];
+    id_atual = *p;
+    if (id_atual == buscado) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void limpa_vetor(void **elementos, char *tipos, int n) {
+  int i;
+  for (i = 0; i < n; i++) {
+    if (elementos[i] != NULL) {
+      free(elementos[i]);
+      tipos[i] = 0;
+    }
+  }
+}
+
 int main(int argc, char *argv[]) {
-  int i, n;
-  n = 0;
+  int i, j, k, d, n;
+  n = -1;
+  double x, y;
   char *filein, *buffer;
   char *dir = alloc_inicial();
   char *nome = alloc_inicial();
@@ -32,6 +57,10 @@ int main(int argc, char *argv[]) {
   if (strlen(dir) == 0) {
     puts("Digite o diretorio no argumento -o!");
     exit(1);
+  }
+  if (n < 0) {
+    puts("Digite o valor de n no argumento -n!");
+    exit(0);
   }
 
   void *elementos[n];
@@ -57,7 +86,9 @@ int main(int argc, char *argv[]) {
 
   i = 0;
   FILE *in = fopen(filein, "r");
-  //FILE *ftxt = fopen(saida_txt, "w");
+  FILE *fsvg = fopen(saida_svg, "w");
+  fprintf(fsvg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+  FILE *ftxt = fopen(saida_txt, "w");
   while (!feof(in)) {
     buffer = le_linha(in);
     circ *aux_circ;
@@ -67,6 +98,7 @@ int main(int argc, char *argv[]) {
         aux_circ = alloc_circ();
         sscanf(buffer, "c %d %lf %lf %lf %s", &(aux_circ->id), &(aux_circ->raio), &(aux_circ->ancora.x), &(aux_circ->ancora.y), aux_circ->cor);
         elementos[i] = aux_circ;
+        fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\"/>\n", aux_circ->ancora.x, aux_circ->ancora.y, aux_circ->raio, aux_circ->cor);
         tipos[i] = 'c';
         i++;
         break;
@@ -74,12 +106,64 @@ int main(int argc, char *argv[]) {
         aux_rect = alloc_rect();
         sscanf(buffer, "r %d %lf %lf %lf %lf %s", &(aux_rect->id), &(aux_rect->width), &(aux_rect->height), &(aux_rect->ancora.x), &(aux_rect->ancora.y), aux_rect->cor);
         elementos[i] = aux_rect;
+        fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", aux_rect->ancora.x, aux_rect->ancora.y, aux_rect->width, aux_rect->height, aux_rect->cor);
         tipos[i] = 'r';
         i++;
         break;
       case 'o':
+        sscanf(buffer, "o %d %d", &j, &k);
+        fputs(buffer, ftxt);
+        fputc('\n', ftxt);
+        int id_1, id_2, bool_inter;
+        bool_inter = 0;
+        double extremidades[4];
+        id_1 = busca_id(elementos, n, j);
+        id_2 = busca_id(elementos, n, k);
+        if (tipos[id_1] == 'c' && tipos[id_2] == 'c') {
+          circ *a, *b;
+          a = elementos[id_1];
+          b = elementos[id_2];
+          if (intersec_cc(*a, *b) == 1) {
+            /* up, left, down, right */
+            extremidades_cc(*a, *b, extremidades);
+            bool_inter = 1;
+          }
+        }
+        if (bool_inter) {
+          fputs("sim", ftxt);
+          fputc('\n', ftxt);
+          fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"none\" style=\"stroke:pink;stroke-width:3;stroke-dasharray:5,5;z-index:1000\"/>\n", extremidades[1], extremidades[0], extremidades[3] - extremidades[1], extremidades[2] - extremidades[0]);
+          fprintf(fsvg, "<text x=\"%lf\" y=\"%lf\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">sobrepoe</text>\n", extremidades[1], extremidades[0] + 16);
+        } else {
+          fputs("nao", ftxt);
+          fputc('\n', ftxt);
+        }
         break;
       case 'i':
+        sscanf(buffer, "i %d %lf %lf", &d, &x, &y);
+        int id = busca_id(elementos, n, d);
+        fputs(buffer, ftxt);
+        if (id == -1) {
+          puts("nao existe item com esse id");
+          break;
+        }
+        if (tipos[id] == 'c') {
+          aux_circ = elementos[id];
+          if (circ_interno(*aux_circ, x, y) == 1) {
+            fputs("sim\n", ftxt);
+          } else {
+            fputs("nao\n", ftxt);
+          }
+        } else if (tipos[id] == 'r') {
+          aux_rect = elementos[id];
+          if (rect_interno(*aux_rect, x, y) == 1) {
+            fputs("sim\n", ftxt);
+          } else {
+            fputs("nao\n", ftxt);
+          }
+        } else {
+          printf("%c\n", tipos[id]);
+        }
         break;
       case 'd':
         break;
@@ -90,9 +174,11 @@ int main(int argc, char *argv[]) {
     free(buffer);
   }
   fclose(in);
+  fclose(ftxt);
+  fprintf(fsvg, "</svg>");
+  fclose(fsvg);
 
-  FILE *fsvg = fopen(saida_svg, "w");
-  fprintf(fsvg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+  /*
   for (i = 0; i < n; i++) {
     if (tipos[i] == 0) {
       break;
@@ -104,15 +190,9 @@ int main(int argc, char *argv[]) {
       fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", r->ancora.x, r->ancora.y, r->width, r->height, r->cor);
     }
   }
-  fprintf(fsvg, "</svg>");
-  fclose(fsvg);
+  */
 
-  for (i = 0; i < n; i++) {
-    if (tipos[i]) {
-      free(elementos[i]);
-      tipos[i] = 0;
-    }
-  }
+  limpa_vetor(elementos, tipos, n);
 
   free(dir);
   free(nome);

@@ -2,9 +2,9 @@
 #define RECT__H
 
 /*
-Esse arquivo define os métodos e atributos de um retângulo (abbr: rect).
-Um retângulo é uma forma geométrica bidimensional que possui uma coordenada que
-define sua posição, altura (height) e largura (width). Também possui uma cor em
+Esse arquivo define os metodos e atributos de um retangulo (abbr: rect).
+Um retangulo eh uma forma geometrica bidimensional que possui uma coordenada que
+define sua posicao, altura (height) e largura (width). Tambem possui uma cor em
 formato reconhecido por SVG, guardada em uma string.
 */
 
@@ -19,5 +19,6 @@ typedef struct r {
 } rect;
 
 rect *alloc_rect();
+int rect_interno(rect r, double x, double y);
 
 #endif

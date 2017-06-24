@@ -43,7 +43,6 @@ char *pega_string(char *str) {
 }
 
 int interpreta_t1(char *str) {
-  //retorna a opcao
   switch (str[0]) {
     case 'x':
       return 1;
