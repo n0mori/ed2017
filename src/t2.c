@@ -31,7 +31,7 @@ void limpa_vetor(void **elementos, char *tipos, int n) {
 }
 
 int main(int argc, char *argv[]) {
-  int i, j, k, d, n;
+  int i, j, k, d, n, id;
   n = -1;
   double x, y, raio, height, width;
   char *filein, *buffer, cor[100];
@@ -95,18 +95,18 @@ int main(int argc, char *argv[]) {
     rect *aux_rect;
     switch (buffer[0]) {
       case 'c':
-        aux_circ = alloc_circ();
-        sscanf(buffer, "c %d %lf %lf %lf %s", &(aux_circ->id), &(aux_circ->raio), &(aux_circ->ancora.x), &(aux_circ->ancora.y), aux_circ->cor);
-        elementos[i] = aux_circ;
-        fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\"/>\n", aux_circ->ancora.x, aux_circ->ancora.y, aux_circ->raio, aux_circ->cor);
+        sscanf(buffer, "c %d %lf %lf %lf %s", &id, &raio, &x, &y, cor);
+        elementos[i] = new_circ(id, raio, x, y, cor);
+        aux_circ = (circ*) elementos[i];
+        fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\"/>\n", aux_circ->x, aux_circ->y, aux_circ->raio, aux_circ->cor);
         tipos[i] = 'c';
         i++;
         break;
       case 'r':
-        aux_rect = alloc_rect();
-        sscanf(buffer, "r %d %lf %lf %lf %lf %s", &(aux_rect->id), &(aux_rect->width), &(aux_rect->height), &(aux_rect->ancora.x), &(aux_rect->ancora.y), aux_rect->cor);
-        elementos[i] = aux_rect;
-        fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", aux_rect->ancora.x, aux_rect->ancora.y, aux_rect->width, aux_rect->height, aux_rect->cor);
+        sscanf(buffer, "r %d %lf %lf %lf %lf %s", &id, &width, &height, &x, &y, cor);
+        elementos[i] = new_rect(id, width, height, x, y, cor);
+        aux_rect = (rect*) elementos[i];
+        fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", aux_rect->x, aux_rect->y, aux_rect->width, aux_rect->height, aux_rect->cor);
         tipos[i] = 'r';
         i++;
         break;
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
             extremidades_cc(*a, *b, extremidades);
             bool_inter = 1;
           }
-        } else if (tipos[id_1] == 'c' && tipos[id_2] == 'r') {
+        } else if (tipos[id_1] == 'r' && tipos[id_2] == 'r') {
 
         }
         if (bool_inter) {
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
         break;
       case 'i':
         sscanf(buffer, "i %d %lf %lf", &d, &x, &y);
-        int id = busca_id(elementos, n, d);
+        id = busca_id(elementos, n, d);
         fputs(buffer, ftxt);
         if (id == -1) {
           puts("nao existe item com esse id");

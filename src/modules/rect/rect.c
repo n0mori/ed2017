@@ -1,7 +1,13 @@
 #include "rect.h"
 
-rect *alloc_rect() {
-  rect *r = malloc(sizeof(rect));
+rect *new_rect(int id, double width, double height, double x, double y, char *cor) {
+  rect *r = (rect*) malloc(sizeof(rect));
+  r->id = id;
+  r->width = width;
+  r->height = height;
+  r->ancora.x = x;
+  r->ancora.y = y;
+  strcpy(r->cor, cor);
   return r;
 }
 

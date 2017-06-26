@@ -8,17 +8,16 @@ define sua posicao, altura (height) e largura (width). Tambem possui uma cor em
 formato reconhecido por SVG, guardada em uma string.
 */
 
-#include "../coord/coord.h"
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct r {
   int id;
-  coord ancora;
-  double width, height;
+  double x, y, width, height;
   char cor[100];
 } rect;
 
-rect *alloc_rect();
+rect *new_rect(int id, double width, double height, double x, double y, char *cor);
 int rect_interno(rect r, double x, double y);
 
 #endif
