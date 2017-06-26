@@ -33,8 +33,8 @@ void limpa_vetor(void **elementos, char *tipos, int n) {
 int main(int argc, char *argv[]) {
   int i, j, k, d, n;
   n = -1;
-  double x, y;
-  char *filein, *buffer;
+  double x, y, raio, height, width;
+  char *filein, *buffer, cor[100];
   char *dir = alloc_inicial();
   char *nome = alloc_inicial();
   char *saida_txt = alloc_inicial();
@@ -113,7 +113,6 @@ int main(int argc, char *argv[]) {
       case 'o':
         sscanf(buffer, "o %d %d", &j, &k);
         fputs(buffer, ftxt);
-        fputc('\n', ftxt);
         int id_1, id_2, bool_inter;
         bool_inter = 0;
         double extremidades[4];
@@ -128,6 +127,8 @@ int main(int argc, char *argv[]) {
             extremidades_cc(*a, *b, extremidades);
             bool_inter = 1;
           }
+        } else if (tipos[id_1] == 'c' && tipos[id_2] == 'r') {
+
         }
         if (bool_inter) {
           fputs("sim", ftxt);
@@ -177,20 +178,6 @@ int main(int argc, char *argv[]) {
   fclose(ftxt);
   fprintf(fsvg, "</svg>");
   fclose(fsvg);
-
-  /*
-  for (i = 0; i < n; i++) {
-    if (tipos[i] == 0) {
-      break;
-    } else if (tipos[i] == 'c') {
-      circ *c = (circ*) elementos[i];
-      fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\"/>\n", c->ancora.x, c->ancora.y, c->raio, c->cor);
-    } else if (tipos[i] == 'r') {
-      rect *r = (rect*) elementos[i];
-      fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", r->ancora.x, r->ancora.y, r->width, r->height, r->cor);
-    }
-  }
-  */
 
   limpa_vetor(elementos, tipos, n);
 
