@@ -33,3 +33,33 @@ void extremidades_cc(circ a, circ b, double *extremidades) {
     extremidades[3] = circ_rightmost(b);
   }
 }
+
+int intersec_rr(rect a, rect b) {
+  if (((a.x >= b.x && a.x <= b.x + b.width) || (b.x >= a.x && b.x <= a.x + a.width)) && ((a.y >= b.y && a.y <= b.y + b.height) || (b.y >= a.y && b.y <= a.y + a.height))) {
+    return 1;
+  }
+  return 0;
+}
+
+void extremidades_rr(rect a, rect b, double *extremidades) {
+  if (a.y <= b.y) {
+    extremidades[0] = a.y;
+  } else {
+    extremidades[0] = b.y;
+  }
+  if (a.x <= b.x) {
+    extremidades[1] = a.x;
+  } else {
+    extremidades[1] = b.x;
+  }
+  if (a.y + a.height >= b.y + b.height) {
+    extremidades[2] = a.y + a.height;
+  } else {
+    extremidades[2] = b.y + b.height;
+  }
+  if (a.x + a.width >= b.x + b.width) {
+    extremidades[3] = a.x + a.width;
+  } else {
+    extremidades[3] = b.x + b.width;
+  }
+}

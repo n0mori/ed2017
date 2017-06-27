@@ -128,7 +128,13 @@ int main(int argc, char *argv[]) {
             bool_inter = 1;
           }
         } else if (tipos[id_1] == 'r' && tipos[id_2] == 'r') {
-
+          rect *a, *b;
+          a = elementos[id_1];
+          b = elementos[id_2];
+          if (intersec_rr(*a, *b) == 1) {
+            extremidades_rr(*a, *b, extremidades);
+            bool_inter = 1;
+          }
         }
         if (bool_inter) {
           fputs("sim", ftxt);

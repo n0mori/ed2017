@@ -12,6 +12,9 @@ se duas formas geometricas possuem interseccao), e seus tipos abstratos.
 
 int intersec_cc(circ a, circ b);
 void extremidades_cc(circ a, circ b, double *extremidades);
+int intersec_rr(rect a, rect b);
+void extremidades_rr(rect a, rect b, double *extremidades);
 double dist(double xa, double ya, double xb, double yb);
+
 
 #endif
