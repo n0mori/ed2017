@@ -18,5 +18,6 @@ char *pega_path(char *str);
 char *monta_arquivo(char *dir, char *a, char *e);
 char *arruma_dir(char *dir);
 char *verifica_quebras(char *str);
+char *last_slash(char *str);
 
 #endif

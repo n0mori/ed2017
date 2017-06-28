@@ -93,7 +93,7 @@ int interpreta_t1(char *str) {
 }
 
 char *le_linha(FILE *f) {
-  char *str = malloc(MAX_BUFFER * sizeof(char));
+  char *str = calloc(MAX_BUFFER, sizeof(char));
   fgets(str, MAX_BUFFER, f);
   return str;
 }
@@ -113,4 +113,15 @@ char *verifica_quebras(char *str) {
       str[i + 1] = '\n';
     }
   }
+}
+
+char *last_slash(char *s) {
+  char *c = NULL;
+  int i;
+  for (i = 0; i < strlen(s); i++) {
+    if (s[i] == '/') {
+      c = &s[i];
+    }
+  }
+  return c;
 }
