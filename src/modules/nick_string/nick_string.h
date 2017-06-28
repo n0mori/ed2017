@@ -1,5 +1,5 @@
 #ifndef MAX_BUFFER
-#define MAX_BUFFER 100000
+#define MAX_BUFFER 1000
 #endif
 #ifndef NICK_STRING__H
 #define NICK_STRING__H

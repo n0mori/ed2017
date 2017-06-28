@@ -33,7 +33,7 @@ void limpa_vetor(void **elementos, char *tipos, int n) {
 int main(int argc, char *argv[]) {
   int i, j, k, d, n, id;
   double x, y, raio, height, width;
-  char *filein, *buffer, cor[100], sufixo[MAX_BUFFER], *nome_sufixo;
+  char *filein, buffer[MAX_BUFFER], cor[100], sufixo[MAX_BUFFER], *nome_sufixo;
   char *dir = alloc_inicial();
   char *nome = alloc_inicial();
   char *saida_txt;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
   fprintf(fsvg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
   ftxt = fopen(saida_txt, "w");
   while (!feof(in)) {
-    buffer = le_linha(in);
+    fgets(buffer, MAX_BUFFER, in);
     switch (buffer[0]) {
       int id_1, id_2, bool_inter;
       double extremidades[4];
@@ -244,7 +244,6 @@ int main(int argc, char *argv[]) {
         free(nome_sufixo);
         break;
     }
-    free(buffer);
   }
   fclose(in);
   fclose(ftxt);
