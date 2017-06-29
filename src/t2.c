@@ -146,6 +146,20 @@ int main(int argc, char *argv[]) {
             extremidades_rr(*a, *b, extremidades);
             bool_inter = 1;
           }
+        } else if ((tipos[id_1] == 'c' && tipos[id_2] == 'r') || (tipos[id_1] == 'r' && tipos[id_2] == 'c')) {
+          circ *c;
+          rect *r;
+          if (tipos[id_1] == 'c') {
+            c = (circ*) elementos[id_1];
+            r = (rect*) elementos[id_2];
+          } else {
+            r = (rect*) elementos[id_1];
+            c = (circ*) elementos[id_2];
+          }
+          if (intersec_cr(*c, *r) == 1) {
+            extremidades_cr(*c, *r, extremidades);
+            bool_inter = 1;
+          }
         }
         if (bool_inter) {
           fputs("sim", ftxt);
@@ -243,7 +257,11 @@ int main(int argc, char *argv[]) {
         fclose(fa);
         free(nome_sufixo);
         break;
+      default:
+        break;
     }
+
+    buffer[0] = 0;
   }
   fclose(in);
   fclose(ftxt);

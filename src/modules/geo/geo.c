@@ -63,3 +63,39 @@ void extremidades_rr(rect a, rect b, double *extremidades) {
     extremidades[3] = b.x + b.width;
   }
 }
+
+int intersec_cr(circ c, rect r) {
+  if (rect_interno(r, c.x, c.y)) { return 1; }
+  if (rect_interno(r, c.x, circ_leftmost(c))) { return 1; }
+  if (rect_interno(r, c.x, circ_rightmost(c))) { return 1; }
+  if (rect_interno(r, circ_upmost(c), c.y)) { return 1; }
+  if (rect_interno(r, circ_botmost(c), c.y)) { return 1; }
+  if (circ_interno(c, r.x, r.y)) { return 1; }
+  if (circ_interno(c, r.x, r.y + r.height)) { return 1; }
+  if (circ_interno(c, r.x + r.width, r.y)) { return 1; }
+  if (circ_interno(c, r.x + r.width, r.y + r.height)) { return 1; }
+  return 0;
+}
+
+void extremidades_cr(circ c, rect r, double *extremidades) {
+  if (circ_upmost(c) <= r.y) {
+    extremidades[0] = circ_upmost(c);
+  } else {
+    extremidades[0] = r.y;
+  }
+  if (circ_leftmost(c) <= r.x) {
+    extremidades[1] = circ_leftmost(c);
+  } else {
+    extremidades[1] = r.x;
+  }
+  if (circ_botmost(c) >= r.y + r.height) {
+    extremidades[2] = circ_botmost(c);
+  } else {
+    extremidades[2] = r.y + r.height;
+  }
+  if (circ_rightmost(c) >= r.x + r.width) {
+    extremidades[3] = circ_rightmost(c);
+  } else {
+    extremidades[3] = r.x + r.width;
+  }
+}
