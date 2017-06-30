@@ -4,29 +4,29 @@ t1: t1.o nick_string.o
 t1.o: t1.c
 		gcc -c t1.c -ansi -pedantic
 
-t2: t2.o svg.o geo.o rect.o circ.o nick_string.o elemento.o
-		gcc -o t2 t2.o svg.o geo.o rect.o circ.o nick_string.o elemento.o -lm -g -ansi -pedantic
+t2: t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o
+		gcc -o t2 t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o -lm -g -ansi -pedantic
 
 t2.o: t2.c
 		gcc -c t2.c -g -ansi -pedantic
 
-geo.o: modules/geo/geo.c circ.o rect.o
-		gcc -c modules/geo/geo.c -lm -g -ansi -pedantic
+Geo.o: modules/Geo/Geo.c Circ.o Rect.o
+		gcc -c modules/Geo/Geo.c -lm -g -ansi -pedantic
 
-svg.o: modules/svg/svg.c geo.o
+svg.o: modules/svg/svg.c Geo.o
 		gcc -c modules/svg/svg.c -lm -g -ansi -pedantic
 
-nick_string.o: modules/nick_string/nick_string.c
-		gcc -c modules/nick_string/nick_string.c -ansi -pedantic
+Nick_string.o: modules/Nick_string/Nick_string.c
+		gcc -c modules/Nick_string/Nick_string.c -ansi -pedantic
 
-circ.o: modules/circ/circ.c
-		gcc -c modules/circ/circ.c -ansi -pedantic
+Circ.o: modules/Circ/Circ.c
+		gcc -c modules/Circ/Circ.c -ansi -pedantic
 
-rect.o: modules/rect/rect.c
-		gcc -c modules/rect/rect.c -ansi -pedantic
+Rect.o: modules/Rect/Rect.c
+		gcc -c modules/Rect/Rect.c -ansi -pedantic
 
-elemento.o: modules/elemento/elemento.c
-		gcc -c modules/elemento/elemento.c -ansi -pedantic
+Elemento.o: modules/Elemento/Elemento.c
+		gcc -c modules/Elemento/Elemento.c -ansi -pedantic
 
 clean:
 		rm -f *.o

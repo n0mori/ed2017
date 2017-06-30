@@ -1,6 +1,6 @@
-#include "elemento.h"
+#include "Elemento.h"
 
-elemento *busca_id(elemento *elementos, int n, int buscado) {
+Elemento *busca_id(Elemento *elementos, int n, int buscado) {
   int i, id_atual;
   for (i = 0; i < n; i++) {
     if (elementos[i].tipo) {
@@ -13,7 +13,7 @@ elemento *busca_id(elemento *elementos, int n, int buscado) {
   return NULL;
 }
 
-void limpa_vetor(elemento *elementos, int n) {
+void limpa_vetor(Elemento *elementos, int n) {
   int i;
   for (i = 0; i < n; i++) {
     if (elementos[i].dado != NULL) {
@@ -23,7 +23,7 @@ void limpa_vetor(elemento *elementos, int n) {
   }
 }
 
-void inicializa_elemento(elemento *e) {
+void inicializa_elemento(Elemento *e) {
   e->id = -1;
   e->tipo = 0;
   e->dado = NULL;

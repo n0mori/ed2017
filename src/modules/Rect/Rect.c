@@ -1,7 +1,7 @@
-#include "rect.h"
+#include "Rect.h"
 
-rect *new_rect(double width, double height, double x, double y, char *cor) {
-  rect *r = (rect*) malloc(sizeof(rect));
+Rect *new_rect(double width, double height, double x, double y, char *cor) {
+  Rect *r = (Rect*) malloc(sizeof(Rect));
   r->width = width;
   r->height = height;
   r->x = x;
@@ -10,7 +10,7 @@ rect *new_rect(double width, double height, double x, double y, char *cor) {
   return r;
 }
 
-int rect_interno(rect r, double x, double y) {
+int rect_interno(Rect r, double x, double y) {
   if (x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height) {
     return 1;
   }

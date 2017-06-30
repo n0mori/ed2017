@@ -1,4 +1,4 @@
-#include "nick_string.h"
+#include "Nick_string.h"
 
 char *monta_arquivo(char *dir, char *a, char *e) {
   char *str = malloc(sizeof(char) * (strlen(dir) + strlen(a) + strlen(e) + 2));

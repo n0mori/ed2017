@@ -1,0 +1,21 @@
+#ifndef GEO__H
+#define GEO__H
+
+/*
+Esse arquivo contem as funcoes que tratam de geometria em geral (e.g. verificar
+se duas formas geometricas possuem interseccao), e seus tipos abstratos.
+*/
+
+#include "../Circ/Circ.h"
+#include "../Rect/Rect.h"
+#include <math.h>
+
+int intersec_cc(Circ a, Circ b);
+void extremidades_cc(Circ a, Circ b, double *extremidades);
+int intersec_rr(Rect a, Rect b);
+void extremidades_rr(Rect a, Rect b, double *extremidades);
+double dist(double xa, double ya, double xb, double yb);
+int intersec_cr(Circ c, Rect r);
+void extremidades_cr(Circ c, Rect r, double *extremidades);
+
+#endif

@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "modules/elemento/elemento.h"
-#include "modules/nick_string/nick_string.h"
+#include "modules/Elemento/Elemento.h"
+#include "modules/Nick_string/Nick_string.h"
 #include "modules/svg/svg.h"
-
 
 int main(int argc, char *argv[]) {
   int i, j, k, d, n, id;
@@ -14,7 +13,7 @@ int main(int argc, char *argv[]) {
   char *nome = alloc_inicial();
   char *saida_txt;
   char *saida_svg;
-  elemento *elementos;
+  Elemento *elementos;
   FILE *in, *fsvg, *ftxt, *fa;
   n = -1;
 
@@ -41,7 +40,7 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-  elementos = malloc(sizeof(elemento) * (n+1));
+  elementos = malloc(sizeof(Elemento) * (n+1));
   for (i = 0; i < n; i++) {
     inicializa_elemento(&elementos[i]);
   }
@@ -69,7 +68,7 @@ int main(int argc, char *argv[]) {
     fgets(buffer, MAX_BUFFER, in);
     switch (buffer[0]) {
       int bool_inter;
-      elemento *a, *b;
+      Elemento *a, *b;
       double extremidades[4];
       case 'c':
         if (i >= n) {
@@ -80,7 +79,7 @@ int main(int argc, char *argv[]) {
         elementos[i].id = id;
         elementos[i].dado = new_circ(raio, x, y, cor);
         elementos[i].tipo = 'c';
-        print_svg_circ(fsvg, (circ*) elementos[i].dado);
+        print_svg_circ(fsvg, (Circ*) elementos[i].dado);
         i++;
         break;
         puts("ola");
@@ -92,7 +91,7 @@ int main(int argc, char *argv[]) {
         sscanf(buffer, "r %d %lf %lf %lf %lf %s", &id, &width, &height, &x, &y, cor);
         elementos[i].id = id;
         elementos[i].dado = new_rect(width, height, x, y, cor);
-        print_svg_rect(fsvg, (rect*) elementos[i].dado);
+        print_svg_rect(fsvg, (Rect*) elementos[i].dado);
         elementos[i].tipo = 'r';
         i++;
         break;
@@ -107,31 +106,31 @@ int main(int argc, char *argv[]) {
           break;
         }
         if (a->tipo == 'c' && b->tipo == 'c') {
-          circ *c1, *c2;
-          c1 = (circ*) a->dado;
-          c2 = (circ*) b->dado;
+          Circ *c1, *c2;
+          c1 = (Circ*) a->dado;
+          c2 = (Circ*) b->dado;
           if (intersec_cc(*c1, *c2) == 1) {
             /* up, left, down, right */
             extremidades_cc(*c1, *c2, extremidades);
             bool_inter = 1;
           }
         } else if (a->tipo == 'r' && b->tipo == 'r') {
-          rect *r1, *r2;
-          r1 = (rect*) a->dado;
-          r2 = (rect*) b->dado;
+          Rect *r1, *r2;
+          r1 = (Rect*) a->dado;
+          r2 = (Rect*) b->dado;
           if (intersec_rr(*r1, *r2) == 1) {
             extremidades_rr(*r1, *r2, extremidades);
             bool_inter = 1;
           }
         } else if ((a->tipo == 'c' && b->tipo == 'r') || (a->tipo == 'r' && b->tipo == 'c')) {
-          circ *c;
-          rect *r;
+          Circ *c;
+          Rect *r;
           if (a->tipo == 'c') {
-            c = (circ*) a->dado;
-            r = (rect*) b->dado;
+            c = (Circ*) a->dado;
+            r = (Rect*) b->dado;
           } else {
-            r = (rect*) a->dado;
-            c = (circ*) b->dado;
+            r = (Rect*) a->dado;
+            c = (Circ*) b->dado;
           }
           if (intersec_cr(*c, *r) == 1) {
             extremidades_cr(*c, *r, extremidades);
@@ -156,14 +155,14 @@ int main(int argc, char *argv[]) {
           break;
         }
         if (a->tipo == 'c') {
-          circ *aux_circ = (circ*) a->dado;
+          Circ *aux_circ = (Circ*) a->dado;
           if (circ_interno(*aux_circ, x, y) == 1) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
           }
         } else if (a->tipo == 'r') {
-          rect *aux_rect = (rect*) a->dado;
+          Rect *aux_rect = (Rect*) a->dado;
           if (rect_interno(*aux_rect, x, y) == 1) {
             fputs("sim\n", ftxt);
           } else {
@@ -185,27 +184,27 @@ int main(int argc, char *argv[]) {
         if (a->tipo == b->tipo) {
           double distancia = 0;
           if (a->tipo == 'c') {
-            circ *c1, *c2;
-            c1 = (circ*) a->dado;
-            c2 = (circ*) b->dado;
+            Circ *c1, *c2;
+            c1 = (Circ*) a->dado;
+            c2 = (Circ*) b->dado;
             distancia = dist(c1->x, c1->y, c2->x, c2->y);
           }
           if (a->tipo == 'r') {
-            rect *r1, *r2;
-            r1 = (rect*) a->dado;
-            r2 = (rect*) b->dado;
+            Rect *r1, *r2;
+            r1 = (Rect*) a->dado;
+            r2 = (Rect*) b->dado;
             distancia = dist(r1->x + r1->width / 2.0, r1->y + r1->height / 2.0, r2->x + r2->width / 2.0, r2->y + r2->height / 2.0);
           }
           fprintf(ftxt, "%lf\n", distancia);
         } else {
-          circ *c;
-          rect *r;
+          Circ *c;
+          Rect *r;
           if (a->tipo == 'c') {
-            c = (circ*) a->dado;
-            r = (rect*) b->dado;
+            c = (Circ*) a->dado;
+            r = (Rect*) b->dado;
           } else {
-            r = (rect*) a->dado;
-            c = (circ*) b->dado;
+            r = (Rect*) a->dado;
+            c = (Circ*) b->dado;
           }
           fprintf(ftxt, "%lf\n", dist(c->x, c->y, r->x + r->width / 2.0, r->y + r->height / 2.0));
         }
@@ -222,10 +221,10 @@ int main(int argc, char *argv[]) {
         fprintf(fa, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
         for (id = 0; id < i; id++) {
           if (elementos[id].tipo == 'c') {
-            circ *c = (circ*) elementos[id].dado;
+            Circ *c = (Circ*) elementos[id].dado;
             print_circ_points(fa, c, cor);
           } else if (elementos[id].tipo == 'r') {
-            rect *r = (rect*) elementos[id].dado;
+            Rect *r = (Rect*) elementos[id].dado;
             print_rect_points(fa, r, cor);
           }
         }
