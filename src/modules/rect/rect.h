@@ -17,7 +17,7 @@ typedef struct r {
   char cor[100];
 } rect;
 
-rect *new_rect(int id, double width, double height, double x, double y, char *cor);
+rect *new_rect(double width, double height, double x, double y, char *cor);
 int rect_interno(rect r, double x, double y);
 
 #endif

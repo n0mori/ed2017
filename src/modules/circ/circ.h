@@ -1,5 +1,5 @@
 #ifndef CIRC__H
-#define CIRC__H value
+#define CIRC__H
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@ struct ci {
 
 typedef struct ci circ;
 
-circ *new_circ(int id, double raio, double x, double y, char *cor);
+circ *new_circ(double raio, double x, double y, char *cor);
 int circ_interno(circ c, double x, double y);
 double circ_upmost(circ c);
 double circ_leftmost(circ c);

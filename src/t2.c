@@ -1,34 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "modules/elemento/elemento.h"
 #include "modules/nick_string/nick_string.h"
 #include "modules/svg/svg.h"
 
-int busca_id(void **elementos, int n, int buscado) {
-  int i, id_atual;
-  int *p;
-  for (i = 0; i < n; i++) {
-    if (elementos[i] == NULL) {
-      break;
-    }
-    p = (int*) elementos[i];
-    id_atual = *p;
-    if (id_atual == buscado) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-void limpa_vetor(void **elementos, char *tipos, int n) {
-  int i;
-  for (i = 0; i < n; i++) {
-    if (elementos[i] != NULL) {
-      free(elementos[i]);
-      tipos[i] = 0;
-    }
-  }
-}
 
 int main(int argc, char *argv[]) {
   int i, j, k, d, n, id;
@@ -38,8 +14,7 @@ int main(int argc, char *argv[]) {
   char *nome = alloc_inicial();
   char *saida_txt;
   char *saida_svg;
-  void **elementos;
-  char *tipos;
+  elemento *elementos;
   FILE *in, *fsvg, *ftxt, *fa;
   n = -1;
 
@@ -66,11 +41,9 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-  elementos = malloc(sizeof(void*) * (n+1));
-  tipos = malloc(sizeof(char) * (n+1));
+  elementos = malloc(sizeof(elemento) * (n+1));
   for (i = 0; i < n; i++) {
-    elementos[i] = NULL;
-    tipos[n] = 0;
+    inicializa_elemento(&elementos[i]);
   }
 
   if (dir[strlen(dir) - 1] != '/') {
@@ -95,7 +68,8 @@ int main(int argc, char *argv[]) {
   while (!feof(in)) {
     fgets(buffer, MAX_BUFFER, in);
     switch (buffer[0]) {
-      int id_1, id_2, bool_inter;
+      int bool_inter;
+      elemento *a, *b;
       double extremidades[4];
       case 'c':
         if (i >= n) {
@@ -103,58 +77,61 @@ int main(int argc, char *argv[]) {
           break;
         }
         sscanf(buffer, "c %d %lf %lf %lf %s", &id, &raio, &x, &y, cor);
-        elementos[i] = new_circ(id, raio, x, y, cor);
-        tipos[i] = 'c';
-        print_svg_circ(fsvg, (circ*) elementos[i]);
+        elementos[i].id = id;
+        elementos[i].dado = new_circ(raio, x, y, cor);
+        elementos[i].tipo = 'c';
+        print_svg_circ(fsvg, (circ*) elementos[i].dado);
         i++;
         break;
+        puts("ola");
       case 'r':
         if (i >= n) {
           puts("voce excedeu o numero de elementos");
           break;
         }
         sscanf(buffer, "r %d %lf %lf %lf %lf %s", &id, &width, &height, &x, &y, cor);
-        elementos[i] = new_rect(id, width, height, x, y, cor);
-        print_svg_rect(fsvg, (rect*) elementos[i]);
-        tipos[i] = 'r';
+        elementos[i].id = id;
+        elementos[i].dado = new_rect(width, height, x, y, cor);
+        print_svg_rect(fsvg, (rect*) elementos[i].dado);
+        elementos[i].tipo = 'r';
         i++;
         break;
       case 'o':
         sscanf(buffer, "o %d %d", &j, &k);
         fputs(buffer, ftxt);
         bool_inter = 0;
-        id_1 = busca_id(elementos, n, j);
-        id_2 = busca_id(elementos, n, k);
-        if (id_1 < 0 || id_2 < 0) {
+        a = busca_id(elementos, n, j);
+        b = busca_id(elementos, n, k);
+        if (&a == NULL || &b == NULL) {
           fputs("id invalido\n", ftxt);
           break;
         }
-        if (tipos[id_1] == 'c' && tipos[id_2] == 'c') {
-          circ *a, *b;
-          a = elementos[id_1];
-          b = elementos[id_2];
-          if (intersec_cc(*a, *b) == 1) {
+        if (a->tipo == 'c' && b->tipo == 'c') {
+          circ *c1, *c2;
+          c1 = (circ*) a->dado;
+          c2 = (circ*) b->dado;
+          if (intersec_cc(*c1, *c2) == 1) {
             /* up, left, down, right */
-            extremidades_cc(*a, *b, extremidades);
+            extremidades_cc(*c1, *c2, extremidades);
             bool_inter = 1;
           }
-        } else if (tipos[id_1] == 'r' && tipos[id_2] == 'r') {
-          rect *a, *b;
-          a = elementos[id_1];
-          b = elementos[id_2];
-          if (intersec_rr(*a, *b) == 1) {
-            extremidades_rr(*a, *b, extremidades);
+        } else if (a->tipo == 'r' && b->tipo == 'r') {
+          rect *r1, *r2;
+          r1 = (rect*) a->dado;
+          r2 = (rect*) b->dado;
+          if (intersec_rr(*r1, *r2) == 1) {
+            extremidades_rr(*r1, *r2, extremidades);
             bool_inter = 1;
           }
-        } else if ((tipos[id_1] == 'c' && tipos[id_2] == 'r') || (tipos[id_1] == 'r' && tipos[id_2] == 'c')) {
+        } else if ((a->tipo == 'c' && b->tipo == 'r') || (a->tipo == 'r' && b->tipo == 'c')) {
           circ *c;
           rect *r;
-          if (tipos[id_1] == 'c') {
-            c = (circ*) elementos[id_1];
-            r = (rect*) elementos[id_2];
+          if (a->tipo == 'c') {
+            c = (circ*) a->dado;
+            r = (rect*) b->dado;
           } else {
-            r = (rect*) elementos[id_1];
-            c = (circ*) elementos[id_2];
+            r = (rect*) a->dado;
+            c = (circ*) b->dado;
           }
           if (intersec_cr(*c, *r) == 1) {
             extremidades_cr(*c, *r, extremidades);
@@ -172,64 +149,63 @@ int main(int argc, char *argv[]) {
         break;
       case 'i':
         sscanf(buffer, "i %d %lf %lf", &d, &x, &y);
-        id = busca_id(elementos, n, d);
+        a = busca_id(elementos, n, d);
         fputs(buffer, ftxt);
-        if (id == -1) {
+        if (a == NULL) {
           puts("nao existe item com esse id");
           break;
         }
-        if (tipos[id] == 'c') {
-          circ *aux_circ = (circ*) elementos[id];
+        if (a->tipo == 'c') {
+          circ *aux_circ = (circ*) a->dado;
           if (circ_interno(*aux_circ, x, y) == 1) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
           }
-        } else if (tipos[id] == 'r') {
-          rect *aux_rect = (rect*) elementos[id];
+        } else if (a->tipo == 'r') {
+          rect *aux_rect = (rect*) a->dado;
           if (rect_interno(*aux_rect, x, y) == 1) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
           }
         } else {
-          printf("%c\n", tipos[id]);
+          printf("%c\n", a->tipo);
         }
         break;
       case 'd':
         sscanf(buffer, "o %d %d", &j, &k);
         fputs(buffer, ftxt);
-        bool_inter = 0;
-        id_1 = busca_id(elementos, n, j);
-        id_2 = busca_id(elementos, n, k);
-        if (id_1 < 0 || id_2 < 0) {
+        a = busca_id(elementos, n, j);
+        b = busca_id(elementos, n, k);
+        if (a->tipo == 0 || b->tipo == 0) {
           fputs("id invalido\n", ftxt);
           break;
         }
-        if (tipos[id_1] == tipos[id_2]) {
+        if (a->tipo == b->tipo) {
           double distancia = 0;
-          if (tipos[id_1] == 'c') {
-            circ *a, *b;
-            a = (circ*) elementos[id_1];
-            b = (circ*) elementos[id_2];
-            distancia = dist(a->x, a->y, b->x, b->y);
+          if (a->tipo == 'c') {
+            circ *c1, *c2;
+            c1 = (circ*) a->dado;
+            c2 = (circ*) b->dado;
+            distancia = dist(c1->x, c1->y, c2->x, c2->y);
           }
-          if (tipos[id_1] == 'r') {
-            rect *a, *b;
-            a = (rect*) elementos[id_1];
-            b = (rect*) elementos[id_2];
-            distancia = dist(a->x + a->width / 2.0, a->y + a->height / 2.0, b->x + b->width / 2.0, b->y + b->height / 2.0);
+          if (a->tipo == 'r') {
+            rect *r1, *r2;
+            r1 = (rect*) a->dado;
+            r2 = (rect*) b->dado;
+            distancia = dist(r1->x + r1->width / 2.0, r1->y + r1->height / 2.0, r2->x + r2->width / 2.0, r2->y + r2->height / 2.0);
           }
           fprintf(ftxt, "%lf\n", distancia);
         } else {
           circ *c;
           rect *r;
-          if (tipos[id_1] == 'c') {
-            c = (circ*) elementos[id_1];
-            r = (rect*) elementos[id_2];
+          if (a->tipo == 'c') {
+            c = (circ*) a->dado;
+            r = (rect*) b->dado;
           } else {
-            r = (rect*) elementos[id_1];
-            c = (circ*) elementos[id_2];
+            r = (rect*) a->dado;
+            c = (circ*) b->dado;
           }
           fprintf(ftxt, "%lf\n", dist(c->x, c->y, r->x + r->width / 2.0, r->y + r->height / 2.0));
         }
@@ -245,11 +221,11 @@ int main(int argc, char *argv[]) {
         fa = fopen(nome_sufixo, "w");
         fprintf(fa, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
         for (id = 0; id < i; id++) {
-          if (tipos[id] == 'c') {
-            circ *c = (circ*) elementos[id];
+          if (elementos[id].tipo == 'c') {
+            circ *c = (circ*) elementos[id].dado;
             print_circ_points(fa, c, cor);
-          } else if (tipos[id] == 'r') {
-            rect *r = (rect*) elementos[id];
+          } else if (elementos[id].tipo == 'r') {
+            rect *r = (rect*) elementos[id].dado;
             print_rect_points(fa, r, cor);
           }
         }
@@ -268,14 +244,13 @@ int main(int argc, char *argv[]) {
   fprintf(fsvg, "</svg>");
   fclose(fsvg);
 
-  limpa_vetor(elementos, tipos, n);
+  limpa_vetor(elementos, n);
 
   free(dir);
   free(nome);
   free(saida_txt);
   free(saida_svg);
   free(elementos);
-  free(tipos);
 
   return 0;
 }

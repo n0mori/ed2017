@@ -1,8 +1,7 @@
 #include "rect.h"
 
-rect *new_rect(int id, double width, double height, double x, double y, char *cor) {
+rect *new_rect(double width, double height, double x, double y, char *cor) {
   rect *r = (rect*) malloc(sizeof(rect));
-  r->id = id;
   r->width = width;
   r->height = height;
   r->x = x;

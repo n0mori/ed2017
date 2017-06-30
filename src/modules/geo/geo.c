@@ -66,10 +66,10 @@ void extremidades_rr(rect a, rect b, double *extremidades) {
 
 int intersec_cr(circ c, rect r) {
   if (rect_interno(r, c.x, c.y)) { return 1; }
-  if (rect_interno(r, c.x, circ_leftmost(c))) { return 1; }
-  if (rect_interno(r, c.x, circ_rightmost(c))) { return 1; }
-  if (rect_interno(r, circ_upmost(c), c.y)) { return 1; }
-  if (rect_interno(r, circ_botmost(c), c.y)) { return 1; }
+  if (c.x >= r.x && c.x <= r.x && dist(c.x, c.y, c.x, r.y) <= c.raio) { return 1; }
+  if (c.x >= r.x && c.x <= r.x && dist(c.x, c.y, c.x, r.y + r.height) <= c.raio) { return 1; }
+  if (c.y >= r.y && c.y <= r.y && dist(c.x, c.y, c.y, r.x) <= c.raio) { return 1; }
+  if (c.y >= r.y && c.y <= r.y && dist(c.x, c.y, c.y, r.x + r.width) <= c.raio) { return 1; }
   if (circ_interno(c, r.x, r.y)) { return 1; }
   if (circ_interno(c, r.x, r.y + r.height)) { return 1; }
   if (circ_interno(c, r.x + r.width, r.y)) { return 1; }

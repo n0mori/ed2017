@@ -1,8 +1,7 @@
 #include "circ.h"
 
-circ *new_circ(int id, double raio, double x, double y, char *cor) {
+circ *new_circ(double raio, double x, double y, char *cor) {
   circ *c = (circ*) malloc(sizeof(circ));
-  c->id = id;
   c->raio = raio;
   c->x = x;
   c->y = y;

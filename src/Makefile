@@ -4,8 +4,8 @@ t1: t1.o nick_string.o
 t1.o: t1.c
 		gcc -c t1.c -ansi -pedantic
 
-t2: t2.o svg.o geo.o rect.o circ.o nick_string.o
-		gcc -o t2 t2.o svg.o geo.o rect.o circ.o nick_string.o -lm -g -ansi -pedantic
+t2: t2.o svg.o geo.o rect.o circ.o nick_string.o elemento.o
+		gcc -o t2 t2.o svg.o geo.o rect.o circ.o nick_string.o elemento.o -lm -g -ansi -pedantic
 
 t2.o: t2.c
 		gcc -c t2.c -g -ansi -pedantic
@@ -24,6 +24,9 @@ circ.o: modules/circ/circ.c
 
 rect.o: modules/rect/rect.c
 		gcc -c modules/rect/rect.c -ansi -pedantic
+
+elemento.o: modules/elemento/elemento.c
+		gcc -c modules/elemento/elemento.c -ansi -pedantic
 
 clean:
 		rm -f *.o
