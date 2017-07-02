@@ -5,7 +5,6 @@
 #include <string.h>
 
 struct ci {
-  int id;
   double x, y, raio;
   char cor[100];
 };

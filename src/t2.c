@@ -82,7 +82,6 @@ int main(int argc, char *argv[]) {
         print_svg_circ(fsvg, (Circ*) elementos[i].dado);
         i++;
         break;
-        puts("ola");
       case 'r':
         if (i >= n) {
           puts("voce excedeu o numero de elementos");
@@ -101,7 +100,7 @@ int main(int argc, char *argv[]) {
         bool_inter = 0;
         a = busca_id(elementos, n, j);
         b = busca_id(elementos, n, k);
-        if (&a == NULL || &b == NULL) {
+        if (a == NULL || b == NULL) {
           fputs("id invalido\n", ftxt);
           break;
         }
@@ -177,7 +176,7 @@ int main(int argc, char *argv[]) {
         fputs(buffer, ftxt);
         a = busca_id(elementos, n, j);
         b = busca_id(elementos, n, k);
-        if (a->tipo == 0 || b->tipo == 0) {
+        if (a == NULL || b == NULL) {
           fputs("id invalido\n", ftxt);
           break;
         }

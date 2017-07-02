@@ -12,7 +12,6 @@ formato reconhecido por SVG, guardada em uma string.
 #include <string.h>
 
 typedef struct r {
-  int id;
   double x, y, width, height;
   char cor[100];
 } Rect;
