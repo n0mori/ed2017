@@ -9,13 +9,6 @@ Circ *new_circ(double raio, double x, double y, char *cor) {
   return c;
 }
 
-int circ_interno(Circ c, double x, double y) {
-  if (dist(c.x, c.y, x, y) <= c.raio) {
-    return 1;
-  }
-  return 0;
-}
-
 double circ_leftmost(Circ c) {
   return c.x - c.raio;
 }

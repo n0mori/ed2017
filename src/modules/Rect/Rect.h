@@ -17,6 +17,5 @@ typedef struct r {
 } Rect;
 
 Rect *new_rect(double width, double height, double x, double y, char *cor);
-int rect_interno(Rect r, double x, double y);
 
 #endif

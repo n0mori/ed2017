@@ -3,11 +3,9 @@
 Elemento *busca_id(Elemento *elementos, int n, int buscado) {
   int i, id_atual;
   for (i = 0; i < n; i++) {
-    if (elementos[i].tipo) {
-      id_atual = elementos[i].id;
-      if (id_atual == buscado) {
-        return &elementos[i];
-      }
+    id_atual = elementos[i].id;
+    if (id_atual == buscado) {
+      return elementos + i;
     }
   }
   return NULL;

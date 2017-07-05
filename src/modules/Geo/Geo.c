@@ -1,14 +1,16 @@
 #include "Geo.h"
 
-double dist(double xa, double ya, double xb, double yb) {
-  return sqrt(pow(xa - xb, 2) + pow(ya - yb, 2));
-}
-
 int intersec_cc(Circ a, Circ b) {
-  if (dist(a.x, a.y, b.x, b.y) <= a.raio + b.raio) {
+  if (distancia(a.x, a.y, b.x, b.y) <= a.raio + b.raio) {
     return 1;
   }
   return 0;
+}
+
+double distancia(double xa, double ya, double xb, double yb) {
+  double d = pow(xa - xb, 2) + pow(ya - yb, 2);
+  double dist = sqrt(d);
+  return dist;
 }
 
 void extremidades_cc(Circ a, Circ b, double *extremidades) {
@@ -66,10 +68,10 @@ void extremidades_rr(Rect a, Rect b, double *extremidades) {
 
 int intersec_cr(Circ c, Rect r) {
   if (rect_interno(r, c.x, c.y)) { return 1; }
-  if (c.x >= r.x && c.x <= r.x && dist(c.x, c.y, c.x, r.y) <= c.raio) { return 1; }
-  if (c.x >= r.x && c.x <= r.x && dist(c.x, c.y, c.x, r.y + r.height) <= c.raio) { return 1; }
-  if (c.y >= r.y && c.y <= r.y && dist(c.x, c.y, c.y, r.x) <= c.raio) { return 1; }
-  if (c.y >= r.y && c.y <= r.y && dist(c.x, c.y, c.y, r.x + r.width) <= c.raio) { return 1; }
+  if (c.x >= r.x && c.x <= r.x && distancia(c.x, c.y, c.x, r.y) <= c.raio) { return 1; }
+  if (c.x >= r.x && c.x <= r.x && distancia(c.x, c.y, c.x, r.y + r.height) <= c.raio) { return 1; }
+  if (c.y >= r.y && c.y <= r.y && distancia(c.x, c.y, c.y, r.x) <= c.raio) { return 1; }
+  if (c.y >= r.y && c.y <= r.y && distancia(c.x, c.y, c.y, r.x + r.width) <= c.raio) { return 1; }
   if (circ_interno(c, r.x, r.y)) { return 1; }
   if (circ_interno(c, r.x, r.y + r.height)) { return 1; }
   if (circ_interno(c, r.x + r.width, r.y)) { return 1; }
@@ -98,4 +100,21 @@ void extremidades_cr(Circ c, Rect r, double *extremidades) {
   } else {
     extremidades[3] = r.x + r.width;
   }
+}
+
+int circ_interno(Circ c, double x, double y) {
+  double d = distancia(c.x, c.y, x, y);
+  /*d = sqrt(pow(c.x - x, 2) + pow(c.x - y, 2));*/
+  if (d <= c.raio) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+int rect_interno(Rect r, double x, double y) {
+  if (x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height) {
+    return 1;
+  }
+  return 0;
 }

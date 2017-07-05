@@ -14,7 +14,9 @@ int intersec_cc(Circ a, Circ b);
 void extremidades_cc(Circ a, Circ b, double *extremidades);
 int intersec_rr(Rect a, Rect b);
 void extremidades_rr(Rect a, Rect b, double *extremidades);
-double dist(double xa, double ya, double xb, double yb);
+double distancia(double xa, double ya, double xb, double yb);
+int circ_interno(Circ c, double x, double y);
+int rect_interno(Rect r, double x, double y);
 int intersec_cr(Circ c, Rect r);
 void extremidades_cr(Circ c, Rect r, double *extremidades);
 

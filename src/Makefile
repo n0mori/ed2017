@@ -1,32 +1,35 @@
+cc = gcc -ansi -pedantic -O0 -g -lm
+deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o
+
 t1: t1.o nick_string.o
 		gcc -o t1 t1.o nick_string.o -g -ansi -pedantic
 
 t1.o: t1.c
 		gcc -c t1.c -ansi -pedantic
 
-t2: t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o
-		gcc -o t2 t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o -lm -g -ansi -pedantic
+t2:	$(deps_t2)
+		$(cc) $(deps_t2) -o t2
 
 t2.o: t2.c
-		gcc -c t2.c -g -ansi -pedantic
+		$(cc) -c t2.c
 
 Geo.o: modules/Geo/Geo.c Circ.o Rect.o
-		gcc -c modules/Geo/Geo.c -lm -g -ansi -pedantic
+		$(cc) -c modules/Geo/Geo.c
 
 svg.o: modules/svg/svg.c Geo.o
-		gcc -c modules/svg/svg.c -lm -g -ansi -pedantic
+		$(cc) -c modules/svg/svg.c
 
 Nick_string.o: modules/Nick_string/Nick_string.c
-		gcc -c modules/Nick_string/Nick_string.c -ansi -pedantic
+		$(cc) -c modules/Nick_string/Nick_string.c
 
 Circ.o: modules/Circ/Circ.c
-		gcc -c modules/Circ/Circ.c -ansi -pedantic
+		$(cc) -c modules/Circ/Circ.c
 
 Rect.o: modules/Rect/Rect.c
-		gcc -c modules/Rect/Rect.c -ansi -pedantic
+		$(cc) -c modules/Rect/Rect.c
 
 Elemento.o: modules/Elemento/Elemento.c
-		gcc -c modules/Elemento/Elemento.c -ansi -pedantic
+		$(cc) -c modules/Elemento/Elemento.c
 
 clean:
 		rm -f *.o

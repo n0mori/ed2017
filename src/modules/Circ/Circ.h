@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <math.h>
 
 struct ci {
   double x, y, raio;
@@ -12,7 +14,6 @@ struct ci {
 typedef struct ci Circ;
 
 Circ *new_circ(double raio, double x, double y, char *cor);
-int circ_interno(Circ c, double x, double y);
 double circ_upmost(Circ c);
 double circ_leftmost(Circ c);
 double circ_botmost(Circ c);

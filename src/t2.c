@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]) {
   int i, j, k, d, n, id;
-  double x, y, raio, height, width;
+  double raio, height, width;
   char *filein, buffer[MAX_BUFFER], cor[100], sufixo[MAX_BUFFER], *nome_sufixo;
   char *dir = alloc_inicial();
   char *nome = alloc_inicial();
@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
     fgets(buffer, MAX_BUFFER, in);
     switch (buffer[0]) {
       int bool_inter;
+      double x, y;
       Elemento *a, *b;
       double extremidades[4];
       case 'c':
@@ -104,6 +105,7 @@ int main(int argc, char *argv[]) {
           fputs("id invalido\n", ftxt);
           break;
         }
+        printf("a:%d b_a:%d\nb:%d b_b:%d\n", a->id, j, b->id, k);
         if (a->tipo == 'c' && b->tipo == 'c') {
           Circ *c1, *c2;
           c1 = (Circ*) a->dado;
@@ -147,22 +149,24 @@ int main(int argc, char *argv[]) {
         break;
       case 'i':
         sscanf(buffer, "i %d %lf %lf", &d, &x, &y);
-        a = busca_id(elementos, n, d);
         fputs(buffer, ftxt);
+        a = busca_id(elementos, n, d);
         if (a == NULL) {
           puts("nao existe item com esse id");
           break;
         }
+        /*printf("a:%d b_a:%d\n", a->id, d);*/
         if (a->tipo == 'c') {
           Circ *aux_circ = (Circ*) a->dado;
-          if (circ_interno(*aux_circ, x, y) == 1) {
+          bool_inter = circ_interno(*aux_circ, x, y);
+          if (bool_inter == 1) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
           }
         } else if (a->tipo == 'r') {
           Rect *aux_rect = (Rect*) a->dado;
-          if (rect_interno(*aux_rect, x, y) == 1) {
+          if (rect_interno(*aux_rect, x, y)) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
@@ -181,20 +185,20 @@ int main(int argc, char *argv[]) {
           break;
         }
         if (a->tipo == b->tipo) {
-          double distancia = 0;
+          double dist = 0;
           if (a->tipo == 'c') {
             Circ *c1, *c2;
             c1 = (Circ*) a->dado;
             c2 = (Circ*) b->dado;
-            distancia = dist(c1->x, c1->y, c2->x, c2->y);
+            dist = distancia(c1->x, c1->y, c2->x, c2->y);
           }
           if (a->tipo == 'r') {
             Rect *r1, *r2;
             r1 = (Rect*) a->dado;
             r2 = (Rect*) b->dado;
-            distancia = dist(r1->x + r1->width / 2.0, r1->y + r1->height / 2.0, r2->x + r2->width / 2.0, r2->y + r2->height / 2.0);
+            dist = distancia(r1->x + r1->width / 2.0, r1->y + r1->height / 2.0, r2->x + r2->width / 2.0, r2->y + r2->height / 2.0);
           }
-          fprintf(ftxt, "%lf\n", distancia);
+          fprintf(ftxt, "%lf\n", dist);
         } else {
           Circ *c;
           Rect *r;
@@ -205,7 +209,7 @@ int main(int argc, char *argv[]) {
             r = (Rect*) a->dado;
             c = (Circ*) b->dado;
           }
-          fprintf(ftxt, "%lf\n", dist(c->x, c->y, r->x + r->width / 2.0, r->y + r->height / 2.0));
+          fprintf(ftxt, "%lf\n", distancia(c->x, c->y, r->x + r->width / 2.0, r->y + r->height / 2.0));
         }
         break;
       case 'a':
