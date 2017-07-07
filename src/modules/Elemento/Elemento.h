@@ -3,7 +3,7 @@
 
 /*
 Um Elemento é uma estrutura que guarda um ponteiro nulo, para o armazenamento de
-um Elemento de qualquer tipo, e um tipo, que identifica o tipo de Elemento.
+um objeto de qualquer tipo, e um tipo, que identifica o tipo do objeto.
 */
 
 #include <stdlib.h>
@@ -14,8 +14,10 @@ typedef struct e {
   void *dado;
 } Elemento;
 
-Elemento *busca_id(Elemento *elementos, int n, int buscado);
-void limpa_vetor(Elemento *elementos, int n);
 void inicializa_elemento(Elemento *e);
+int get_elemento_id(Elemento e);
+char get_elemento_tipo(Elemento e);
+void *get_elemento_dado(Elemento e);
+Elemento novo_elemento(int id, char tipo, void *p);
 
 #endif

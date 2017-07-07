@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "modules/Elemento/Elemento.h"
+#include "modules/ListaEstatica/ListaEstatica.h"
 #include "modules/Nick_string/Nick_string.h"
 #include "modules/svg/svg.h"
 
@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
   char *nome = alloc_inicial();
   char *saida_txt;
   char *saida_svg;
-  Elemento *elementos;
+  ListaEstatica elementos;
   FILE *in, *fsvg, *ftxt, *fa;
   n = -1;
 
@@ -39,11 +39,7 @@ int main(int argc, char *argv[]) {
     puts("Digite o valor de n no argumento -n!");
     exit(0);
   }
-
-  elementos = malloc(sizeof(Elemento) * (n+1));
-  for (i = 0; i < n; i++) {
-    inicializa_elemento(&elementos[i]);
-  }
+  elementos = cria_lista_estatica(n);
 
   if (dir[strlen(dir) - 1] != '/') {
     dir = concatena(dir, "/");
@@ -77,10 +73,8 @@ int main(int argc, char *argv[]) {
           break;
         }
         sscanf(buffer, "c %d %lf %lf %lf %s", &id, &raio, &x, &y, cor);
-        elementos[i].id = id;
-        elementos[i].dado = new_circ(raio, x, y, cor);
-        elementos[i].tipo = 'c';
-        print_svg_circ(fsvg, (Circ*) elementos[i].dado);
+        adiciona_lista_estatica(elementos, i, novo_elemento(id, 'c', new_circ(raio, x, y, cor)));
+        print_svg_circ(fsvg, (Circ*) get_elemento_dado(elementos[i]));
         i++;
         break;
       case 'r':
@@ -89,10 +83,8 @@ int main(int argc, char *argv[]) {
           break;
         }
         sscanf(buffer, "r %d %lf %lf %lf %lf %s", &id, &width, &height, &x, &y, cor);
-        elementos[i].id = id;
-        elementos[i].dado = new_rect(width, height, x, y, cor);
-        print_svg_rect(fsvg, (Rect*) elementos[i].dado);
-        elementos[i].tipo = 'r';
+        adiciona_lista_estatica(elementos, i, novo_elemento(id, 'r', new_rect(width, height, x, y, cor)));
+        print_svg_rect(fsvg, (Rect*) get_elemento_dado(elementos[i]));
         i++;
         break;
       case 'o':
@@ -105,33 +97,32 @@ int main(int argc, char *argv[]) {
           fputs("id invalido\n", ftxt);
           break;
         }
-        printf("a:%d b_a:%d\nb:%d b_b:%d\n", a->id, j, b->id, k);
-        if (a->tipo == 'c' && b->tipo == 'c') {
+        if (get_elemento_tipo(*a) == 'c' && get_elemento_tipo(*b) == 'c') {
           Circ *c1, *c2;
-          c1 = (Circ*) a->dado;
-          c2 = (Circ*) b->dado;
+          c1 = (Circ*) get_elemento_dado(*a);
+          c2 = (Circ*) get_elemento_dado(*b);
           if (intersec_cc(*c1, *c2) == 1) {
             /* up, left, down, right */
             extremidades_cc(*c1, *c2, extremidades);
             bool_inter = 1;
           }
-        } else if (a->tipo == 'r' && b->tipo == 'r') {
+        } else if (get_elemento_tipo(*a) == 'r' && get_elemento_tipo(*b) == 'r') {
           Rect *r1, *r2;
-          r1 = (Rect*) a->dado;
-          r2 = (Rect*) b->dado;
+          r1 = (Rect*) get_elemento_dado(*a);
+          r2 = (Rect*) get_elemento_dado(*b);
           if (intersec_rr(*r1, *r2) == 1) {
             extremidades_rr(*r1, *r2, extremidades);
             bool_inter = 1;
           }
-        } else if ((a->tipo == 'c' && b->tipo == 'r') || (a->tipo == 'r' && b->tipo == 'c')) {
+        } else if ((get_elemento_tipo(*a) == 'c' && get_elemento_tipo(*b) == 'r') || (get_elemento_tipo(*a) == 'r' && get_elemento_tipo(*b) == 'c')) {
           Circ *c;
           Rect *r;
-          if (a->tipo == 'c') {
-            c = (Circ*) a->dado;
-            r = (Rect*) b->dado;
+          if (get_elemento_tipo(*a) == 'c') {
+            c = (Circ*) get_elemento_dado(*a);
+            r = (Rect*) get_elemento_dado(*b);
           } else {
-            r = (Rect*) a->dado;
-            c = (Circ*) b->dado;
+            r = (Rect*) get_elemento_dado(*a);
+            c = (Circ*) get_elemento_dado(*b);
           }
           if (intersec_cr(*c, *r) == 1) {
             extremidades_cr(*c, *r, extremidades);
@@ -156,23 +147,23 @@ int main(int argc, char *argv[]) {
           break;
         }
         /*printf("a:%d b_a:%d\n", a->id, d);*/
-        if (a->tipo == 'c') {
-          Circ *aux_circ = (Circ*) a->dado;
+        if (get_elemento_tipo(*a) == 'c') {
+          Circ *aux_circ = (Circ*) get_elemento_dado(*a);
           bool_inter = circ_interno(*aux_circ, x, y);
           if (bool_inter == 1) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
           }
-        } else if (a->tipo == 'r') {
-          Rect *aux_rect = (Rect*) a->dado;
+        } else if (get_elemento_tipo(*a) == 'r') {
+          Rect *aux_rect = (Rect*) get_elemento_dado(*a);
           if (rect_interno(*aux_rect, x, y)) {
             fputs("sim\n", ftxt);
           } else {
             fputs("nao\n", ftxt);
           }
         } else {
-          printf("%c\n", a->tipo);
+          printf("%c\n", get_elemento_tipo(*a));
         }
         break;
       case 'd':
@@ -184,30 +175,30 @@ int main(int argc, char *argv[]) {
           fputs("id invalido\n", ftxt);
           break;
         }
-        if (a->tipo == b->tipo) {
+        if (get_elemento_tipo(*a) == get_elemento_tipo(*b)) {
           double dist = 0;
-          if (a->tipo == 'c') {
+          if (get_elemento_tipo(*a) == 'c') {
             Circ *c1, *c2;
-            c1 = (Circ*) a->dado;
-            c2 = (Circ*) b->dado;
+            c1 = (Circ*) get_elemento_dado(*a);
+            c2 = (Circ*) get_elemento_dado(*b);
             dist = distancia(c1->x, c1->y, c2->x, c2->y);
           }
-          if (a->tipo == 'r') {
+          if (get_elemento_tipo(*a) == 'r') {
             Rect *r1, *r2;
-            r1 = (Rect*) a->dado;
-            r2 = (Rect*) b->dado;
+            r1 = (Rect*) get_elemento_dado(*a);
+            r2 = (Rect*) get_elemento_dado(*b);
             dist = distancia(r1->x + r1->width / 2.0, r1->y + r1->height / 2.0, r2->x + r2->width / 2.0, r2->y + r2->height / 2.0);
           }
           fprintf(ftxt, "%lf\n", dist);
         } else {
           Circ *c;
           Rect *r;
-          if (a->tipo == 'c') {
-            c = (Circ*) a->dado;
-            r = (Rect*) b->dado;
+          if (get_elemento_tipo(*a) == 'c') {
+            c = (Circ*) get_elemento_dado(*a);
+            r = (Rect*) get_elemento_dado(*b);
           } else {
-            r = (Rect*) a->dado;
-            c = (Circ*) b->dado;
+            r = (Rect*) get_elemento_dado(*a);
+            c = (Circ*) get_elemento_dado(*b);
           }
           fprintf(ftxt, "%lf\n", distancia(c->x, c->y, r->x + r->width / 2.0, r->y + r->height / 2.0));
         }
@@ -238,7 +229,6 @@ int main(int argc, char *argv[]) {
       default:
         break;
     }
-
     buffer[0] = 0;
   }
   fclose(in);

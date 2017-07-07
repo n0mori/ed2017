@@ -1,5 +1,5 @@
-cc = gcc -ansi -pedantic -O0 -g -lm
-deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o
+cc = gcc -ansi -pedantic -g -lm
+deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o ListaEstatica.o
 
 t1: t1.o nick_string.o
 		gcc -o t1 t1.o nick_string.o -g -ansi -pedantic
@@ -30,6 +30,9 @@ Rect.o: modules/Rect/Rect.c
 
 Elemento.o: modules/Elemento/Elemento.c
 		$(cc) -c modules/Elemento/Elemento.c
+
+ListaEstatica.o: modules/ListaEstatica/ListaEstatica.c Elemento.o
+		$(cc) -c modules/ListaEstatica/ListaEstatica.c
 
 clean:
 		rm -f *.o

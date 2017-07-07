@@ -1,28 +1,27 @@
 #include "Elemento.h"
 
-Elemento *busca_id(Elemento *elementos, int n, int buscado) {
-  int i, id_atual;
-  for (i = 0; i < n; i++) {
-    id_atual = elementos[i].id;
-    if (id_atual == buscado) {
-      return elementos + i;
-    }
-  }
-  return NULL;
-}
-
-void limpa_vetor(Elemento *elementos, int n) {
-  int i;
-  for (i = 0; i < n; i++) {
-    if (elementos[i].dado != NULL) {
-      free(elementos[i].dado);
-      elementos[i].tipo = 0;
-    }
-  }
-}
-
 void inicializa_elemento(Elemento *e) {
   e->id = -1;
   e->tipo = 0;
   e->dado = NULL;
+}
+
+void *get_elemento_dado(Elemento e) {
+  return e.dado;
+}
+
+int get_elemento_id(Elemento e) {
+  return e.id;
+}
+
+char get_elemento_tipo(Elemento e) {
+  return e.tipo;
+}
+
+Elemento novo_elemento(int id, char tipo, void *dado) {
+  Elemento e;
+  e.id = id;
+  e.tipo = tipo;
+  e.dado = dado;
+  return e;
 }
