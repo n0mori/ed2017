@@ -13,7 +13,7 @@ t2:	$(deps_t2)
 t2.o: t2.c
 		$(cc) -c t2.c
 
-Geo.o: modules/Geo/Geo.c Circ.o Rect.o
+Geo.o: modules/Geo/Geo.c
 		$(cc) -c modules/Geo/Geo.c
 
 svg.o: modules/svg/svg.c Geo.o
@@ -33,6 +33,15 @@ Elemento.o: modules/Elemento/Elemento.c
 
 ListaEstatica.o: modules/ListaEstatica/ListaEstatica.c Elemento.o
 		$(cc) -c modules/ListaEstatica/ListaEstatica.c
+
+Lista.o: modules/Lista/Lista.c
+		$(cc) -c modules/Lista/Lista.c
+
+teste_lista.o: teste_lista.c
+		$(cc) -c teste_lista.c
+
+teste_lista: teste_lista.o Lista.o Geo.o Rect.o Circ.o
+		$(cc) teste_lista.o Lista.o Geo.o Rect.o Circ.o -o teste_lista
 
 clean:
 		rm -f *.o
