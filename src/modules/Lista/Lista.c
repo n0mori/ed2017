@@ -4,6 +4,7 @@ Lista create_lista() {
   Lista l;
   l.head = NULL;
   l.tail = NULL;
+  l.length = 0;
   return l;
 }
 
@@ -35,6 +36,7 @@ void insert_first(Lista *l, void *val) {
 void insert_last(Lista *l, void *val) {
   Node *n = malloc(sizeof(Node));
   n->prev = l->tail;
+  n->prev->next = n;
   n->val = val;
   n->next = NULL;
   l->tail = n;
@@ -44,151 +46,115 @@ void insert_last(Lista *l, void *val) {
   }
 }
 
-void insert_before(Lista *l, int posic, void *val) {
-  if (posic <= 0) {
+void insert_before(Lista *l, Node *posic, void *val) {
+  Node *new;
+  if (posic == l->head) {
     insert_first(l, val);
     return;
   }
-  if (posic > l->length) {
-    insert_last(l, val);
-    return;
-  }
-  int i = 0;
-  Node *n, *new;
-  for (n = l->head; i < posic; i++) {
-    n = n->next;
-  }
   new = malloc(sizeof(Node));
-  new->prev = n->prev;
-  new->val = val;
-  new->next = n;
+  new->prev = posic->prev;
   new->prev->next = new;
+  new->val = val;
+  new->next = posic;
+  posic->prev = new;
   l->length++;
 }
 
-void insert_after(Lista *l, int posic, void *val) {
-  if (posic < 0) {
-    insert_first(l, val);
-    return;
-  }
-  if (posic >= l->length) {
+void insert_after(Lista *l, Node *posic, void *val) {
+  Node *new;
+  if (posic == l->tail) {
     insert_last(l, val);
     return;
   }
-  int i = 0;
-  Node *n, *new;
-  for (n = l->head; i < posic; i++) {
-    n = n->next;
-  }
   new = malloc(sizeof(Node));
-  new->prev = n->prev;
+  new->next = posic->next;
+  posic->next = new;
   new->val = val;
-  new->next = n;
-  new->prev->next = new;
+  new->prev = posic;
+  new->next->prev = new;
   l->length++;
 }
 
-void remove_first(Lista *l) {
+void *remove_first(Lista *l) {
   Node *aux;
+  void *p;
+  p = l->head->val;
   if (l->head == NULL) {
-    return;
+    return NULL;
   }
   if (l->head == l->tail) {
     free(l->head);
     l->head = NULL;
     l->tail = NULL;
     l->length--;
-    return;
+    return p;
   }
   aux = l->head;
   l->head = aux->next;
   l->head->prev = NULL;
   l->length--;
   free(aux);
+  return p;
 }
 
-void remove_last(Lista *l) {
+void *remove_last(Lista *l) {
   Node *aux;
-  if (l->tail == NULL) {
-    return;
+  void *p = l->tail->val;
+  if (l->length == 0 || l->tail == NULL) {
+    return NULL;
   }
   if (l->head == l->tail) {
     free(l->head);
     l->head == NULL;
     l->tail == NULL;
     l->length--;
-    return;
+    return p;
   }
   aux = l->tail;
   l->tail = aux->prev;
   l->tail->next = NULL;
   l->length--;
   free(aux);
+  return p;
 }
 
-void remove_at(Lista *l, int posic) {
-  Node *aux;
-  int i = 0;
-  if (posic < 0 || posic >= l->length) {
-    return;
-  }
+void *remove_at(Lista *l, Node *posic) {
+  void *p = posic->val;
   if (posic == 0) {
     remove_first(l);
-    return;
+    return p;
   }
-  if (posic == l->length - 1) {
+  if (posic == l->tail) {
     remove_last(l);
-    return;
+    return p;
   }
-  for (aux = l->head; i < posic && aux->next != l->tail; i++) {
-    aux = aux->next;
-  }
-  aux->prev->next = aux->next;
-  aux->next->prev = aux->prev;
+  posic->prev->next = posic->next;
+  posic->next->prev = posic->prev;
   l->length--;
-  free(aux);
+  free(posic->val);
+  free(posic);
+  return p;
 }
 
-void *get_first(Lista *l) {
+Node *get_first(Lista *l) {
   return l->head->val;
 }
 
-void *get_last(Lista *l) {
+Node *get_last(Lista *l) {
   return l->tail->val;
 }
 
-void *get_next(Lista *l, int posic) {
-  int i = 0;
-  Node *aux;
-
-  if (posic < 0) {
-    return get_first(l);
-  }
-  if (posic >= l->length - 1) {
-    return get_last(l);
-  }
-
-  for (aux = l->head; i < posic && i < l->length; i++) {
-    aux = aux->next;
-  }
-  return aux->next;
+Node *get_next(Lista *l, Node *posic) {
+  return posic->next;
 }
 
-void *get_before(Lista *l, int posic) {
-  int i = 0;
-  Node *aux;
+Node *get_before(Lista *l, Node *posic) {
+  return posic->prev;
+}
 
-  if (posic < 0) {
-    return get_first(l);
-  }
-  if (posic >= l->length - 1) {
-    return get_last(l);
-  }
-
-  for (aux = l->head; i < posic && i < l->length; i++) {
-    aux = aux->next;
-  }
-  return aux->prev;
+void *get(Lista *l, Node *posic) {
+  return posic->val;
 }
 
 void free_lista(Lista *l) {

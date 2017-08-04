@@ -23,16 +23,16 @@ Lista create_lista();
 int length_lista(Lista *l);
 void insert_first(Lista *l, void *val);
 void insert_last(Lista *l, void *val);
-void insert_before(Lista *l, int posic, void *val);
-void insert_after(Lista *l, int posic, void *val);
-void remove_first(Lista *l);
-void remove_last(Lista *l);
-void remove_at(Lista *l, int posic);
-void *get_first(Lista *l);
-void *get_last(Lista *l);
-void *get_next(Lista *l, int posic);
-void *get_before(Lista *l, int posic);
-void *get_index(Lista *l, int posic);
+void insert_before(Lista *l, Node *posic, void *val);
+void insert_after(Lista *l, Node *posic, void *val);
+void *remove_first(Lista *l);
+void *remove_last(Lista *l);
+void *remove_at(Lista *l, Node *posic);
+Node *get_first(Lista *l);
+Node *get_last(Lista *l);
+Node *get_next(Lista *l, Node *posic);
+Node *get_before(Lista *l, Node *posic);
+void *get(Lista *l, Node *posic);
 void free_lista(Lista *l);
 
 #endif
