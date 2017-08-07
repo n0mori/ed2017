@@ -125,3 +125,13 @@ char *last_slash(char *s) {
   }
   return c;
 }
+
+void retira_extensao(char *s) {
+  int i;
+  for (i = strlen(s) - 1; i >= 0; i--) {
+    if (s[i] == '.') {
+      s[i] = 0;
+      return;
+    }
+  }
+}

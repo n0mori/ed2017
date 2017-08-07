@@ -18,13 +18,14 @@ typedef struct lista {
 } Lista;
 
 #include <stdlib.h>
+#include <stdio.h>
 
-Lista create_lista();
+Lista *create_lista();
 int length_lista(Lista *l);
-void insert_first(Lista *l, void *val);
-void insert_last(Lista *l, void *val);
-void insert_before(Lista *l, Node *posic, void *val);
-void insert_after(Lista *l, Node *posic, void *val);
+int insert_first(Lista *l, void *val);
+int insert_last(Lista *l, void *val);
+int insert_after(Lista *l, Node *posic, void *val);
+int insert_before(Lista *l, Node *posic, void *val);
 void *remove_first(Lista *l);
 void *remove_last(Lista *l);
 void *remove_at(Lista *l, Node *posic);

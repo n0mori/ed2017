@@ -1,10 +1,10 @@
 #include "Lista.h"
 
-Lista create_lista() {
-  Lista l;
-  l.head = NULL;
-  l.tail = NULL;
-  l.length = 0;
+Lista *create_lista() {
+  Lista *l = malloc(sizeof(Lista));
+  l->head = NULL;
+  l->tail = NULL;
+  l->length = 0;
   return l;
 }
 
@@ -21,20 +21,29 @@ int length_lista(Lista *l) {
   return l->length;
 }
 
-void insert_first(Lista *l, void *val) {
+int insert_first(Lista *l, void *val) {
   Node *n = malloc(sizeof(Node));
   n->prev = NULL;
   n->val = val;
   n->next = l->head;
   l->head = n;
   l->length++;
+  if (n->next != NULL) {
+    n->next->prev = l->head;
+  }
   if (l->tail == NULL) {
     l->tail = l->head;
   }
+  return 1;
 }
 
-void insert_last(Lista *l, void *val) {
-  Node *n = malloc(sizeof(Node));
+int insert_last(Lista *l, void *val) {
+  Node *n;
+  if (length_lista(l) == 0) {
+    insert_first(l, val);
+    return 1;
+  }
+  n = malloc(sizeof(Node));
   n->prev = l->tail;
   n->prev->next = n;
   n->val = val;
@@ -44,13 +53,14 @@ void insert_last(Lista *l, void *val) {
   if (l->head == NULL) {
     l->head = l->tail;
   }
+  return 1;
 }
 
-void insert_before(Lista *l, Node *posic, void *val) {
+int insert_before(Lista *l, Node *posic, void *val) {
   Node *new;
   if (posic == l->head) {
     insert_first(l, val);
-    return;
+    return 1;
   }
   new = malloc(sizeof(Node));
   new->prev = posic->prev;
@@ -59,13 +69,14 @@ void insert_before(Lista *l, Node *posic, void *val) {
   new->next = posic;
   posic->prev = new;
   l->length++;
+  return 1;
 }
 
-void insert_after(Lista *l, Node *posic, void *val) {
+int insert_after(Lista *l, Node *posic, void *val) {
   Node *new;
   if (posic == l->tail) {
     insert_last(l, val);
-    return;
+    return 1;
   }
   new = malloc(sizeof(Node));
   new->next = posic->next;
@@ -74,6 +85,7 @@ void insert_after(Lista *l, Node *posic, void *val) {
   new->prev = posic;
   new->next->prev = new;
   l->length++;
+  return 1;
 }
 
 void *remove_first(Lista *l) {
@@ -138,11 +150,11 @@ void *remove_at(Lista *l, Node *posic) {
 }
 
 Node *get_first(Lista *l) {
-  return l->head->val;
+  return l->head;
 }
 
 Node *get_last(Lista *l) {
-  return l->tail->val;
+  return l->tail;
 }
 
 Node *get_next(Lista *l, Node *posic) {
@@ -158,7 +170,7 @@ void *get(Lista *l, Node *posic) {
 }
 
 void free_lista(Lista *l) {
-  Node *aux;
+  /*Node *aux;
   if (l->head == NULL || l->tail == NULL) {
     return;
   }
@@ -168,4 +180,13 @@ void free_lista(Lista *l) {
     }
   }
   free(l->tail);
+  */
+  for (; l->length > 0;) {
+    void *val = remove_first(l);
+    if (val != NULL) {
+      free(val);
+    }
+  }
+
+  free(l);
 }
