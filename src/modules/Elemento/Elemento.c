@@ -18,10 +18,10 @@ char get_elemento_tipo(Elemento e) {
   return e.tipo;
 }
 
-Elemento novo_elemento(int id, char tipo, void *dado) {
-  Elemento e;
-  e.id = id;
-  e.tipo = tipo;
-  e.dado = dado;
+Elemento *new_elemento(int id, char tipo, void *dado) {
+  Elemento *e;
+  e->id = id;
+  e->tipo = tipo;
+  e->dado = dado;
   return e;
 }

@@ -18,6 +18,6 @@ void inicializa_elemento(Elemento *e);
 int get_elemento_id(Elemento e);
 char get_elemento_tipo(Elemento e);
 void *get_elemento_dado(Elemento e);
-Elemento novo_elemento(int id, char tipo, void *p);
+Elemento *new_elemento(int id, char tipo, void *p);
 
 #endif

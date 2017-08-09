@@ -3,12 +3,13 @@
 #include "modules/Cidade/Cidade.h"
 #include "modules/svg/svg.h"
 #include "modules/Nick_string/Nick_string.h"
+#include "modules/Elemento/Elemento.h"
 
 int main(int argc, char *argv[]) {
   int i, acc0, acc, ins, cpi, del, cpd;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
@@ -81,17 +82,13 @@ int main(int argc, char *argv[]) {
       double raio, x, y;
       char cor[100];
       sscanf(buffer, "c %d %lf %lf %lf %s", &id, &raio, &x, &y, cor);
-      file_txt = fopen(txt, "a+");
-      fprintf(file_txt, "%d %lf %lf %lf %s\n", id, raio, x, y, cor);
-      fclose(file_txt);
+      insere_forma(city, new_elemento(id, 'c', new_circ(raio, x, y, cor)));
     } else if (buffer[0] == 'r') {
       int id;
       double width, height, x, y;
       char cor[100];
       sscanf(buffer, "r %d %lf %lf %lf %lf %s", &id, &width, &height, &x, &y, cor);
-      file_txt = fopen(txt, "a+");
-      fprintf(file_txt, "%d %lf %lf %lf %lf %s\n", id, width, height, x, y, cor);
-      fclose(file_txt);
+      insere_forma(city, new_elemento(id, 'r', new_rect(width, height, x, y, cor)));
     } else if (buffer[0] == 'o') {
 
     } else if (buffer[0] == 'i') {
@@ -106,37 +103,44 @@ int main(int argc, char *argv[]) {
       sscanf(buffer, "q %lf %lf %lf %lf %s", &x, &y, &width, &height, cep);
       insere_quadra(city, new_quadra(x, y, width, height, cep, cfq, csq), &cpi, &ins);
     } else if (buffer[0] == 'h') {
-
+      char id[100];
+      double x, y;
+      sscanf(buffer, "h %lf %lf %s", &x, &y, id);
+      insere_hidrante(city, new_hidrante(x, y, id, cfh, csh));
     } else if (buffer[0] == 's') {
-
+      char id[100];
+      double x, y;
+      sscanf(buffer, "s %lf %lf %s", &x, &y, id);
+      insere_semaforo(city, new_semaforo(x, y, id, cfs, css));
     } else if (buffer[0] == 't') {
-
+      char id[100];
+      double x, y;
+      sscanf(buffer, "t %lf %lf %s", &x, &y, id);
+      insere_torre(city, new_torre(x, y, id, cft, cst));
     } else if (buffer[0] == 'c' && buffer[1] == 'q') {
-      puts("ola");
       sscanf(buffer, "cq %[^ ] %s", cfq, csq);
-      puts(cfq);
-      puts(csq);
     } else if (buffer[0] == 'c' && buffer[1] == 'h') {
-      sscanf(buffer, "cq %[^ ] %s", cfh, csh);
+      sscanf(buffer, "ch %[^ ] %s", cfh, csh);
     } else if (buffer[0] == 'c' && buffer[1] == 's') {
-      sscanf(buffer, "cq %[^ ] %s", cfs, css);
+      sscanf(buffer, "cs %[^ ] %s", cfs, css);
     } else if (buffer[0] == 'c' && buffer[1] == 't') {
-      sscanf(buffer, "cq %[^ ] %s", cft, cst);
+      sscanf(buffer, "ct %[^ ] %s", cft, cst);
     }
-
     buffer[0] = 0;
   }
   fclose(in);
 
-  puts(geo);
-  puts(bsd);
-  puts(bed);
+  svg = monta_arquivo(bsd, geo, "svg");
+  print_svg_cidade(svg, city);
 
   free_lista(city.quadras);
   free_lista(city.hidrantes);
   free_lista(city.semaforos);
   free_lista(city.torres);
+  free_lista(city.formas);
+
   free(txt);
+  free(svg);
   free(full_name);
   free(qry);
   free(geo);

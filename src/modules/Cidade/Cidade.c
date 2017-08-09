@@ -6,6 +6,7 @@ Cidade new_cidade() {
   c.hidrantes = create_lista();
   c.semaforos = create_lista();
   c.torres = create_lista();
+  c.formas = create_lista();
   return c;
 }
 
@@ -24,6 +25,10 @@ void insere_semaforo(Cidade c, Semaforo *s) {
 
 void insere_torre(Cidade c, Torre *t) {
   insert_last(c.torres, t);
+}
+
+void insere_forma(Cidade c, Elemento *e) {
+  insert_last(c.formas, e);
 }
 
 int remove_quadra(Cidade c, Quadra *q, int *cmp);

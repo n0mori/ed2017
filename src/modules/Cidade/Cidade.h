@@ -7,6 +7,7 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 
 #include "../Lista/Lista.h"
 #include "../Geo/Geo.h"
+#include "../Elemento/Elemento.h"
 #include "../Quadra/Quadra.h"
 #include "../Hidrante/Hidrante.h"
 #include "../Semaforo/Semaforo.h"
@@ -17,6 +18,7 @@ typedef struct cidade {
   Lista *hidrantes;
   Lista *semaforos;
   Lista *torres;
+  Lista *formas;
 } Cidade;
 
 Cidade new_cidade();
@@ -24,5 +26,6 @@ void insere_quadra(Cidade c, Quadra *q, int *cmp, int *insercoes);
 void insere_hidrante(Cidade c, Hidrante *h);
 void insere_semaforo(Cidade c, Semaforo *s);
 void insere_torre(Cidade c, Torre *t);
+void insere_forma(Cidade c, Elemento *e);
 
 #endif

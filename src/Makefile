@@ -2,7 +2,7 @@ cc = gcc -ansi -pedantic -g -lm
 deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o ListaEstatica.o
 deps_geo = Geo.o Circ.o Rect.o
 deps_cidade = Cidade.o Quadra.o Hidrante.o Semaforo.o Torre.o
-deps_siguel = siguel.o $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o
+deps_siguel = siguel.o $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o Elemento.o
 
 t1: t1.o nick_string.o
 	gcc -o t1 t1.o nick_string.o -g -ansi -pedantic
