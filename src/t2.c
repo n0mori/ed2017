@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
         }
         break;
       case 'd':
-        sscanf(buffer, "o %d %d", &j, &k);
+        sscanf(buffer, "d %d %d", &j, &k);
         fputs(buffer, ftxt);
         a = busca_id(elementos, n, j);
         b = busca_id(elementos, n, k);

@@ -19,7 +19,7 @@ char get_elemento_tipo(Elemento e) {
 }
 
 Elemento *new_elemento(int id, char tipo, void *dado) {
-  Elemento *e;
+  Elemento *e = malloc(sizeof(Elemento));
   e->id = id;
   e->tipo = tipo;
   e->dado = dado;

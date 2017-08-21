@@ -1,7 +1,7 @@
 #include "Quadra.h"
 
 Quadra *new_quadra(double x, double y, double width, double height, char *cep, char *fill, char *stroke) {
-  Quadra *q = (Quadra*) malloc(sizeof(Quadra));
+  Quadra *q = malloc(sizeof(Quadra));
   q->x = x;
   q->y = y;
   q->width = width;

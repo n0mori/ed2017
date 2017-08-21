@@ -6,7 +6,7 @@
 #include "modules/Elemento/Elemento.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
   char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg;
@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
   cpi = 0;
   del = 0;
   cpd = 0;
+  bool_qry = 0;
   sprintf(cfq, "white");
   sprintf(csq, "black");
   sprintf(cfh, "white");
@@ -46,6 +47,7 @@ int main(int argc, char *argv[]) {
       acc = 0;
     } else if (!strcmp("-q", argv[i])) {
       qry = concatena(qry, argv[++i]);
+      bool_qry = 1;
     }
   }
 
@@ -76,7 +78,6 @@ int main(int argc, char *argv[]) {
   in = fopen(full_name, "r");
   while (!feof(in)) {
     fgets(buffer, MAX_BUFFER, in);
-
     if (buffer[0] == 'c' && buffer[1] == ' ') {
       int id;
       double raio, x, y;
@@ -90,13 +91,128 @@ int main(int argc, char *argv[]) {
       sscanf(buffer, "r %d %lf %lf %lf %lf %s", &id, &width, &height, &x, &y, cor);
       insere_forma(city, new_elemento(id, 'r', new_rect(width, height, x, y, cor)));
     } else if (buffer[0] == 'o') {
-
+      int id_j, id_k, overlap;
+      Elemento *ej, *ek;
+      double extremidades[4];
+      file_txt = fopen(txt, "a+");
+      fputs(buffer, file_txt);
+      sscanf(buffer, "o %d %d", &id_j, &id_k);
+      ej = search_forma(city, id_j);
+      ek = search_forma(city, id_k);
+      if (ej == NULL || ek == NULL) {
+        fputs("id invalido\n", file_txt);
+      } else {
+        overlap = 0;
+        if (get_elemento_tipo(*ej) == 'c') {
+          Circ *c1 = (Circ*) get_elemento_dado(*ej);
+          if (get_elemento_tipo(*ek) == 'c') {
+            Circ *c2 = (Circ*) get_elemento_dado(*ek);
+            overlap = intersec_cc(*c1, *c2);
+          } else if (get_elemento_tipo(*ek) == 'r') {
+            Rect *r1 = (Rect*) get_elemento_dado(*ek);
+            overlap = intersec_cr(*c1, *r1);
+          }
+        } else if (get_elemento_tipo(*ej) == 'r') {
+          Rect *r1 = (Rect*) get_elemento_dado(*ej);
+          if (get_elemento_tipo(*ek) == 'c') {
+            Circ *c1 = (Circ*) get_elemento_dado(*ek);
+            overlap = intersec_cr(*c1, *r1);
+          } else if (get_elemento_tipo(*ek) == 'r') {
+            Rect *r2 = (Rect*) get_elemento_dado(*ek);
+            overlap = intersec_rr(*r1, *r2);
+          }
+        }
+        if (overlap) {
+          fputs("sim\n", file_txt);
+        } else {
+          fputs("nao\n", file_txt);
+        }
+      }
+      fclose(file_txt);
     } else if (buffer[0] == 'i') {
-
+      int id;
+      double x, y;
+      Elemento *e;
+      file_txt = fopen(txt, "a+");
+      sscanf(buffer, "i %d %lf %lf", &id, &x, &y);
+      fputs(buffer, file_txt);
+      e = search_forma(city, id);
+      if (e == NULL) {
+        fputs("id nao encontrado!\n", file_txt);
+      } else if (get_elemento_tipo(*e) == 'c') {
+        Circ *c = (Circ*) get_elemento_dado(*e);
+        if (circ_interno(*c, x, y)) {
+          fputs("sim\n", file_txt);
+        } else {
+          fputs("nao\n", file_txt);
+        }
+      } else if (get_elemento_tipo(*e) == 'r') {
+        Rect *r = (Rect*) get_elemento_dado(*e);
+        if (rect_interno(*r, x, y)) {
+          fputs("sim\n", file_txt);
+        } else {
+          fputs("nao\n", file_txt);
+        }
+      }
+      fclose(file_txt);
     } else if (buffer[0] == 'd') {
-
+      int id_j, id_k;
+      double x, y, x0, y0;
+      Elemento *ej, *ek;
+      file_txt = fopen(txt, "a+");
+      sscanf(buffer, "d %d %d", &id_j, &id_k);
+      fputs(buffer, file_txt);
+      ej = search_forma(city, id_j);
+      ek = search_forma(city, id_k);
+      if (ej == NULL || ek == NULL) {
+        fputs("id invalido\n", file_txt);
+      } else {
+        if (get_elemento_tipo(*ej) == 'c') {
+          Circ *c = (Circ*) get_elemento_dado(*ej);
+          x = c->x;
+          y = c->y;
+        } else if (get_elemento_tipo(*ej) == 'r') {
+          Rect *r = (Rect*) get_elemento_dado(*ej);
+          x = r->x + r->width / 2;
+          y = r->y + r->height / 2;
+        }
+        if (get_elemento_tipo(*ek) == 'c') {
+          Circ *c = (Circ*) get_elemento_dado(*ek);
+          x0 = c->x;
+          y0 = c->y;
+        } else if (get_elemento_tipo(*ek) == 'r') {
+          Rect *r = (Rect*) get_elemento_dado(*ek);
+          x0 = r->x + r->width / 2;
+          y0 = r->y + r->height / 2;
+        }
+        fprintf(file_txt, "%lf\n", distancia(x, y, x0, y0));
+      }
+      fclose(file_txt);
     } else if (buffer[0] == 'a') {
-
+      char cor[100], sufixo[MAX_BUFFER], *nome_sufixo, *full_sufixo;
+      Node *n;
+      sscanf(buffer, "a %[^ ] %s", sufixo, cor);
+      nome_sufixo = alloc_inicial();
+      nome_sufixo = concatena(nome_sufixo, geo);
+      nome_sufixo = concatena(nome_sufixo, "-");
+      nome_sufixo = concatena(nome_sufixo, sufixo);
+      full_sufixo = monta_arquivo(bsd, nome_sufixo, "svg");
+      file_svg = fopen(full_sufixo, "w+");
+      fprintf(file_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+      for (n = get_first(city.formas); n != NULL; n = get_next(city.formas, n)) {
+        Elemento *e = get(city.formas, n);
+        if (get_elemento_tipo(*e) == 'c') {
+          Circ *c = (Circ*) get_elemento_dado(*e);
+          print_circ_points(file_svg, c, cor);
+        } else if (get_elemento_tipo(*e) == 'r') {
+          Rect *r = (Rect*) get_elemento_dado(*e);
+          print_rect_points(file_svg, r, cor);
+        }
+      }
+      fprintf(file_svg, "</svg>");
+      free(nome_sufixo);
+      free(full_sufixo);
+      fclose(file_svg);
     } else if (buffer[0] == 'q') {
       char cep[100];
       double x, y, width, height;
@@ -129,19 +245,77 @@ int main(int argc, char *argv[]) {
     buffer[0] = 0;
   }
   fclose(in);
+  free(full_name);
+
+  if (bool_qry) {
+    full_name = alloc_inicial();
+    full_name = concatena(full_name, bed);
+    full_name = concatena(full_name, qry);
+    file_qry = fopen(full_name, "r");
+
+    while (!feof(file_qry)) {
+      fgets(buffer, MAX_BUFFER, file_qry);
+      if (buffer[0] == 'd') {
+        Rect *r;
+        double x, y, width, height;
+        sscanf(buffer, "d%*c %lf %lf %lf %lf", &x, &y, &width, &height);
+        r = new_rect(width, height, x, y, "");
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        if (buffer[1] == 'q') {
+          remove_quadras_in_rect(city, file_txt, r, &cpd, &del);
+        } else if (buffer[1] == 'h') {
+          remove_hidrantes_in_rect(city, file_txt, r);
+        } else if (buffer[1] == 's') {
+          remove_semaforos_in_rect(city, file_txt, r);
+        } else if (buffer[1] == 't') {
+          remove_torres_in_rect(city, file_txt, r);
+        }
+
+        fclose(file_txt);
+        free(r);
+      } else if (buffer[0] == 'D') {
+        Circ *ci;
+        double x, y, raio;
+        sscanf(buffer, "D%*c %lf %lf %lf", &x, &y, &raio);
+        ci = new_circ(raio, x, y, "");
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        if (buffer[1] == 'q') {
+          remove_quadras_in_circ(city, file_txt, ci, &cpd, &del);
+        } else if (buffer[1] == 'h') {
+          remove_hidrantes_in_circ(city, file_txt, ci);
+        } else if (buffer[1] == 's') {
+          remove_semaforos_in_circ(city, file_txt, ci);
+        } else if (buffer[1] == 't') {
+          remove_torres_in_circ(city, file_txt, ci);
+        }
+        fclose(file_txt);
+        free(ci);
+      } else if (buffer[0] == 'c') {
+        char id[100];
+        sscanf(buffer, "crd? %s", id);
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        search_cep_or_id(city, file_txt, id);
+        fclose(file_txt);
+      }
+      buffer[0] = 0;
+    }
+
+    fclose(file_qry);
+    free(full_name);
+  }
 
   svg = monta_arquivo(bsd, geo, "svg");
   print_svg_cidade(svg, city);
 
-  free_lista(city.quadras);
-  free_lista(city.hidrantes);
-  free_lista(city.semaforos);
-  free_lista(city.torres);
-  free_lista(city.formas);
+  free_cidade(city);
 
   free(txt);
   free(svg);
-  free(full_name);
   free(qry);
   free(geo);
   free(bsd);

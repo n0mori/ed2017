@@ -133,18 +133,17 @@ void *remove_last(Lista *l) {
 
 void *remove_at(Lista *l, Node *posic) {
   void *p = posic->val;
-  if (posic == 0) {
-    remove_first(l);
+  if (posic == l->head) {
+    p = remove_first(l);
     return p;
   }
   if (posic == l->tail) {
-    remove_last(l);
+    p = remove_last(l);
     return p;
   }
   posic->prev->next = posic->next;
   posic->next->prev = posic->prev;
   l->length--;
-  free(posic->val);
   free(posic);
   return p;
 }
