@@ -118,3 +118,23 @@ int rect_interno(Rect r, double x, double y) {
   }
   return 0;
 }
+
+int rect_inside_circ(Rect r, Circ c) {
+  if (circ_interno(c, r.x, r.y) &&
+      circ_interno(c, r.x + r.width, r.y) &&
+      circ_interno(c, r.x, r.y + r.height) &&
+      circ_interno(c, r.x + r.width, r.y + r.height)) {
+    return 1;
+  }
+  return 0;
+}
+
+int rect_inside_rect(Rect in, Rect out) {
+  if (rect_interno(out, in.x, in.y) &&
+      rect_interno(out, in.x + in.width, in.y) &&
+      rect_interno(out, in.x, in.y + in.height) &&
+      rect_interno(out, in.x + in.width, in.y + in.height)) {
+    return 1;
+  }
+  return 0;
+}

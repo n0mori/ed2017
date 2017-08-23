@@ -12,7 +12,7 @@ Cidade new_cidade() {
 
 void insere_quadra(Cidade c, Quadra *q, int *cmp, int *insercoes) {
   *cmp += insert_last(c.quadras, q);
-  *insercoes++;
+  *insercoes += 1;
 }
 
 void insere_hidrante(Cidade c, Hidrante *h) {
@@ -57,7 +57,28 @@ void free_cidade(Cidade c) {
 }
 
 void remove_quadras_in_rect(Cidade c, FILE *f, Rect *r, int *cmp, int *del) {
-	return;
+  Node *n;
+  int rm_anterior = 0;
+  for (n = get_first(c.quadras); n != NULL; n = get_next(c.quadras, n)) {
+    Quadra *q = (Quadra*) get(c.quadras, n);
+    Rect *ri = new_rect(q->width, q->height, q->x, q->y, "");
+    *cmp += 1;
+    if (rm_anterior) {
+      free(remove_at(c.quadras, get_before(c.torres, n)));
+      *del += 1;
+    }
+    rm_anterior = 0;
+    if (rect_inside_rect(*ri, *r)) {
+      fputs(q->cep, f);
+      fputs("\n", f);
+      rm_anterior = 1;
+    }
+    free(ri);
+  }
+  if (rm_anterior) {
+    free(remove_last(c.torres));
+    *del += 1;
+  }
 }
 
 void remove_hidrantes_in_rect(Cidade c, FILE *f, Rect *r) {
@@ -121,7 +142,28 @@ void remove_torres_in_rect(Cidade c, FILE *f, Rect *r) {
 }
 
 void remove_quadras_in_circ(Cidade c, FILE *f, Circ *ci, int *cmp, int *del) {
-	return;
+  Node *n;
+  int rm_anterior = 0;
+  for (n = get_first(c.quadras); n != NULL; n = get_next(c.quadras, n)) {
+    Quadra *q = (Quadra*) get(c.quadras, n);
+    Rect *r = new_rect(q->width, q->height, q->x, q->y, "");
+    *cmp += 1;
+    if (rm_anterior) {
+      free(remove_at(c.quadras, get_before(c.torres, n)));
+      *del += 1;
+    }
+    rm_anterior = 0;
+    if (rect_inside_circ(*r, *ci)) {
+      fputs(q->cep, f);
+      fputs("\n", f);
+      rm_anterior = 1;
+    }
+    free(r);
+  }
+  if (rm_anterior) {
+    free(remove_last(c.torres));
+    *del += 1;
+  }
 }
 
 void remove_hidrantes_in_circ(Cidade c, FILE *f, Circ *ci) {

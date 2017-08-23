@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   int i, acc0, acc, ins, cpi, del, cpd, bool_qry;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
@@ -42,9 +42,9 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-e", argv[i])) {
       bed = concatena(bed, argv[++i]);
     } else if (!strcmp("-acc0", argv[i])) {
-      acc0 = 0;
+      acc0 = 1;
     } else if (!strcmp("-acc", argv[i])) {
-      acc = 0;
+      acc = 1;
     } else if (!strcmp("-q", argv[i])) {
       qry = concatena(qry, argv[++i]);
       bool_qry = 1;
@@ -260,7 +260,6 @@ int main(int argc, char *argv[]) {
         double x, y, width, height;
         sscanf(buffer, "d%*c %lf %lf %lf %lf", &x, &y, &width, &height);
         r = new_rect(width, height, x, y, "");
-
         file_txt = fopen(txt, "a+");
         fputs(buffer, file_txt);
         if (buffer[1] == 'q') {
@@ -272,7 +271,6 @@ int main(int argc, char *argv[]) {
         } else if (buffer[1] == 't') {
           remove_torres_in_rect(city, file_txt, r);
         }
-
         fclose(file_txt);
         free(r);
       } else if (buffer[0] == 'D') {
@@ -280,7 +278,6 @@ int main(int argc, char *argv[]) {
         double x, y, raio;
         sscanf(buffer, "D%*c %lf %lf %lf", &x, &y, &raio);
         ci = new_circ(raio, x, y, "");
-
         file_txt = fopen(txt, "a+");
         fputs(buffer, file_txt);
         if (buffer[1] == 'q') {
@@ -311,6 +308,19 @@ int main(int argc, char *argv[]) {
 
   svg = monta_arquivo(bsd, geo, "svg");
   print_svg_cidade(svg, city);
+
+
+  res = monta_arquivo(bsd, "resumo", "txt");
+  if (acc0) {
+    FILE *file_res = fopen(res, "w+");
+  	fprintf(file_res, "%s\t%d\t%d\t%d\t%d\n", geo_name, cpi, ins, cpd, del);
+    fclose(file_res);
+  } else if (acc) {
+    FILE *file_res = fopen(res, "a+");
+  	fprintf(file_res, "%s\t%d\t%d\t%d\t%d\n", geo_name, cpi, ins, cpd, del);
+    fclose(file_res);
+  }
+  free(res);
 
   free_cidade(city);
 

@@ -20,5 +20,7 @@ int circ_interno(Circ c, double x, double y);
 int rect_interno(Rect r, double x, double y);
 int intersec_cr(Circ c, Rect r);
 void extremidades_cr(Circ c, Rect r, double *extremidades);
+int rect_inside_circ(Rect r, Circ c);
+int rect_inside_rect(Rect in, Rect out);
 
 #endif
