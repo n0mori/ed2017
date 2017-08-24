@@ -118,8 +118,8 @@ void *remove_last(Lista *l) {
   }
   if (l->head == l->tail) {
     free(l->head);
-    l->head == NULL;
-    l->tail == NULL;
+    l->head = NULL;
+    l->tail = NULL;
     l->length--;
     return p;
   }

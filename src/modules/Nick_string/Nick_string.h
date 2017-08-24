@@ -17,7 +17,8 @@ char *substitui_str(char *str, char *new);
 char *pega_path(char *str);
 char *monta_arquivo(char *dir, char *a, char *e);
 char *arruma_dir(char *dir);
-char *verifica_quebras(char *str);
+void verifica_quebras(char *str);
 char *last_slash(char *str);
+void retira_extensao(char *s);
 
 #endif

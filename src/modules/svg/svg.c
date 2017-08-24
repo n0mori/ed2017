@@ -1,47 +1,47 @@
 #include "svg.h"
 
 void print_svg_circ(FILE *fsvg, Circ *c) {
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\"/>\n", c->x, c->y, c->raio, c->cor);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"%f\" fill=\"%s\"/>\n", c->x, c->y, c->raio, c->cor);
 }
 
 void print_svg_rect(FILE *fsvg, Rect *r) {
-  fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\"/>\n", r->x, r->y, r->width, r->height, r->cor);
+  fprintf(fsvg, "<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"%s\"/>\n", r->x, r->y, r->width, r->height, r->cor);
 }
 
 void print_svg_quadra(FILE *fsvg, Quadra *q) {
-  fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"%s\"/>\n", q->x, q->y, q->width, q->height, q->fill, q->stroke);
-  fprintf(fsvg, "<text x=\"%lf\" y=\"%lf\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">%s</text>\n", q->x, q->y + 16, q->cep);
+  fprintf(fsvg, "<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"%s\" stroke=\"%s\"/>\n", q->x, q->y, q->width, q->height, q->fill, q->stroke);
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">%s</text>\n", q->x, q->y + 16, q->cep);
 }
 
 void print_svg_hidrante(FILE *fsvg, Hidrante *h) {
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", h->x, h->y, h->fill, h->stroke);
-  fprintf(fsvg, "<text x=\"%lf\" y=\"%lf\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">H</text>\n", h->x - 5, h->y + 4);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", h->x, h->y, h->fill, h->stroke);
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">H</text>\n", h->x - 5, h->y + 4);
 }
 
 void print_svg_semaforo(FILE *fsvg, Semaforo *s) {
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", s->x, s->y, s->fill, s->stroke);
-  fprintf(fsvg, "<text x=\"%lf\" y=\"%lf\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">S</text>\n", s->x - 5, s->y + 4);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", s->x, s->y, s->fill, s->stroke);
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">S</text>\n", s->x - 5, s->y + 4);
 }
 
 void print_svg_torre(FILE *fsvg, Torre *t) {
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", t->x, t->y, t->fill, t->stroke);
-  fprintf(fsvg, "<text x=\"%lf\" y=\"%lf\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">T</text>\n", t->x - 5, t->y + 4);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", t->x, t->y, t->fill, t->stroke);
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">T</text>\n", t->x - 5, t->y + 4);
 }
 
 void print_sobreposto(FILE *fsvg, double *extremidades) {
-  fprintf(fsvg, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"none\" style=\"stroke:pink;stroke-width:3;stroke-dasharray:5,5;z-index:1000\"/>\n", extremidades[1], extremidades[0], extremidades[3] - extremidades[1], extremidades[2] - extremidades[0]);
-  fprintf(fsvg, "<text x=\"%lf\" y=\"%lf\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">sobrepoe</text>\n", extremidades[1], extremidades[0] + 16);
+  fprintf(fsvg, "<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"none\" style=\"stroke:pink;stroke-width:3;stroke-dasharray:5,5;z-index:1000\"/>\n", extremidades[1], extremidades[0], extremidades[3] - extremidades[1], extremidades[2] - extremidades[0]);
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">sobrepoe</text>\n", extremidades[1], extremidades[0] + 16);
 }
 
 void print_circ_points(FILE *fsvg, Circ *c, char *cor) {
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"%s\"/>\n", c->x, c->y, cor);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"5\" fill=\"%s\"/>\n", c->x, c->y, cor);
 }
 
 void print_rect_points(FILE *fsvg, Rect *r, char *cor) {
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"%s\"/>\n", r->x, r->y, cor);
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"%s\"/>\n", r->x + r->width, r->y, cor);
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"%s\"/>\n", r->x, r->y + r->height, cor);
-  fprintf(fsvg, "<circle cx=\"%lf\" cy=\"%lf\" r=\"5\" fill=\"%s\"/>\n", r->x + r->width, r->y + r->height, cor);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"5\" fill=\"%s\"/>\n", r->x, r->y, cor);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"5\" fill=\"%s\"/>\n", r->x + r->width, r->y, cor);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"5\" fill=\"%s\"/>\n", r->x, r->y + r->height, cor);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"5\" fill=\"%s\"/>\n", r->x + r->width, r->y + r->height, cor);
 }
 
 void print_svg_cidade(char *svg, Cidade c) {
@@ -78,6 +78,14 @@ void print_svg_cidade(char *svg, Cidade c) {
     } else if (e->tipo == 'r') {
       Rect *r = (Rect*) e->dado;
       print_svg_rect(file_svg, r);
+    } else if (e->tipo == 'e') {
+      Rect *r = (Rect*) e->dado;
+      double extremidades[4];
+      extremidades[1] = r->x;
+      extremidades[0] = r->y;
+      extremidades[3] = r->x + r->height;
+      extremidades[2] = r->y + r->width;
+      print_sobreposto(file_svg, extremidades);
     }
   }
   fprintf(file_svg, "</svg>");

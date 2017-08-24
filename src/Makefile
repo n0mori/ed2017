@@ -1,4 +1,4 @@
-cc = gcc -ansi -pedantic -g -lm
+cc = gcc -ansi -pedantic -g -lm -Wall
 deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o ListaEstatica.o
 deps_geo = Geo.o Circ.o Rect.o
 deps_cidade = Cidade.o Quadra.o Hidrante.o Semaforo.o Torre.o

@@ -87,9 +87,8 @@ int interpreta_t1(char *str) {
     case 'f':
       return 13;
       break;
-    default:
-      return 0;
   }
+  return 0;
 }
 
 char *le_linha(FILE *f) {
@@ -105,7 +104,7 @@ char *arruma_dir(char *dir) {
   return dir;
 }
 
-char *verifica_quebras(char *str) {
+void verifica_quebras(char *str) {
   int i;
   for (i = 0; i < strlen(str); i++) {
     if (str[i] == '\\' && str[i + 1] == 'n') {

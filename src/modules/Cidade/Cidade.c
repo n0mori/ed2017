@@ -231,28 +231,28 @@ void search_cep_or_id(Cidade c, FILE *f, char *id) {
   for (n = get_first(c.quadras); n != NULL; n = get_next(c.quadras, n)) {
     Quadra *q = (Quadra*) get(c.quadras, n);
     if (strcmp(q->cep, id) == 0) {
-      fprintf(f, "Quadra - x: %lf y: %lf\n", q->x, q->y);
+      fprintf(f, "Quadra - x: %f y: %f\n", q->x, q->y);
     }
   }
 
   for (n = get_first(c.hidrantes); n != NULL; n = get_next(c.hidrantes, n)) {
     Hidrante *h = (Hidrante*) get(c.hidrantes, n);
     if (strcmp(h->id, id) == 0) {
-      fprintf(f, "Hidrantes - x: %lf y: %lf\n", h->x, h->y);
+      fprintf(f, "Hidrantes - x: %f y: %f\n", h->x, h->y);
     }
   }
 
   for (n = get_first(c.semaforos); n != NULL; n = get_next(c.semaforos, n)) {
     Semaforo *s = (Semaforo*) get(c.semaforos, n);
     if (strcmp(s->id, id) == 0) {
-      fprintf(f, "Semaforo - x: %lf y: %lf\n", s->x, s->y);
+      fprintf(f, "Semaforo - x: %f y: %f\n", s->x, s->y);
     }
   }
 
   for (n = get_first(c.torres); n != NULL; n = get_next(c.torres, n)) {
     Torre *t = (Torre*) get(c.torres, n);
     if (strcmp(t->id, id) == 0) {
-      fprintf(f, "Torre - x: %lf y: %lf\n", t->x, t->y);
+      fprintf(f, "Torre - x: %f y: %f\n", t->x, t->y);
     }
   }
 }

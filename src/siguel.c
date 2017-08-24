@@ -9,13 +9,12 @@ int main(int argc, char *argv[]) {
   int i, acc0, acc, ins, cpi, del, cpd, bool_qry;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
   FILE *in, *file_txt, *file_qry, *file_svg;
   Cidade city = new_cidade();
-  Node *no;
 
   acc0 = 0;
   acc = 0;
@@ -66,6 +65,13 @@ int main(int argc, char *argv[]) {
   bsd = arruma_dir(bsd);
   geo = concatena(geo, geo_name);
   retira_extensao(geo);
+  geo_saida = alloc_inicial();
+  geo_saida = concatena(geo_saida, geo);
+  if (bool_qry) {
+    geo_saida = concatena(geo_saida, "-");
+    geo_saida = concatena(geo_saida, qry);
+    retira_extensao(geo);
+  }
 
   /*
   O próximo loop irá interpretar todos os comandos do arquivo geo, salvando os
@@ -74,7 +80,7 @@ int main(int argc, char *argv[]) {
   */
 
   full_name = monta_arquivo(bed, geo, "geo");
-  txt = monta_arquivo(bsd, geo, "txt");
+  txt = monta_arquivo(bsd, geo_saida, "txt");
   in = fopen(full_name, "r");
   while (!feof(in)) {
     fgets(buffer, MAX_BUFFER, in);
@@ -108,22 +114,27 @@ int main(int argc, char *argv[]) {
           if (get_elemento_tipo(*ek) == 'c') {
             Circ *c2 = (Circ*) get_elemento_dado(*ek);
             overlap = intersec_cc(*c1, *c2);
+            extremidades_cc(*c1, *c2, extremidades);
           } else if (get_elemento_tipo(*ek) == 'r') {
             Rect *r1 = (Rect*) get_elemento_dado(*ek);
             overlap = intersec_cr(*c1, *r1);
+            extremidades_cr(*c1, *r1, extremidades);
           }
         } else if (get_elemento_tipo(*ej) == 'r') {
           Rect *r1 = (Rect*) get_elemento_dado(*ej);
           if (get_elemento_tipo(*ek) == 'c') {
             Circ *c1 = (Circ*) get_elemento_dado(*ek);
             overlap = intersec_cr(*c1, *r1);
+            extremidades_cr(*c1, *r1, extremidades);
           } else if (get_elemento_tipo(*ek) == 'r') {
             Rect *r2 = (Rect*) get_elemento_dado(*ek);
             overlap = intersec_rr(*r1, *r2);
+            extremidades_rr(*r1, *r2, extremidades);
           }
         }
         if (overlap) {
           fputs("sim\n", file_txt);
+          insere_forma(city, new_elemento(-1, 'e', new_rect(extremidades[3] - extremidades[1], extremidades[2] - extremidades[0], extremidades[1], extremidades[0], "")));
         } else {
           fputs("nao\n", file_txt);
         }
@@ -185,7 +196,7 @@ int main(int argc, char *argv[]) {
           x0 = r->x + r->width / 2;
           y0 = r->y + r->height / 2;
         }
-        fprintf(file_txt, "%lf\n", distancia(x, y, x0, y0));
+        fprintf(file_txt, "%f\n", distancia(x, y, x0, y0));
       }
       fclose(file_txt);
     } else if (buffer[0] == 'a') {
@@ -306,17 +317,19 @@ int main(int argc, char *argv[]) {
     free(full_name);
   }
 
-  svg = monta_arquivo(bsd, geo, "svg");
+  svg = monta_arquivo(bsd, geo_saida, "svg");
   print_svg_cidade(svg, city);
 
 
   res = monta_arquivo(bsd, "resumo", "txt");
   if (acc0) {
     FILE *file_res = fopen(res, "w+");
+    geo_saida = concatena(geo_saida, ".geo");
   	fprintf(file_res, "%s\t%d\t%d\t%d\t%d\n", geo_name, cpi, ins, cpd, del);
     fclose(file_res);
   } else if (acc) {
     FILE *file_res = fopen(res, "a+");
+    geo_saida = concatena(geo_saida, ".geo");
   	fprintf(file_res, "%s\t%d\t%d\t%d\t%d\n", geo_name, cpi, ins, cpd, del);
     fclose(file_res);
   }
@@ -328,6 +341,7 @@ int main(int argc, char *argv[]) {
   free(svg);
   free(qry);
   free(geo);
+  free(geo_saida);
   free(bsd);
   free(bed);
 
