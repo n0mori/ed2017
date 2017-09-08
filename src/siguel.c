@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "modules/Cidade/Cidade.h"
 #include "modules/svg/svg.h"
 #include "modules/Nick_string/Nick_string.h"
@@ -9,7 +10,7 @@ int main(int argc, char *argv[]) {
   int i, acc0, acc, ins, cpi, del, cpd, bool_qry;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-acc", argv[i])) {
       acc = 1;
     } else if (!strcmp("-q", argv[i])) {
-      qry = concatena(qry, argv[++i]);
+      qry_name = argv[++i];
       bool_qry = 1;
     }
   }
@@ -67,10 +68,13 @@ int main(int argc, char *argv[]) {
   retira_extensao(geo);
   geo_saida = alloc_inicial();
   geo_saida = concatena(geo_saida, geo);
+  retira_path(geo_saida);
   if (bool_qry) {
+    qry = concatena(qry, qry_name);
+    retira_path(qry);
     geo_saida = concatena(geo_saida, "-");
     geo_saida = concatena(geo_saida, qry);
-    retira_extensao(geo);
+    retira_extensao(geo_saida);
   }
 
   /*
@@ -81,6 +85,7 @@ int main(int argc, char *argv[]) {
 
   full_name = monta_arquivo(bed, geo, "geo");
   txt = monta_arquivo(bsd, geo_saida, "txt");
+  puts(txt);
   in = fopen(full_name, "r");
   while (!feof(in)) {
     fgets(buffer, MAX_BUFFER, in);
@@ -261,8 +266,9 @@ int main(int argc, char *argv[]) {
   if (bool_qry) {
     full_name = alloc_inicial();
     full_name = concatena(full_name, bed);
-    full_name = concatena(full_name, qry);
+    full_name = concatena(full_name, qry_name);
     file_qry = fopen(full_name, "r");
+    puts(full_name);
 
     while (!feof(file_qry)) {
       fgets(buffer, MAX_BUFFER, file_qry);

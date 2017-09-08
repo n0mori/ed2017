@@ -61,11 +61,20 @@ ListaEstatica.o: modules/ListaEstatica/ListaEstatica.c Elemento.o
 Lista.o: modules/Lista/Lista.c
 	$(cc) -c modules/Lista/Lista.c
 
+Pilha.o: modules/Pilha/Pilha.c
+	$(cc) -c modules/Pilha/Pilha.c
+
 teste_lista.o: teste_lista.c
 	$(cc) -c teste_lista.c
 
 teste_lista: teste_lista.o Lista.o Geo.o Rect.o Circ.o
 	$(cc) teste_lista.o Lista.o Geo.o Rect.o Circ.o -o teste_lista
+
+teste_pilha.o: teste_pilha.c
+	$(cc) -c teste_pilha.c
+
+teste_pilha: teste_pilha.o Pilha.o
+	$(cc) teste_pilha.o Pilha.o -o teste_pilha
 
 teste_quadras.o: teste_quadras.c
 	$(cc) -c teste_quadras.c

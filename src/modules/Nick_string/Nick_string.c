@@ -134,3 +134,22 @@ void retira_extensao(char *s) {
     }
   }
 }
+
+int busca_slash(char *s) {
+  int i;
+  for (i = 0; i < strlen(s); i++) {
+    if (s[i] == '/') {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void retira_path(char *s) {
+  int i;
+  while (busca_slash(s)) {
+    for (i = 0; i < strlen(s); i++) {
+      s[i] = s[i + 1];
+    }
+  }
+}

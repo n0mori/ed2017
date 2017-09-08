@@ -20,5 +20,7 @@ char *arruma_dir(char *dir);
 void verifica_quebras(char *str);
 char *last_slash(char *str);
 void retira_extensao(char *s);
+int busca_slash(char *s);
+void retira_path(char *s);
 
 #endif
