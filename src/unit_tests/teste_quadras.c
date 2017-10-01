@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "modules/Lista/Lista.h"
-#include "modules/Quadra/Quadra.h"
+#include "../modules/Lista/Lista.h"
+#include "../modules/Quadra/Quadra.h"
 
 int main() {
   Lista *l = create_lista();

@@ -10,11 +10,10 @@ cartesiano, altura, largura, cor e um CEP alfanumérico.
 #include <string.h>
 #include <stdio.h>
 
-typedef struct quadra {
-  double x, y, width, height;
-  char cep[100], fill[100], stroke[100];
-} Quadra;
+
+typedef void * Quadra;
 
 Quadra *new_quadra(double x, double y, double width, double height, char *cep, char *fill, char *stroke);
+double quadra_get_y(Quadra *q);
 
 #endif

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "modules/Lista/Lista.h"
-#include "modules/Geo/Geo.h"
+#include "../modules/Lista/Lista.h"
+#include "../modules/Geo/Geo.h"
 
 int main() {
   Lista *l = create_lista();
