@@ -9,11 +9,15 @@ plano cartesiano
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct torre {
-  double x, y;
-  char id[100], fill[100], stroke[100];
-} Torre;
+typedef void* Torre;
 
-Torre *new_torre(double x, double y, char *id, char *fill, char *stroke);
+Torre new_torre(double x, double y, char *id, char *fill, char *stroke);
+double torre_get_x(Torre t);
+double torre_get_y(Torre t);
+double torre_get_range(Torre t);
+char* torre_get_id(Torre t);
+char* torre_get_fill(Torre t);
+char* torre_get_stroke(Torre t);
+void torre_set_range(Torre t, double range);
 
 #endif

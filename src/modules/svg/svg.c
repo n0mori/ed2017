@@ -9,23 +9,50 @@ void print_svg_rect(FILE *fsvg, Rect *r) {
 }
 
 void print_svg_quadra(FILE *fsvg, Quadra *q) {
-  fprintf(fsvg, "<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"%s\" stroke=\"%s\"/>\n", q->x, q->y, q->width, q->height, q->fill, q->stroke);
-  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">%s</text>\n", q->x, q->y + 16, q->cep);
+  fprintf(fsvg, "<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" fill=\"%s\" stroke=\"%s\"/>\n",
+          quadra_get_x(q),
+          quadra_get_y(q),
+          quadra_get_width(q),
+          quadra_get_height(q),
+          quadra_get_fill(q),
+          quadra_get_stroke(q));
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"red\" font-size=\"16\" style=\"z-index:100\">%s</text>\n",
+          quadra_get_x(q),
+          quadra_get_y(q) + 16,
+          quadra_get_cep(q));
 }
 
 void print_svg_hidrante(FILE *fsvg, Hidrante *h) {
-  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", h->x, h->y, h->fill, h->stroke);
-  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">H</text>\n", h->x - 5, h->y + 4);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n",
+          hidrante_get_x(h),
+          hidrante_get_y(h),
+          hidrante_get_fill(h),
+          hidrante_get_stroke(h));
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">H</text>\n",
+          hidrante_get_x(h) - 5,
+          hidrante_get_y(h) + 4);
 }
 
 void print_svg_semaforo(FILE *fsvg, Semaforo *s) {
-  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", s->x, s->y, s->fill, s->stroke);
-  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">S</text>\n", s->x - 5, s->y + 4);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n",
+          semaforo_get_x(s),
+          semaforo_get_y(s),
+          semaforo_get_fill(s),
+          semaforo_get_stroke(s));
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">S</text>\n",
+          semaforo_get_x(s) - 5,
+          semaforo_get_y(s) + 4);
 }
 
 void print_svg_torre(FILE *fsvg, Torre *t) {
-  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n", t->x, t->y, t->fill, t->stroke);
-  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">T</text>\n", t->x - 5, t->y + 4);
+  fprintf(fsvg, "<circle cx=\"%f\" cy=\"%f\" r=\"16\" fill=\"%s\" stroke=\"%s\"/>\n",
+          torre_get_x(t),
+          torre_get_y(t),
+          torre_get_fill(t),
+          torre_get_stroke(t));
+  fprintf(fsvg, "<text x=\"%f\" y=\"%f\" fill=\"white\" font-size=\"16\" style=\"z-index:100\">T</text>\n",
+          torre_get_x(t) - 5, 
+          torre_get_y(t) + 4);
 }
 
 void print_sobreposto(FILE *fsvg, double *extremidades) {

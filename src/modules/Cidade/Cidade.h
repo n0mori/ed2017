@@ -23,10 +23,10 @@ typedef struct cidade {
 } Cidade;
 
 Cidade new_cidade();
-void insere_quadra(Cidade c, Quadra *q, int *cmp, int *insercoes);
-void insere_hidrante(Cidade c, Hidrante *h);
-void insere_semaforo(Cidade c, Semaforo *s);
-void insere_torre(Cidade c, Torre *t);
+void insere_quadra(Cidade c, Quadra q, int *cmp, int *insercoes);
+void insere_hidrante(Cidade c, Hidrante h);
+void insere_semaforo(Cidade c, Semaforo s);
+void insere_torre(Cidade c, Torre t);
 void insere_forma(Cidade c, Elemento *e);
 Elemento *search_forma(Cidade c, int id);
 void free_cidade(Cidade c);

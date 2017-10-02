@@ -1,20 +1,18 @@
 #include <stdio.h>
-#include "../modules/Lista/Lista.h"
 #include "../modules/Quadra/Quadra.h"
 
 int main() {
-  Lista *l = create_lista();
-  Node *n;
-  Quadra *q = new_quadra(10, 10, 10, 10, "ayanami", "white", "blue");
-  Quadra *a;
-  printf("%d\n", q);
-  insert_first(l, q);
+  Quadra q = new_quadra(10, 20, 30, 40, "ayanami", "white", "blue");
 
-  n = l->head;
-  printf("%d\n", n->val);
-  a = get(l, n);
-  printf("%d\n", a);
-  printf("%s\n", a->cep);
+  printf("%f\n", quadra_get_x(q));
+  printf("%f\n", quadra_get_y(q));
+  printf("%f\n", quadra_get_width(q));
+  printf("%f\n", quadra_get_height(q));
+  printf("%s\n", quadra_get_cep(q));
+  printf("%s\n", quadra_get_fill(q));
+  printf("%s\n", quadra_get_stroke(q));
 
-  free_lista(l);
+  free(q);
+
+  return 0;
 }

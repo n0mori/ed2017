@@ -1,9 +1,9 @@
 #include "Comparacao.h"
 
 int cmp_quadra_string(void *a, void *b) {
-  Quadra *q = (Quadra*) a;
+  Quadra q = (Quadra) a;
   char *s = (char*) b;
-  return strcmp(q->cep, s);
+  return strcmp(quadra_get_cep(q), s);
 }
 
 int cmp_hidrante_string(void *a, void *b) {

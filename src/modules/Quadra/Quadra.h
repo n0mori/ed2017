@@ -13,7 +13,13 @@ cartesiano, altura, largura, cor e um CEP alfanumérico.
 
 typedef void * Quadra;
 
-Quadra *new_quadra(double x, double y, double width, double height, char *cep, char *fill, char *stroke);
-double quadra_get_y(Quadra *q);
+Quadra new_quadra(double x, double y, double width, double height, char *cep, char *fill, char *stroke);
+double quadra_get_y(Quadra q);
+double quadra_get_x(Quadra q);
+double quadra_get_width(Quadra q);
+double quadra_get_height(Quadra q);
+char* quadra_get_cep(Quadra q);
+char* quadra_get_fill(Quadra q);
+char* quadra_get_stroke(Quadra q);
 
 #endif

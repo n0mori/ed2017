@@ -11,7 +11,7 @@ typedef struct StStack {
 }* Stack;
 
 Pilha new_pilha() {
-  Pilha p = malloc(sizeof(Stack));
+  Pilha p = malloc(sizeof(struct stStackNode));
   Stack s = (Stack) p;
   s->length = 0;
   s->top = NULL;

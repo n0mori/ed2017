@@ -7,7 +7,7 @@
 #include "modules/Elemento/Elemento.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd, bool_qry;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
   char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name;
@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
   del = 0;
   cpd = 0;
   bool_qry = 0;
+  bool_f = 0;
   sprintf(cfq, "white");
   sprintf(csq, "black");
   sprintf(cfh, "white");
@@ -37,6 +38,7 @@ int main(int argc, char *argv[]) {
   for (i = 0; i < argc; i++) {
     if (!strcmp("-f", argv[i])) {
       geo_name = argv[++i];
+      bool_f = 1;
     } else if (!strcmp("-o", argv[i])) {
       bsd = concatena(bsd, argv[++i]);
     } else if (!strcmp("-e", argv[i])) {
@@ -48,10 +50,12 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-q", argv[i])) {
       qry_name = argv[++i];
       bool_qry = 1;
+    } else if (!strcmp("-id", argv[i])) {
+      puts("Nicolas Jashchenko Omori - 201600560295");
     }
   }
 
-  if (strlen(geo_name) == 0) {
+  if (!bool_f) {
     puts("Digite o arquivo de entrada no argumento -f!");
     exit(1);
   }
@@ -61,6 +65,9 @@ int main(int argc, char *argv[]) {
   }
   if (strlen(bed) != 0) {
     bed = arruma_dir(bed);
+  } else {
+    puts("Digite o diretorio no argumento -e!");
+    exit(1);
   }
 
   bsd = arruma_dir(bsd);
@@ -68,13 +75,11 @@ int main(int argc, char *argv[]) {
   retira_extensao(geo);
   geo_saida = alloc_inicial();
   geo_saida = concatena(geo_saida, geo);
-  retira_path(geo_saida);
   if (bool_qry) {
     qry = concatena(qry, qry_name);
     retira_path(qry);
     geo_saida = concatena(geo_saida, "-");
     geo_saida = concatena(geo_saida, qry);
-    retira_extensao(geo_saida);
   }
 
   /*
@@ -85,8 +90,17 @@ int main(int argc, char *argv[]) {
 
   full_name = monta_arquivo(bed, geo, "geo");
   txt = monta_arquivo(bsd, geo_saida, "txt");
-  puts(txt);
   in = fopen(full_name, "r");
+  file_txt = fopen(txt, "a+");
+  if (in == NULL) {
+    puts("Não consegui encontrar o arquivo geo! Saindo...");
+    exit(1);
+  }
+  if (file_txt == NULL) {
+    puts("Não consegui criar o arquivo de saída txt. Saindo...");
+    exit(1);
+  }
+  fclose(file_txt);
   while (!feof(in)) {
     fgets(buffer, MAX_BUFFER, in);
     if (buffer[0] == 'c' && buffer[1] == ' ') {
@@ -268,7 +282,10 @@ int main(int argc, char *argv[]) {
     full_name = concatena(full_name, bed);
     full_name = concatena(full_name, qry_name);
     file_qry = fopen(full_name, "r");
-    puts(full_name);
+    if (file_qry == NULL) {
+      puts("Não consegui encontrar o arquivo qry! Saindo...");
+      exit(1);
+    }
 
     while (!feof(file_qry)) {
       fgets(buffer, MAX_BUFFER, file_qry);
