@@ -74,6 +74,9 @@ Comparacao.o: modules/Comparacao/Comparacao.c
 Quadtree.o: modules/Quadtree/Quadtree.c
 	$(cc) -c modules/Quadtree/Quadtree.c
 
+Convex.o: modules/Convex/Convex.c
+	$(cc) -c modules/Convex/Convex.c
+
 teste_lista.o: $(unit)/teste_lista.c
 	$(cc) -c $(unit)/teste_lista.c
 
@@ -103,6 +106,12 @@ teste_quadtree.o: $(unit)/teste_quadtree.c
 
 teste_quadtree: teste_quadtree.o Quadtree.o Quadra.o svg.o
 	$(cc) teste_quadtree.o Quadra.o Quadtree.o svg.o -o teste_quadtree
+
+teste_convex.o: $(unit)/teste_convex.c
+	$(cc) -c $(unit)/teste_convex.c
+
+teste_convex: teste_convex.o Convex.o svg.o Lista.o Pilha.o Sorting.o Comparacao.o $(deps_cidade) $(deps_geo) Elemento.o
+	$(cc) teste_convex.o Convex.o svg.o Lista.o Pilha.o Sorting.o Comparacao.o $(deps_cidade) $(deps_geo) Elemento.o -o teste_convex
 
 clean:
 	rm -f *.o

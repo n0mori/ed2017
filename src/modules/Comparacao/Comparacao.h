@@ -15,7 +15,10 @@ int cmp_hidrante_string(void *a, void *b);
 int cmp_semaforo_string(void *a, void *b);
 int cmp_torre_string(void *a, void *b);
 int cmp_quadra_quadra_y0(void *a, void *b);
-int cmp_quadra_quadra_theta(void *a, void *b);
+int cmp_quadra_quadra_y0(void *a, void *b);
+int cmp_hidrante_hidrante_y0(void *a, void *b);
+int cmp_semaforo_semaforo_y0(void *a, void *b);
+int cmp_torre_torre_y0(void *a, void *b);
 int cmp_int_int(void *a, void *b);
 int cmp_double_double(void *a, void *b);
 
