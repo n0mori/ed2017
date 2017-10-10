@@ -51,3 +51,19 @@ void torre_set_range(Torre t, double range) {
   StTorre torre = (StTorre) t;
   torre->range = range;
 }
+
+void torre_range_pontos(Torre t, Lista *l) {
+  double sen_45 = 0.7071;
+  double range = torre_get_range(t);
+  double r_sen = sen_45 * range;
+  double x = torre_get_x(t);
+  double y = torre_get_y(t);
+  insert_last(l, new_ponto(x - range, y));
+  insert_last(l, new_ponto(x - r_sen, y - r_sen));
+  insert_last(l, new_ponto(x, y - range));
+  insert_last(l, new_ponto(x + r_sen, y - r_sen));
+  insert_last(l, new_ponto(x + range, y));
+  insert_last(l, new_ponto(x + r_sen, y + r_sen));
+  insert_last(l, new_ponto(x, y + range));
+  insert_last(l, new_ponto(x - r_sen, y + r_sen));
+}

@@ -2,7 +2,8 @@ cc = gcc -ansi -pedantic -g -lm -Wall
 deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o ListaEstatica.o
 deps_geo = Geo.o Circ.o Rect.o
 deps_cidade = Cidade.o Quadra.o Hidrante.o Semaforo.o Torre.o
-deps_siguel = siguel.o $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o Elemento.o
+deps_sorts = Sorting.o Comparacao.o
+deps_siguel = siguel.o $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o Elemento.o $(deps_sorts) Quadtree.o Ponto.o
 unit = unit_tests
 
 t1: t1.o nick_string.o
@@ -76,6 +77,9 @@ Quadtree.o: modules/Quadtree/Quadtree.c
 
 Convex.o: modules/Convex/Convex.c
 	$(cc) -c modules/Convex/Convex.c
+
+Ponto.o: modules/Ponto/Ponto.c
+	$(cc) -c modules/Ponto/Ponto.c
 
 teste_lista.o: $(unit)/teste_lista.c
 	$(cc) -c $(unit)/teste_lista.c

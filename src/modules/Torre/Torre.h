@@ -8,6 +8,8 @@ plano cartesiano
 
 #include <stdlib.h>
 #include <string.h>
+#include "../Ponto/Ponto.h"
+#include "../Lista/Lista.h"
 
 typedef void* Torre;
 
@@ -19,5 +21,6 @@ char* torre_get_id(Torre t);
 char* torre_get_fill(Torre t);
 char* torre_get_stroke(Torre t);
 void torre_set_range(Torre t, double range);
+void torre_range_pontos(Torre t, Lista *l);
 
 #endif

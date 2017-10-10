@@ -7,10 +7,12 @@ typedef struct angleData {
 
 int convex_ccw(double ax, double ay, double bx, double by, double cx, double cy) {
   double result = (bx - ax)*(cy - ay) - (by - ay)*(cx - ax);
+  /*
   printf("ccw: %f\n", result);
   printf("xa: %f ya: %f\n", ax, ay);
   printf("xb: %f yb: %f\n", bx, by);
   printf("xc: %f yc: %f\n", cx, cy);
+  */
   if (result < 0) {
     return -1;
   } else if (result == 0) {
@@ -75,8 +77,8 @@ void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b))
   insert_first(angles, a);
 
   while (length_lista(angles) > 0) {
-    printf("%f\n", ((AngleData) get(angles, get_first(angles)))->angle);
-    insert_last(l, ((AngleData)get(angles, get_first(angles)))->data);
+    /*printf("%f\n", ((AngleData) get(angles, get_first(angles)))->angle);*/
+    insert_last(l, ((AngleData) get(angles, get_first(angles)))->data);
     free(remove_first(angles));
   }
 }
@@ -95,18 +97,17 @@ void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(vo
       void *top = pop(aux);
       while (convex_ccw(get_x(peek(aux)), get_y(peek(aux)), get_x(top), get_y(top), get_x(get(l, n)), get_y(get(l, n))) < 0) {
         top = pop(aux);
-        puts("POP!");
       }
       push(aux, top);
       push(aux, get(l, n));
     }
 
     n = get_last(l);
-    printf("<polygon fill=\"none\" stroke=\"black\" points=\"");
+    /*printf("<polygon fill=\"none\" stroke=\"black\" points=\"");*/
     while (!empty(aux)) {
       if (peek(aux) == get(l, n)) {
         push(p, pop(aux));
-        printf("%f,%f ", get_x(peek(p)), get_y(peek(p)));
+        /*printf("%f,%f ", get_x(peek(p)), get_y(peek(p)));*/
         if (n == get_last(l)) {
           remove_last(l);
           n = get_last(l);
@@ -118,11 +119,9 @@ void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(vo
         n = get_before(l, n);
       }
     }
-    printf("\"/>\n");
+    /*printf("\"/>\n");*/
 
     free(aux);
-
-    convex_hull(l, p, get_x, get_y, compar);
 
   } else {
     while (length_lista(l) > 0) {

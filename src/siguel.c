@@ -5,6 +5,10 @@
 #include "modules/svg/svg.h"
 #include "modules/Nick_string/Nick_string.h"
 #include "modules/Elemento/Elemento.h"
+#include "modules/Sorting/Sorting.h"
+#include "modules/Comparacao/Comparacao.h"
+#include "modules/Convex/Convex.h"
+#include "modules/Quadtree/Quadtree.h"
 
 int main(int argc, char *argv[]) {
   int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f;
@@ -65,9 +69,6 @@ int main(int argc, char *argv[]) {
   }
   if (strlen(bed) != 0) {
     bed = arruma_dir(bed);
-  } else {
-    puts("Digite o diretorio no argumento -e!");
-    exit(1);
   }
 
   bsd = arruma_dir(bsd);
