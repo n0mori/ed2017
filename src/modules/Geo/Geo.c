@@ -37,7 +37,10 @@ void extremidades_cc(Circ a, Circ b, double *extremidades) {
 }
 
 int intersec_rr(Rect a, Rect b) {
-  if (((a.x >= b.x && a.x <= b.x + b.width) || (b.x >= a.x && b.x <= a.x + a.width)) && ((a.y >= b.y && a.y <= b.y + b.height) || (b.y >= a.y && b.y <= a.y + a.height))) {
+  if (((a.x >= b.x && a.x <= b.x + b.width) ||
+       (b.x >= a.x && b.x <= a.x + a.width)) &&
+       ((a.y >= b.y && a.y <= b.y + b.height) ||
+       (b.y >= a.y && b.y <= a.y + a.height))) {
     return 1;
   }
   return 0;

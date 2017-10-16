@@ -9,7 +9,7 @@ cartesiano, altura, largura, cor e um CEP alfanumérico.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
+#include "../Geo/Geo.h"
 
 typedef void * Quadra;
 
@@ -21,5 +21,8 @@ double quadra_get_height(Quadra q);
 char* quadra_get_cep(Quadra q);
 char* quadra_get_fill(Quadra q);
 char* quadra_get_stroke(Quadra q);
+int quadra_inside_circ(Quadra q, void *circ);
+int quadra_inside_rect(Quadra q, void *rect);
+void quadra_print_xy(FILE *f, Quadra q);
 
 #endif

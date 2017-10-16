@@ -8,6 +8,7 @@ no plano cartesiano.
 
 #include <stdlib.h>
 #include <string.h>
+#include "../Geo/Geo.h"
 
 typedef void* Hidrante;
 
@@ -18,5 +19,8 @@ double hidrante_get_vazao(Hidrante h);
 char* hidrante_get_id(Hidrante h);
 char* hidrante_get_fill(Hidrante h);
 char* hidrante_get_stroke(Hidrante h);
+void hidrante_set_vazao(Hidrante h, double vazao);
+int hidrante_inside_circ(Hidrante h, void *circ);
+int hidrante_inside_rect(Hidrante h, void *rect);
 
 #endif

@@ -50,3 +50,13 @@ void hidrante_set_vazao(Hidrante h, double vazao) {
   StHidrante hidrante = (StHidrante) h;
   hidrante->vazao = vazao;
 }
+
+int hidrante_inside_circ(Hidrante h, void *circ){
+  Circ *c = (Circ*) circ;
+  return circ_interno(*c, hidrante_get_x(h), hidrante_get_y(h));
+}
+
+int hidrante_inside_rect(Hidrante h, void *rect) {
+  Rect *r = (Rect*) rect;
+  return rect_interno(*r, hidrante_get_x(h), hidrante_get_y(h));
+}

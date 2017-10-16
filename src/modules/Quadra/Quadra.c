@@ -52,3 +52,23 @@ char* quadra_get_stroke(Quadra q) {
   StQuadra quadra = (StQuadra) q;
   return quadra->stroke;
 }
+
+int quadra_inside_circ(Quadra q, void *circ) {
+  Circ *c = (Circ*) circ;
+  Rect *r = new_rect(quadra_get_width(q), quadra_get_height(q), quadra_get_x(q), quadra_get_y(q), "");
+  int val = rect_inside_circ(*r, *c);
+  free(r);
+  return val;
+}
+
+int quadra_inside_rect(Quadra q, void *rect) {
+  Rect *r = (Rect*) rect;
+  Rect *rect1 = new_rect(quadra_get_width(q), quadra_get_height(q), quadra_get_x(q), quadra_get_y(q), "");
+  int val = rect_inside_rect(*rect1, *r);
+  free(rect1);
+  return val;
+}
+
+void quadra_print_xy(FILE *f, Quadra q) {
+  fprintf(f, "Quadra - x: %f y: %f\n", quadra_get_x(q), quadra_get_y(q));
+}

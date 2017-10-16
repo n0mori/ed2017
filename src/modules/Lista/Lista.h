@@ -35,5 +35,6 @@ Node *get_next(Lista *l, Node *posic);
 Node *get_before(Lista *l, Node *posic);
 void *get(Lista *l, Node *posic);
 void free_lista(Lista *l);
+void *search_lista(Lista *l, int (*compar)(void* a, void *b), void *comparado);
 
 #endif

@@ -51,3 +51,17 @@ void semaforo_set_ciclo(Semaforo s, double ciclo) {
   StSemaforo semaforo = (StSemaforo) s;
   semaforo->ciclo = ciclo;
 }
+
+int semaforo_inside_circ(Semaforo s, void *circ) {
+  Circ *c = (Circ*) circ;
+  return circ_interno(*c, semaforo_get_x(s), semaforo_get_y(s));
+}
+
+int semaforo_inside_rect(Semaforo s, void *rect) {
+  Rect *r = (Rect*) rect;
+  return rect_interno(*r, semaforo_get_x(s), semaforo_get_y(s));
+}
+
+void semaforo_print_xy(FILE *f, Semaforo s) {
+  fprintf(f, "Semaforo - x: %f y: %f\n", semaforo_get_x(s), semaforo_get_y(s));
+}

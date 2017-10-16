@@ -24,5 +24,7 @@ int main() {
 
   printf("%d\n", cmp);
 
+  free_quadtree(q);
+
   return 0;
 }

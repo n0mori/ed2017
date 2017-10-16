@@ -13,9 +13,9 @@ int convex_ccw(double ax, double ay, double bx, double by, double cx, double cy)
   printf("xb: %f yb: %f\n", bx, by);
   printf("xc: %f yc: %f\n", cx, cy);
   */
-  if (result < 0) {
+  if (result < -10e-7) {
     return -1;
-  } else if (result == 0) {
+  } else if (result < 10e-7) {
     return 0;
   } else {
     return 1;
@@ -41,26 +41,27 @@ int cmp_angle_data(void *a, void *b) {
   }
 }
 
-void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b)) {
+void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b), int (*compar)(void *a, void *b)) {
   void *first = get(l, get_first(l));
   double x0 = get_x(first);
   double y0 = get_y(first);
   Lista *angles = create_lista();
+  Lista *same = create_lista();
   AngleData a = malloc(sizeof(struct angleData));
-  Node *n, *aux;
-  aux = get_first(l);
+  Node *n;
 
-  for (n = get_first(l); n != NULL && get_y(get(l, n)) == get_y(get(l, aux)); n = get_next(l, n)) {
-    if (get_x(get(l, n)) < get_x(get(l, aux))) {
-      aux = n;
-    }
+  for (n = get_first(l); n != NULL && get_y(get(l, n)) == y0; ) {
+    insert_first(same, remove_first(l));
+    n = get_first(l);
   }
 
-  first = remove_at(l, aux);
-  insert_first(l, first);
-
-  a->data = first;
+  sort_lista(same, compar);
+  a->data = get(same, get_first(same));
   a->angle = 0;
+  while (length_lista(same) > 0) {
+    insert_first(l, remove_last(same));
+  }
+
 
   for (n = get_next(l, get_first(l)); n != NULL; n = get_next(l, n)) {
     AngleData a = malloc(sizeof(struct angleData));
@@ -81,14 +82,23 @@ void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b))
     insert_last(l, ((AngleData) get(angles, get_first(angles)))->data);
     free(remove_first(angles));
   }
+  free_lista(angles);
+
+  while (length_lista(same) > 0) {
+    insert_first(l, remove_last(same));
+  }
+  free_lista(same);
 }
 
-void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(void* b), int (*compar)(void *a, void *b)) {
+void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(void* b), int (*compar_y0)(void *a, void *b), int (*compar_x0)(void *a, void *b)) {
   if (length_lista(l) > 3) {
     Node *n;
     Pilha aux = new_pilha();
-    sort_lista(l, compar); /*sort para y0*/
-    sort_by_angle(l, get_x, get_y);
+    sort_lista(l, compar_y0); /*sort para y0*/
+    sort_by_angle(l, get_x, get_y, compar_x0);
+
+
+
 
     push(aux, get(l, get_first(l)));
     push(aux, get(l, get_next(l, get_first(l))));

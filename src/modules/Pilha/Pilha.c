@@ -25,7 +25,7 @@ int empty(Pilha p) {
 
 void push(Pilha p, void *e) {
   Stack s = (Stack) p;
-  StackNode n = malloc(sizeof(StackNode));
+  StackNode n = malloc(sizeof(struct stStackNode));
   n->next = s->top;
   n->valor = e;
   s->top = n;

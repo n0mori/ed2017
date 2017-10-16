@@ -25,3 +25,34 @@ Elemento *new_elemento(int id, char tipo, void *dado) {
   e->dado = dado;
   return e;
 }
+
+double elemento_get_x(void *elemento) {
+  Elemento *e = (Elemento*) elemento;
+  if (e->tipo == 'c') {
+    Circ *c = (Circ*) e->dado;
+    return c->x;
+  } else if (e->tipo == 'r') {
+    Rect *r = (Rect*) e->dado;
+    return r->x;
+  }
+  return 0;
+}
+
+double elemento_get_y(void *elemento) {
+  Elemento *e = (Elemento*) elemento;
+  if (e->tipo == 'c') {
+    Circ *c = (Circ*) e->dado;
+    return c->y;
+  } else if (e->tipo == 'r' || e->tipo == 'e') {
+    Rect *r = (Rect*) e->dado;
+    return r->y;
+  }
+  return 0;
+}
+
+void destroy_dado_elemento(void *elemento) {
+  Elemento *e = (Elemento*) elemento;
+  if (elemento != NULL) {
+    free(e->dado);
+  }
+}

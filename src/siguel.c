@@ -11,7 +11,7 @@
 #include "modules/Quadtree/Quadtree.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
   char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name;
@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
   cpd = 0;
   bool_qry = 0;
   bool_f = 0;
+  bool_convex = 1;
   sprintf(cfq, "white");
   sprintf(csq, "black");
   sprintf(cfh, "white");
@@ -56,6 +57,8 @@ int main(int argc, char *argv[]) {
       bool_qry = 1;
     } else if (!strcmp("-id", argv[i])) {
       puts("Nicolas Jashchenko Omori - 201600560295");
+    } else if (!strcmp("-noconvex", argv[i])) {
+      bool_convex = 0;
     }
   }
 
@@ -81,6 +84,7 @@ int main(int argc, char *argv[]) {
     retira_path(qry);
     geo_saida = concatena(geo_saida, "-");
     geo_saida = concatena(geo_saida, qry);
+    retira_extensao(geo_saida);
   }
 
   /*
@@ -123,8 +127,8 @@ int main(int argc, char *argv[]) {
       file_txt = fopen(txt, "a+");
       fputs(buffer, file_txt);
       sscanf(buffer, "o %d %d", &id_j, &id_k);
-      ej = search_forma(city, id_j);
-      ek = search_forma(city, id_k);
+      ej = search_forma_lista(city, id_j);
+      ek = search_forma_lista(city, id_k);
       if (ej == NULL || ek == NULL) {
         fputs("id invalido\n", file_txt);
       } else {
@@ -167,7 +171,7 @@ int main(int argc, char *argv[]) {
       file_txt = fopen(txt, "a+");
       sscanf(buffer, "i %d %lf %lf", &id, &x, &y);
       fputs(buffer, file_txt);
-      e = search_forma(city, id);
+      e = search_forma_lista(city, id);
       if (e == NULL) {
         fputs("id nao encontrado!\n", file_txt);
       } else if (get_elemento_tipo(*e) == 'c') {
@@ -193,8 +197,8 @@ int main(int argc, char *argv[]) {
       file_txt = fopen(txt, "a+");
       sscanf(buffer, "d %d %d", &id_j, &id_k);
       fputs(buffer, file_txt);
-      ej = search_forma(city, id_j);
-      ek = search_forma(city, id_k);
+      ej = search_forma_lista(city, id_j);
+      ek = search_forma_lista(city, id_k);
       if (ej == NULL || ek == NULL) {
         fputs("id invalido\n", file_txt);
       } else {
@@ -230,8 +234,8 @@ int main(int argc, char *argv[]) {
       full_sufixo = monta_arquivo(bsd, nome_sufixo, "svg");
       file_svg = fopen(full_sufixo, "w+");
       fprintf(file_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
-      for (n = get_first(city.formas); n != NULL; n = get_next(city.formas, n)) {
-        Elemento *e = get(city.formas, n);
+      for (n = get_first(city.lista_formas); n != NULL; n = get_next(city.lista_formas, n)) {
+        Elemento *e = get(city.lista_formas, n);
         if (get_elemento_tipo(*e) == 'c') {
           Circ *c = (Circ*) get_elemento_dado(*e);
           print_circ_points(file_svg, c, cor);
@@ -249,21 +253,48 @@ int main(int argc, char *argv[]) {
       double x, y, width, height;
       sscanf(buffer, "q %lf %lf %lf %lf %s", &x, &y, &width, &height, cep);
       insere_quadra(city, new_quadra(x, y, width, height, cep, cfq, csq), &cpi, &ins);
-    } else if (buffer[0] == 'h') {
+    } else if (buffer[0] == 'h' && buffer[1] == ' ') {
       char id[100];
       double x, y;
       sscanf(buffer, "h %lf %lf %s", &x, &y, id);
       insere_hidrante(city, new_hidrante(x, y, id, cfh, csh));
-    } else if (buffer[0] == 's') {
+    } else if (buffer[0] == 'h' && buffer[1] == 'I') {
+      char id[100];
+      double vazao;
+      Hidrante h;
+      sscanf(buffer, "hI %[^ ] %lf", id, &vazao);
+      h = search_lista(city.lista_hidrantes, cmp_hidrante_string, id);
+      if (h != NULL) {
+        hidrante_set_vazao(h, vazao);
+      }
+    } else if (buffer[0] == 's' && buffer[1] == ' ') {
       char id[100];
       double x, y;
       sscanf(buffer, "s %lf %lf %s", &x, &y, id);
       insere_semaforo(city, new_semaforo(x, y, id, cfs, css));
-    } else if (buffer[0] == 't') {
+    } else if (buffer[0] == 's' && buffer[1] == 'I') {
+      char id[100];
+      double ciclo;
+      Semaforo s;
+      sscanf(buffer, "sI %[^ ] %lf", id, &ciclo);
+      s = search_lista(city.lista_semaforos, cmp_semaforo_string, id);
+      if (s != NULL) {
+        semaforo_set_ciclo(s, ciclo);
+      }
+    } else if (buffer[0] == 't' && buffer[1] == ' ') {
       char id[100];
       double x, y;
       sscanf(buffer, "t %lf %lf %s", &x, &y, id);
       insere_torre(city, new_torre(x, y, id, cft, cst));
+    } else if (buffer[0] == 't' && buffer[1] == 'I') {
+      char id[100];
+      double range;
+      Torre t;
+      sscanf(buffer, "tI %[^ ] %lf", id, &range);
+      t = search_lista(city.lista_torres, cmp_torre_string, id);
+      if (t != NULL) {
+        torre_set_range(t, range);
+      }
     } else if (buffer[0] == 'c' && buffer[1] == 'q') {
       sscanf(buffer, "cq %[^ ] %s", cfq, csq);
     } else if (buffer[0] == 'c' && buffer[1] == 'h') {
@@ -277,6 +308,86 @@ int main(int argc, char *argv[]) {
   }
   fclose(in);
   free(full_name);
+
+  if (bool_convex) {
+    Pilha stk_quadras = new_pilha();
+    Pilha stk_hidrantes = new_pilha();
+    Pilha stk_semaforos = new_pilha();
+    Pilha stk_torres = new_pilha();
+    Pilha stk_formas = new_pilha();
+
+    while (length_lista(city.lista_formas) > 0) {
+      convex_hull(city.lista_formas, stk_formas, elemento_get_x, elemento_get_y, cmp_elemento_elemento_y0, cmp_elemento_elemento_x0);
+    }
+    while (!empty(stk_formas)) {
+      Elemento *e = pop(stk_formas);
+      quadtree_insert(city.qt_formas, e, elemento_get_x(e), elemento_get_y(e));
+    }
+    free(stk_formas);
+
+    while(length_lista(city.lista_quadras) > 0) {
+      convex_hull(city.lista_quadras, stk_quadras, quadra_get_x, quadra_get_y, cmp_quadra_quadra_y0, cmp_quadra_quadra_x0);
+    }
+    while(!empty(stk_quadras)) {
+      Quadra q = pop(stk_quadras);
+      quadtree_insert(city.qt_quadras, q, quadra_get_x(q), quadra_get_y(q));
+    }
+    free(stk_quadras);
+
+    while(length_lista(city.lista_hidrantes) > 0) {
+      convex_hull(city.lista_hidrantes, stk_hidrantes, hidrante_get_x, hidrante_get_y, cmp_hidrante_hidrante_y0, cmp_hidrante_hidrante_x0);
+    }
+    while(!empty(stk_hidrantes)) {
+      Hidrante h = pop(stk_hidrantes);
+      quadtree_insert(city.qt_hidrantes, h, hidrante_get_x(h), hidrante_get_y(h));
+    }
+    free(stk_hidrantes);
+
+    while(length_lista(city.lista_semaforos) > 0) {
+      convex_hull(city.lista_semaforos, stk_semaforos, semaforo_get_x, semaforo_get_y, cmp_semaforo_semaforo_y0, cmp_semaforo_semaforo_x0);
+    }
+    while(!empty(stk_semaforos)) {
+      Semaforo s = pop(stk_semaforos);
+      quadtree_insert(city.qt_semaforos, s, semaforo_get_x(s), semaforo_get_y(s));
+    }
+    free(stk_semaforos);
+
+    while(length_lista(city.lista_torres) > 0) {
+      convex_hull(city.lista_torres, stk_torres, torre_get_x, torre_get_y, cmp_torre_torre_y0, cmp_torre_torre_x0);
+    }
+    while(!empty(stk_torres)) {
+      Torre t = pop(stk_torres);
+      quadtree_insert(city.qt_torres, t, torre_get_x(t), torre_get_y(t));
+    }
+    free(stk_torres);
+  } else {
+
+    while (length_lista(city.lista_formas) > 0) {
+      Elemento *e = remove_first(city.lista_formas);
+      quadtree_insert(city.qt_formas, e, elemento_get_x(e), elemento_get_y(e));
+    }
+
+    while (length_lista(city.lista_quadras) > 0) {
+      Quadra q = remove_first(city.lista_quadras);
+      quadtree_insert(city.qt_quadras, q, quadra_get_x(q), quadra_get_y(q));
+    }
+
+    while (length_lista(city.lista_hidrantes) > 0) {
+      Hidrante h = remove_first(city.lista_hidrantes);
+      quadtree_insert(city.qt_hidrantes, h, hidrante_get_x(h), hidrante_get_y(h));
+    }
+
+    while (length_lista(city.lista_semaforos) > 0) {
+      Semaforo s = remove_first(city.lista_semaforos);
+      quadtree_insert(city.qt_semaforos, s, semaforo_get_x(s), semaforo_get_x(s));
+    }
+
+    while (length_lista(city.lista_torres) > 0) {
+      Torre t = remove_first(city.lista_torres);
+      quadtree_insert(city.qt_torres, t, torre_get_x(t), semaforo_get_y(t));
+    }
+  }
+
 
   if (bool_qry) {
     full_name = alloc_inicial();
@@ -333,6 +444,119 @@ int main(int argc, char *argv[]) {
         fputs(buffer, file_txt);
         search_cep_or_id(city, file_txt, id);
         fclose(file_txt);
+      } else if (buffer[0] == 'p' && buffer[1] == 'c' && buffer[2] == '?') {
+        FILE *pc_svg;
+        char sufixo[100], str_x[100], str_y[100], str_width[100], str_height[100];
+        char *str_pc = alloc_inicial();
+        double x, y, width, height;
+        Lista *towers = create_lista();
+        Lista *pts = create_lista();
+        Pilha stk_pts = new_pilha();
+        Node *n;
+        sufixo[0] = 0;
+        str_x[0] = 0;
+        str_y[0] = 0;
+        str_width[0] = 0;
+        str_height[0] = 0;
+
+        sscanf(buffer, "pc? %s %s %s %s %s", sufixo, str_x, str_y, str_width, str_height);
+
+        str_pc = concatena(str_pc, bsd);
+        str_pc = concatena(str_pc, geo_saida);
+        retira_extensao(str_pc);
+        str_pc = concatena(str_pc, "-");
+        str_pc = concatena(str_pc, sufixo);
+        str_pc = concatena(str_pc, ".svg");
+        pc_svg = fopen(str_pc, "w+");
+
+        if (pc_svg == NULL) {
+          puts("Não consegui criar o arquivo! Verificar casos de testes e diretórios");
+          exit(1);
+        }
+
+        if (strlen(str_x) > 0) {
+          Rect *r;
+          sscanf(str_x, "%lf", &x);
+          sscanf(str_y, "%lf", &y);
+          sscanf(str_width, "%lf", &width);
+          sscanf(str_height, "%lf", &height);
+          r = new_rect(width, height, x, y, "");
+          quadtree_filter_to_list(quadtree_root(city.qt_torres), towers, torre_inside_rect, r);
+          free(r);
+        } else {
+          quadtree_filter_to_list(quadtree_root(city.qt_torres), towers, cmp_true, NULL);
+        }
+
+        for (n = get_first(towers); n != NULL; n = get_next(towers, n)) {
+          torre_range_pontos(get(towers, n), pts);
+        }
+
+        convex_hull(pts, stk_pts, get_x, get_y, cmp_ponto_y0, cmp_ponto_x0);
+
+        fprintf(pc_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+        quadtree_percorre_print(quadtree_root(city.qt_quadras), pc_svg, print_svg_quadra);
+        quadtree_percorre_print(quadtree_root(city.qt_hidrantes), pc_svg, print_svg_hidrante);
+        quadtree_percorre_print(quadtree_root(city.qt_semaforos), pc_svg, print_svg_semaforo);
+        quadtree_percorre_print(quadtree_root(city.qt_torres), pc_svg, print_svg_torre);
+        quadtree_percorre_print(quadtree_root(city.qt_torres), pc_svg, print_svg_torre_range);
+        quadtree_percorre_print(quadtree_root(city.qt_formas), pc_svg, print_svg_elemento);
+        print_svg_point_stack(pc_svg, stk_pts);
+        fprintf(pc_svg, "</svg>");
+
+        fclose(pc_svg);
+        free(str_pc);
+        free_lista(pts);
+        free(stk_pts);
+        while (length_lista(towers) > 0) {
+          remove_first(towers);
+        }
+        free(towers);
+
+      } else if (buffer[0] == 'a' && buffer[1] == 'c' && buffer[2] == '?') {
+        char sufixo[100], str_x[100], str_y[100], str_width[100], str_height[100];
+        double x, y, width, height;
+        Lista *towers = create_lista();
+        Lista *pts = create_lista();
+        Pilha stk_pts = new_pilha();
+        Node *n;
+        sufixo[0] = 0;
+        str_x[0] = 0;
+        str_y[0] = 0;
+        str_width[0] = 0;
+        str_height[0] = 0;
+
+        sscanf(buffer, "ac? %s %s %s %s %s", sufixo, str_x, str_y, str_width, str_height);
+
+        if (strlen(str_x) > 0) {
+          Rect *r;
+          sscanf(str_x, "%lf", &x);
+          sscanf(str_y, "%lf", &y);
+          sscanf(str_width, "%lf", &width);
+          sscanf(str_height, "%lf", &height);
+          r = new_rect(width, height, x, y, "");
+          quadtree_filter_to_list(quadtree_root(city.qt_torres), towers, torre_inside_rect, r);
+          free(r);
+        } else {
+          quadtree_filter_to_list(quadtree_root(city.qt_torres), towers, cmp_true, NULL);
+        }
+
+        for (n = get_first(towers); n != NULL; n = get_next(towers, n)) {
+          torre_range_pontos(get(towers, n), pts);
+        }
+
+        convex_hull(pts, stk_pts, get_x, get_y, cmp_ponto_y0, cmp_ponto_x0);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        fprintf(file_txt, "%f metros\n", 30.0);
+        fclose(file_txt);
+
+        free_lista(pts);
+        free(stk_pts);
+        while (length_lista(towers) > 0) {
+          remove_first(towers);
+        }
+        free(towers);
       }
       buffer[0] = 0;
     }

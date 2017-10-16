@@ -3,7 +3,7 @@ deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o ListaEstatica.
 deps_geo = Geo.o Circ.o Rect.o
 deps_cidade = Cidade.o Quadra.o Hidrante.o Semaforo.o Torre.o
 deps_sorts = Sorting.o Comparacao.o
-deps_siguel = siguel.o $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o Elemento.o $(deps_sorts) Quadtree.o Ponto.o
+deps_siguel = $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o Elemento.o $(deps_sorts) Quadtree.o Ponto.o Pilha.o Convex.o
 unit = unit_tests
 
 t1: t1.o nick_string.o
@@ -18,8 +18,8 @@ t2:	$(deps_t2)
 t2.o: t2.c
 	$(cc) -c t2.c
 
-siguel: $(deps_siguel)
-	$(cc) $(deps_siguel) -o siguel
+siguel: siguel.o $(deps_siguel)
+	$(cc) siguel.o $(deps_siguel) -o siguel
 
 siguel.o: siguel.c
 	$(cc) -c siguel.c
@@ -114,8 +114,14 @@ teste_quadtree: teste_quadtree.o Quadtree.o Quadra.o svg.o
 teste_convex.o: $(unit)/teste_convex.c
 	$(cc) -c $(unit)/teste_convex.c
 
-teste_convex: teste_convex.o Convex.o svg.o Lista.o Pilha.o Sorting.o Comparacao.o $(deps_cidade) $(deps_geo) Elemento.o
-	$(cc) teste_convex.o Convex.o svg.o Lista.o Pilha.o Sorting.o Comparacao.o $(deps_cidade) $(deps_geo) Elemento.o -o teste_convex
+teste_convex: teste_convex.o 	$(deps_siguel)
+	$(cc) teste_convex.o $(deps_siguel) -o teste_convex
+
+teste_colisao.o: $(unit)/teste_colisao.c
+	$(cc) -c $(unit)/teste_colisao.c
+
+teste_colisao: teste_colisao.o Geo.o Rect.o Circ.o
+	$(cc) teste_colisao.o Geo.o Rect.o Circ.o -o teste_colisao
 
 clean:
 	rm -f *.o

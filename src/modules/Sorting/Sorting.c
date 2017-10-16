@@ -26,6 +26,7 @@ void sort_lista(Lista *l, int (*compar)(void *a, void *b)) {
   quick_sort(arr, 0, length, compar);
 
   array_to_lista(arr, length, l);
+  free(arr);
 }
 
 int particiona(void **vetor, int inicio, int fim, int (*compar)(void *a, void *b)) {

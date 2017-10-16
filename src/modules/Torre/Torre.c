@@ -54,10 +54,10 @@ void torre_set_range(Torre t, double range) {
 
 void torre_range_pontos(Torre t, Lista *l) {
   double sen_45 = 0.7071;
-  double range = torre_get_range(t);
-  double r_sen = sen_45 * range;
   double x = torre_get_x(t);
   double y = torre_get_y(t);
+  double range = torre_get_range(t);
+  double r_sen = sen_45 * range;
   insert_last(l, new_ponto(x - range, y));
   insert_last(l, new_ponto(x - r_sen, y - r_sen));
   insert_last(l, new_ponto(x, y - range));
@@ -66,4 +66,14 @@ void torre_range_pontos(Torre t, Lista *l) {
   insert_last(l, new_ponto(x + r_sen, y + r_sen));
   insert_last(l, new_ponto(x, y + range));
   insert_last(l, new_ponto(x - r_sen, y + r_sen));
+}
+
+int torre_inside_circ(Torre t, void *c) {
+  Circ *circ = (Circ*) c;
+  return circ_interno(*circ, torre_get_x(t), torre_get_y(t));
+}
+
+int torre_inside_rect(Torre t, void *r) {
+  Rect *rect = (Rect*) r;
+  return rect_interno(*rect, torre_get_x(t), torre_get_y(t));
 }

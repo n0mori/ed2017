@@ -8,6 +8,7 @@ no plano cartesiano e uma cor
 
 #include <stdlib.h>
 #include <string.h>
+#include "../Geo/Geo.h"
 
 typedef void* Semaforo;
 
@@ -19,5 +20,8 @@ char* semaforo_get_id(Semaforo s);
 char* semaforo_get_fill(Semaforo s);
 char* semaforo_get_stroke(Semaforo s);
 void semaforo_set_ciclo(Semaforo s, double ciclo);
+int semaforo_inside_circ(Semaforo s, void *circ);
+int semaforo_inside_rect(Semaforo s, void *rect);
+void semaforo_print_xy(FILE *f, Semaforo s);
 
 #endif

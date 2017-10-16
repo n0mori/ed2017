@@ -10,6 +10,7 @@ plano cartesiano
 #include <string.h>
 #include "../Ponto/Ponto.h"
 #include "../Lista/Lista.h"
+#include "../Geo/Geo.h"
 
 typedef void* Torre;
 
@@ -22,5 +23,7 @@ char* torre_get_fill(Torre t);
 char* torre_get_stroke(Torre t);
 void torre_set_range(Torre t, double range);
 void torre_range_pontos(Torre t, Lista *l);
+int torre_inside_circ(Torre t, void *c);
+int torre_inside_rect(Torre t, void *r);
 
 #endif
