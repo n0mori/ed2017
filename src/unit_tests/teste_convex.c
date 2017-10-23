@@ -10,11 +10,18 @@ int main() {
   Lista *hulls = create_lista();
   int i, j;
 
-  for (i = 0; i < 10; i++) {
-    for (j = 0; j < 10; j++) {
+  /*
+  for (i = 0; i < 3; i++) {
+    for (j = 0; j < 1; j++) {
       insert_first(l, new_hidrante(100 * (i + 1), 100 * (j + 1), "", "red", "black"));
     }
   }
+  */
+
+
+  insert_first(l, new_hidrante(0 , 0 , "", "red", "black"));
+  insert_first(l, new_hidrante(50, 50, "", "red", "black"));
+  insert_first(l, new_hidrante(0 , 50, "", "red", "black"));
 
   /*
   insert_first(l, new_hidrante(10, 10, "", "red", "black"));
@@ -31,6 +38,7 @@ int main() {
     Pilha p = new_pilha();
     convex_hull(l, p, hidrante_get_x, hidrante_get_y, cmp_hidrante_hidrante_y0, cmp_hidrante_hidrante_x0);
     insert_first(hulls, p);
+    break;
   }
 
   while (length_lista(hulls) > 0) {
@@ -40,6 +48,7 @@ int main() {
     Hidrante pt = pop(p);
     printf("%f %f ", hidrante_get_x(pt), hidrante_get_y(pt));
     free(pt);
+    free(p);
   }
   printf("\" />");
     free(p);
