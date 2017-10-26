@@ -43,7 +43,7 @@ int cmp_angle_data(void *a, void *b) {
     return (dist_sq(p0, a) >= dist_sq(p0, b))? -1 : 1;
   }
 
-  return (orientation == -1)? -1: 1;
+  return (orientation == 1)? -1: 1;
 
 }
 
@@ -51,7 +51,7 @@ void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b),
   Node *n;
   Lista *angles = create_lista();
 
-  for (n = get_next(l, get_first(l)); n != NULL; n = get_next(l, n)) {
+  for (n = get_first(l); n != NULL; n = get_next(l, n)) {
     AngleData a = malloc(sizeof(struct angleData));
     a->x = get_x(get(l, n));
     a->y = get_y(get(l, n));
@@ -60,7 +60,7 @@ void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b),
   }
 
   sort_lista(angles, cmp_angle_data);
-  insert_first(angles, p0);
+  /*insert_first(angles, p0);*/
 
   while (length_lista(l) > 0) {
     remove_first(l);
@@ -76,13 +76,9 @@ void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b),
 
 }
 
-void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(void* b), int (*compar_y0)(void *a, void *b), int (*compar_x0)(void *a, void *b)) {
-  Pilha aux = new_pilha();
-  Lista *maybes = create_lista();
+void encontra_menor_e_coloca_no_comeco(Lista *l, int (*compar_y0)(void *a, void *b), int (*compar_x0)(void *a, void *b)) {
   Node *n;
   void *menor = get(l, get_first(l));
-
-  /* encontrando o menor */
   for (n = get_next(l, get_first(l)); n != NULL; n = get_next(l, n)) {
     if (compar_y0(menor, get(l, n)) > 0
     || (compar_y0(menor, get(l, n)) == 0
@@ -91,26 +87,45 @@ void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(vo
       n = get_before(l, n);
       remove_at(l, get_next(l, n));
       insert_first(l, new_menor);
+      menor = get(l, get_first(l));
     }
   }
+}
+
+void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(void* b), int (*compar_y0)(void *a, void *b), int (*compar_x0)(void *a, void *b)) {
+  Pilha aux = new_pilha();
+  Lista *maybes = create_lista();
+  Node *n;
+  void *menor;
+
+  /* encontrando o menor */
+  encontra_menor_e_coloca_no_comeco(l, compar_y0, compar_x0);
+
+
+  menor = remove_first(l);
 
   p0 = malloc(sizeof(struct angleData));
   p0->x = get_x(menor);
   p0->y = get_y(menor);
   p0->data = menor;
-  sort_by_angle(l, get_x, get_y, compar_x0);
-
+  sort_by_angle(l, get_x, get_y, compar_y0);
+  insert_first(l, menor);
   /* FUNCIONA ACIMA */
+  for (n = get_first(l); n != NULL; n = get_next(l, n)) {
+    printf("%f %f\n", get_x(get(l, n)), get_y(get(l, n)));
+  }
 
   /*
-  for (n = get_next(l, get_first(l)); n != NULL; n = get_next(l,n)) {
-    while (get_next(l, n) != NULL
-    && convex_ccw(get_x(menor), get_y(menor),
-    get_x(get(l, n)), get_y(get(l, n)),
-    get_x(get(l, get_next(l, n))), get_y(get(l, get_next(l, n)))) == 0) {
-      n = get_next(l, n);
+  if (length_lista(l) > 3) {
+    for (n = get_next(l, get_first(l)); n != NULL; n = get_next(l,n)) {
+      while (get_next(l, n) != NULL
+      && convex_ccw(get_x(menor), get_y(menor),
+      get_x(get(l, n)), get_y(get(l, n)),
+      get_x(get(l, get_next(l, n))), get_y(get(l, get_next(l, n)))) == 0) {
+        n = get_before(l, n);
+        insert_last(maybes, remove_at(l, get_next(l, n)));
+      }
     }
-    insert_last(maybes, get(l, n));
   }
   */
 
@@ -123,7 +138,6 @@ void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(vo
       while (convex_ccw(get_x(peek(aux)), get_y(peek(aux)), get_x(top), get_y(top), get_x(get(l, n)), get_y(get(l, n))) < 0) {
         top = pop(aux);
       }
-    puts("oi");
       push(aux, top);
       push(aux, get(l, n));
     }
