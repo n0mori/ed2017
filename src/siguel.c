@@ -513,19 +513,18 @@ int main(int argc, char *argv[]) {
         free(towers);
 
       } else if (buffer[0] == 'a' && buffer[1] == 'c' && buffer[2] == '?') {
-        char sufixo[100], str_x[100], str_y[100], str_width[100], str_height[100];
+        char str_x[100], str_y[100], str_width[100], str_height[100];
         double x, y, width, height;
         Lista *towers = create_lista();
         Lista *pts = create_lista();
         Pilha stk_pts = new_pilha();
         Node *n;
-        sufixo[0] = 0;
         str_x[0] = 0;
         str_y[0] = 0;
         str_width[0] = 0;
         str_height[0] = 0;
 
-        sscanf(buffer, "ac? %s %s %s %s %s", sufixo, str_x, str_y, str_width, str_height);
+        sscanf(buffer, "ac? %s %s %s %s", str_x, str_y, str_width, str_height);
 
         if (strlen(str_x) > 0) {
           Rect *r;
@@ -546,9 +545,11 @@ int main(int argc, char *argv[]) {
 
         convex_hull(pts, stk_pts, get_x, get_y, cmp_ponto_y0, cmp_ponto_x0);
 
+
+
         file_txt = fopen(txt, "a+");
         fputs(buffer, file_txt);
-        fprintf(file_txt, "%f metros\n", 30.0);
+        fprintf(file_txt, "%f metros\n", area_pilha_pontos(stk_pts));
         fclose(file_txt);
 
         free_lista(pts);

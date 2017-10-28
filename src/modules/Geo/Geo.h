@@ -9,6 +9,8 @@ se duas formas geometricas possuem interseccao), e seus tipos abstratos.
 #include "../Circ/Circ.h"
 #include "../Rect/Rect.h"
 #include "../Pilha/Pilha.h"
+#include "../Lista/Lista.h"
+#include "../Ponto/Ponto.h"
 #include <math.h>
 
 int intersec_cc(Circ a, Circ b);

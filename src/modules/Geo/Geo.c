@@ -141,3 +141,34 @@ int rect_inside_rect(Rect in, Rect out) {
   }
   return 0;
 }
+
+double area_pilha_pontos(Pilha p) {
+  Lista *pontos = create_lista();
+  Node *n;
+  double area, soma1, soma2;
+
+  soma1 = 0;
+  soma2 = 0;
+
+  while (!empty(p)) {
+    insert_last(pontos, pop(p));
+  }
+
+  insert_last(pontos, get(pontos, get_first(pontos)));
+
+  for (n = get_first(pontos); get_next(pontos, n) != NULL; n = get_next(pontos, n)) {
+    Ponto a, next;
+    a = get(pontos, n);
+    next = get(pontos, get_next(pontos, n));
+    soma1 += get_x(a) * get_y(next);
+    soma2 += get_y(a) * get_x(next);
+  }
+
+  remove_first(pontos);
+  while (length_lista(pontos) > 0) {
+    free(remove_first(pontos));
+  }
+
+  area = (soma1 - soma2) / 2;
+  return area;
+}

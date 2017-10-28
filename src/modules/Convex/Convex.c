@@ -111,9 +111,11 @@ void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(vo
   sort_by_angle(l, get_x, get_y, compar_y0);
   insert_first(l, menor);
   /* FUNCIONA ACIMA */
+  /*
   for (n = get_first(l); n != NULL; n = get_next(l, n)) {
     printf("%f %f\n", get_x(get(l, n)), get_y(get(l, n)));
   }
+  */
 
   /*
   if (length_lista(l) > 3) {
