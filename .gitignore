@@ -2,3 +2,4 @@ src/*.o
 siguel
 teste_*
 *.svg
+src/tests/*
