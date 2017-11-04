@@ -1,14 +1,27 @@
 #include "Lista.h"
 
-Lista *create_lista() {
-  Lista *l = malloc(sizeof(Lista));
-  l->head = NULL;
-  l->tail = NULL;
-  l->length = 0;
+typedef struct node {
+  struct node *prev;
+  void *val;
+  struct node *next;
+}* StNode;
+
+typedef struct lista {
+  StNode head;
+  StNode tail;
+  int length;
+}* StLista;
+
+Lista create_lista() {
+  Lista l = malloc(sizeof(struct lista));
+  StLista lista = (StLista) l;
+  lista->head = NULL;
+  lista->tail = NULL;
+  lista->length = 0;
   return l;
 }
 
-int length_lista(Lista *l) {
+int length_lista(Lista lista) {
   /*if (l.head == NULL || l.tail == NULL) {
     return 0;
   }
@@ -18,11 +31,14 @@ int length_lista(Lista *l) {
     i++;
   }
   return i;*/
+  StLista l = (StLista) lista;
   return l->length;
 }
 
-int insert_first(Lista *l, void *val) {
-  Node *n = malloc(sizeof(Node));
+int insert_first(Lista lista, void *val) {
+  Node node = malloc(sizeof(struct node));
+  StNode n = (StNode) node;
+  StLista l = (StLista) lista;
   n->prev = NULL;
   n->val = val;
   n->next = l->head;
@@ -37,13 +53,19 @@ int insert_first(Lista *l, void *val) {
   return 1;
 }
 
-int insert_last(Lista *l, void *val) {
-  Node *n;
+int insert_last(Lista lista, void *val) {
+  Node node;
+  StNode n;
+  StLista l = (StLista) lista;
+
   if (length_lista(l) == 0) {
     insert_first(l, val);
     return 1;
   }
-  n = malloc(sizeof(Node));
+  
+  node = malloc(sizeof(struct node));
+  n = (StNode) node;
+
   n->prev = l->tail;
   n->prev->next = n;
   n->val = val;
@@ -56,42 +78,58 @@ int insert_last(Lista *l, void *val) {
   return 1;
 }
 
-int insert_before(Lista *l, Node *posic, void *val) {
-  Node *new;
+int insert_before(Lista lista, Node posic, void *val) {
+  Node n;
+  StNode new, pos;
+  StLista l = (StLista) lista;
+
   if (posic == l->head) {
     insert_first(l, val);
     return 1;
   }
-  new = malloc(sizeof(Node));
-  new->prev = posic->prev;
+
+  n = malloc(sizeof(struct node));
+  new = (StNode) n;
+  pos = (StNode) posic;
+
+  new->prev = pos->prev;
   new->prev->next = new;
   new->val = val;
-  new->next = posic;
-  posic->prev = new;
+  new->next = pos;
+  pos->prev = new;
   l->length++;
   return 1;
 }
 
-int insert_after(Lista *l, Node *posic, void *val) {
-  Node *new;
+int insert_after(Lista lista, Node posic, void *val) {
+  Node n;
+  StNode new, pos;
+  StLista l = (StLista) lista;
+
   if (posic == l->tail) {
     insert_last(l, val);
     return 1;
   }
-  new = malloc(sizeof(Node));
-  new->next = posic->next;
-  posic->next = new;
+
+  n = malloc(sizeof(struct node));
+  new = (StNode) n;
+  pos = (StNode) posic;
+
+  new->next = pos->next;
+  pos->next = new;
   new->val = val;
-  new->prev = posic;
+  new->prev = pos;
   new->next->prev = new;
   l->length++;
   return 1;
 }
 
-void *remove_first(Lista *l) {
-  Node *aux;
+void *remove_first(Lista lista) {
+  StNode aux;
+  StLista l = (StLista) lista;
   void *p;
   p = l->head->val;
+
   if (l->head == NULL) {
     return NULL;
   }
@@ -102,6 +140,7 @@ void *remove_first(Lista *l) {
     l->length--;
     return p;
   }
+
   aux = l->head;
   l->head = aux->next;
   l->head->prev = NULL;
@@ -110,9 +149,11 @@ void *remove_first(Lista *l) {
   return p;
 }
 
-void *remove_last(Lista *l) {
-  Node *aux;
+void *remove_last(Lista lista) {
+  StNode aux;
+  StLista l = (StLista) lista;
   void *p = l->tail->val;
+
   if (l->length == 0 || l->tail == NULL) {
     return NULL;
   }
@@ -123,6 +164,7 @@ void *remove_last(Lista *l) {
     l->length--;
     return p;
   }
+
   aux = l->tail;
   l->tail = aux->prev;
   l->tail->next = NULL;
@@ -131,44 +173,53 @@ void *remove_last(Lista *l) {
   return p;
 }
 
-void *remove_at(Lista *l, Node *posic) {
-  void *p = posic->val;
-  if (posic == l->head) {
+void *remove_at(Lista lista, Node posic) {
+  StNode pos = (StNode) posic;
+  StLista l = (StLista) lista;
+  void *p = pos->val;
+
+  if (pos == l->head) {
     p = remove_first(l);
     return p;
   }
-  if (posic == l->tail) {
+  if (pos == l->tail) {
     p = remove_last(l);
     return p;
   }
-  posic->prev->next = posic->next;
-  posic->next->prev = posic->prev;
+
+  pos->prev->next = pos->next;
+  pos->next->prev = pos->prev;
   l->length--;
-  free(posic);
+  free(pos);
   return p;
 }
 
-Node *get_first(Lista *l) {
+Node get_first(Lista lista) {
+  StLista l = (StLista) lista;
   return l->head;
 }
 
-Node *get_last(Lista *l) {
+Node get_last(Lista lista) {
+  StLista l = (StLista) lista;
   return l->tail;
 }
 
-Node *get_next(Lista *l, Node *posic) {
-  return posic->next;
+Node get_next(Lista lista, Node posic) {
+  StNode pos = (StNode) posic;
+  return pos->next;
 }
 
-Node *get_before(Lista *l, Node *posic) {
-  return posic->prev;
+Node get_before(Lista lista, Node posic) {
+  StNode pos = (StNode) posic;
+  return pos->prev;
 }
 
-void *get(Lista *l, Node *posic) {
-  return posic->val;
+void *get(Lista lista, Node posic) {
+  StNode pos = (StNode) posic;
+  return pos->val;
 }
 
-void free_lista(Lista *l) {
+void free_lista(Lista lista) {
   /*Node *aux;
   if (l->head == NULL || l->tail == NULL) {
     return;
@@ -180,6 +231,8 @@ void free_lista(Lista *l) {
   }
   free(l->tail);
   */
+
+  StLista l = (StLista) lista;
   for (; l->length > 0;) {
     void *val = remove_first(l);
     if (val != NULL) {
@@ -190,8 +243,8 @@ void free_lista(Lista *l) {
   free(l);
 }
 
-void *search_lista(Lista *l, int (*compar)(void* a, void *b), void *comparado) {
-  Node *n;
+void *search_lista(Lista l, int (*compar)(void* a, void *b), void *comparado) {
+  Node n;
   for (n = get_first(l); n != NULL; n = get_next(l, n)) {
     if (compar(get(l, n), comparado) == 1) {
       return get(l, n);

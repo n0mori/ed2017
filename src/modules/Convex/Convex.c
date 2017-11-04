@@ -47,9 +47,9 @@ int cmp_angle_data(void *a, void *b) {
 
 }
 
-void sort_by_angle(Lista *l, double (*get_x)(void *a), double (*get_y)(void *b), int (*compar)(void *a, void *b)) {
-  Node *n;
-  Lista *angles = create_lista();
+void sort_by_angle(Lista l, double (*get_x)(void *a), double (*get_y)(void *b), int (*compar)(void *a, void *b)) {
+  Node n;
+  Lista angles = create_lista();
 
   for (n = get_first(l); n != NULL; n = get_next(l, n)) {
     AngleData a = malloc(sizeof(struct angleData));
@@ -92,10 +92,10 @@ void encontra_menor_e_coloca_no_comeco(Lista *l, int (*compar_y0)(void *a, void 
   }
 }
 
-void convex_hull(Lista *l, Pilha p, double (*get_x)(void* a), double (*get_y)(void* b), int (*compar_y0)(void *a, void *b), int (*compar_x0)(void *a, void *b)) {
+void convex_hull(Lista l, Pilha p, double (*get_x)(void* a), double (*get_y)(void* b), int (*compar_y0)(void *a, void *b), int (*compar_x0)(void *a, void *b)) {
   Pilha aux = new_pilha();
-  Lista *maybes = create_lista();
-  Node *n;
+  Lista maybes = create_lista();
+  Node n;
   void *menor;
 
   /* encontrando o menor */

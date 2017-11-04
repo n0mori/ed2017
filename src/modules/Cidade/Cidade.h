@@ -16,11 +16,11 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Torre/Torre.h"
 
 typedef struct cidade {
-  Lista *lista_quadras;
-  Lista *lista_hidrantes;
-  Lista *lista_semaforos;
-  Lista *lista_torres;
-  Lista *lista_formas;
+  Lista lista_quadras;
+  Lista lista_hidrantes;
+  Lista lista_semaforos;
+  Lista lista_torres;
+  Lista lista_formas;
   Quadtree qt_quadras;
   Quadtree qt_hidrantes;
   Quadtree qt_semaforos;

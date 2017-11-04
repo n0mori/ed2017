@@ -1,17 +1,17 @@
 #include "Sorting.h"
 
-void **lista_to_array(Lista *l) {
+void **lista_to_array(Lista l) {
   int len = length_lista(l);
   int i = 0;
   void **arr = malloc(sizeof(void*) * len);
-  Node *n;
+  Node n;
   for (n = get_first(l); n != NULL; n = get_next(l, n)) {
     arr[i++] = get(l, n);
   }
   return arr;
 }
 
-void array_to_lista(void **arr, int length, Lista *l) {
+void array_to_lista(void **arr, int length, Lista l) {
   int i;
   while (length_lista(l) > 0) remove_last(l);
   for (i = 0; i < length; i++) {
@@ -19,7 +19,7 @@ void array_to_lista(void **arr, int length, Lista *l) {
   }
 }
 
-void sort_lista(Lista *l, int (*compar)(void *a, void *b)) {
+void sort_lista(Lista l, int (*compar)(void *a, void *b)) {
   int length = length_lista(l);
   void **arr = lista_to_array(l);
 
