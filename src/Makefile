@@ -84,6 +84,12 @@ Ponto.o: modules/Ponto/Ponto.c
 Pessoa.o: modules/Pessoa/Pessoa.c
 	$(cc) -c modules/Pessoa/Pessoa.c
 
+Comercio.o: modules/Comercio/Comercio.c
+	$(cc) -c modules/Comercio/Comercio.c
+
+TipoCom.o: modules/TipoCom/TipoCom.c
+	$(cc) -c modules/TipoCom/TipoCom.c
+
 Hash.o: modules/Hash/Hash.c
 	$(cc) -c modules/Hash/Hash.c
 
@@ -132,8 +138,8 @@ teste_colisao: teste_colisao.o Geo.o Rect.o Circ.o
 teste_hash.o: $(unit)/teste_hash.c
 	$(cc) -c $(unit)/teste_hash.c
 
-teste_hash: teste_hash.o Lista.o Hash.o Pessoa.o
-	$(cc) teste_hash.o Lista.o Hash.o Pessoa.o -o teste_hash
+teste_hash: teste_hash.o Lista.o Hash.o Pessoa.o Comercio.o
+	$(cc) teste_hash.o Lista.o Hash.o Pessoa.o Comercio.o -o teste_hash
 
 clean:
 	rm -f *.o
