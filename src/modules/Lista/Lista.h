@@ -27,5 +27,6 @@ Node get_before(Lista lista, Node posic);
 void *get(Lista lista, Node posic);
 void free_lista(Lista lista);
 void *search_lista(Lista lista, int (*compar)(void* a, void *b), void *comparado);
+void *seek_and_destroy_lista(Lista lista, int (*compar)(void* a, void *b), void *comparado);
 
 #endif

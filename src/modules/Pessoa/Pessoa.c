@@ -11,11 +11,11 @@ typedef struct stPessoa {
 Pessoa new_pessoa(char *cpf, char *nome, char *sobrenome, char sexo, char *nasc) {
   Pessoa pessoa = malloc(sizeof(struct stPessoa));
   Person p = (Person) pessoa;
-  strcpy(cpf, p->cpf);
-  strcpy(nome, p->nome);
-  strcpy(sobrenome, p->sobrenome);
+  strcpy(p->cpf, cpf);
+  strcpy(p->nome, nome);
+  strcpy(p->sobrenome, sobrenome);
   p->sexo = sexo;
-  strcpy(nasc, p->nasc);
+  strcpy(p->nasc, nasc);
   return pessoa;
 }
 
@@ -42,4 +42,8 @@ char pessoa_get_sexo(Pessoa p) {
 char *pessoa_get_nasc(Pessoa p) {
   Person person = (Person) p;
   return person->nasc;
+}
+
+int cmp_pessoa_cpf(Pessoa p, void *cpf) {
+  return strcmp(pessoa_get_cpf(p), cpf) == 0;
 }

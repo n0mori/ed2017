@@ -81,6 +81,12 @@ Convex.o: modules/Convex/Convex.c
 Ponto.o: modules/Ponto/Ponto.c
 	$(cc) -c modules/Ponto/Ponto.c
 
+Pessoa.o: modules/Pessoa/Pessoa.c
+	$(cc) -c modules/Pessoa/Pessoa.c
+
+Hash.o: modules/Hash/Hash.c
+	$(cc) -c modules/Hash/Hash.c
+
 teste_lista.o: $(unit)/teste_lista.c
 	$(cc) -c $(unit)/teste_lista.c
 
@@ -122,6 +128,12 @@ teste_colisao.o: $(unit)/teste_colisao.c
 
 teste_colisao: teste_colisao.o Geo.o Rect.o Circ.o
 	$(cc) teste_colisao.o Geo.o Rect.o Circ.o -o teste_colisao
+
+teste_hash.o: $(unit)/teste_hash.c
+	$(cc) -c $(unit)/teste_hash.c
+
+teste_hash: teste_hash.o Lista.o Hash.o Pessoa.o
+	$(cc) teste_hash.o Lista.o Hash.o Pessoa.o -o teste_hash
 
 clean:
 	rm -f *.o
