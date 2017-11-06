@@ -90,6 +90,12 @@ Comercio.o: modules/Comercio/Comercio.c
 TipoCom.o: modules/TipoCom/TipoCom.c
 	$(cc) -c modules/TipoCom/TipoCom.c
 
+Celular.o: modules/Celular/Celular.c
+	$(cc) -c modules/Celular/Celular.c
+
+Morador.o: modules/Morador/Morador.c
+	$(cc) -c modules/Morador/Morador.c
+
 Hash.o: modules/Hash/Hash.c
 	$(cc) -c modules/Hash/Hash.c
 
