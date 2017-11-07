@@ -12,11 +12,11 @@ Este é o módulo que implementará a tabela de espalhamento (Hash). Uma tabela 
 
 typedef void* Hash;
 
-Hash new_hash(int size, int (*compar)(void *a, void *key));
+Hash new_hash(int size);
 void hash_insert(Hash hash, char* key, void* data);
 int hash_index(int size, char *key); /*TEMPORARIAMENTE NO .h, RETIRAR*/
 void *hash_get(Hash hash, char *key);
 void *hash_delete(Hash hash, char *key);
-void hash_free(Hash hash);
+void hash_free(Hash hash, void (*destroy)(void *a));
 
 #endif

@@ -14,8 +14,8 @@ int main() {
   }
 
   printf("Criando uma hash\n");
-  hash = new_hash(31, cmp_pessoa_cpf);
-  comercios = new_hash(31, cmp_comercio_cnpj);
+  hash = new_hash(31);
+  comercios = new_hash(31);
 
   printf("Inserindo algumas coisas...\n");
   nick = new_pessoa("101.247.789-41", "Nicolas", "Omori", 'M', "26/12/1997");
@@ -36,8 +36,8 @@ int main() {
   f = hash_delete(hash, "101.247.789-41");
   free(f);
 
-  hash_free(hash);
-  hash_free(comercios);
+  hash_free(hash, free);
+  hash_free(comercios, free);
 
   return 0;
 }

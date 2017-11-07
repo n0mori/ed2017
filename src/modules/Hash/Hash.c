@@ -5,9 +5,18 @@ const int  global_size  = 41;
 
 typedef struct hash {
   int size, used;
-  int (*cmp)(void *a, void *key);
   Lista *arr;
 }* StHash;
+
+typedef struct hashpack {
+  char key[100];
+  void *data;
+}* HashPack;
+
+int cmp_pack_key(void *pack, void *key) {
+  HashPack p = (HashPack) pack;
+  return strcmp(p->key, key) == 0;
+}
 
 int hash_index(int size, char *key) {
   int i, soma, index;
@@ -20,13 +29,12 @@ int hash_index(int size, char *key) {
   return index;
 }
 
-Hash new_hash(int size, int (*compar)(void *a, void *key)) {
+Hash new_hash(int size) {
   int i;
   StHash hash = malloc(sizeof(struct hash));
   hash->size = size;
   hash->used = 0;
   hash->arr = malloc(sizeof(Lista) * size);
-  hash->cmp = compar;
   for (i = 0; i < size; i++) {
     hash->arr[i] = create_lista();
   }
@@ -35,26 +43,48 @@ Hash new_hash(int size, int (*compar)(void *a, void *key)) {
 
 void hash_insert(Hash hash, char* key, void* data) {
   StHash h = (StHash) hash;
+  HashPack p = malloc(sizeof(struct hashpack));
   int index = hash_index(h->size, key);
-  insert_first(h->arr[index], data);
+
+  strcpy(p->key, key);
+  p->data = data;
+
+  insert_first(h->arr[index], p);
 }
 
 void *hash_get(Hash hash, char *key) {
   StHash h = (StHash) hash;
   int index = hash_index(h->size, key);
-  return search_lista(h->arr[index], h->cmp, key);
+  HashPack p = search_lista(h->arr[index], cmp_pack_key, key);
+  if (p == NULL) {
+    return p;
+  } else {
+    return p->data;
+  }
 }
 
 void *hash_delete(Hash hash, char *key) {
   StHash h = (StHash) hash;
   int index = hash_index(h->size, key);
-  return (seek_and_destroy_lista(h->arr[index], h->cmp, key));
+  HashPack p = seek_and_destroy_lista(h->arr[index], cmp_pack_key, key);
+  if (p == NULL) {
+    return p;
+  } else {
+    void *data = p->data;
+    free(p);
+    return data;
+  }
 }
 
-void hash_free(Hash hash) {
+void hash_free(Hash hash, void (*destroy)(void *a)) {
   int i;
   StHash h = (StHash) hash;
   for (i = 0; i < h->size; i++) {
+    while (length_lista(h->arr[i]) > 0) {
+      HashPack p = remove_first(h->arr[i]);
+      destroy(p->data);
+      free(p);
+    }
     free_lista(h->arr[i]);
   }
   free(h->arr);
