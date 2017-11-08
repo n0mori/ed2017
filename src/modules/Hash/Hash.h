@@ -3,7 +3,8 @@
 
 /* 
 Este é o módulo que implementará a tabela de espalhamento (Hash). Uma tabela de espalhamento
-é uma maneira eficaz de fazer buscas em um conjunto de dados.
+é uma maneira eficaz de fazer buscas em um conjunto de dados. A tabela de espalhamento associa
+uma chave a um dado para inserir e retirar esses dados da tabela.
 */
 
 #include "../Lista/Lista.h"
@@ -12,11 +13,10 @@ Este é o módulo que implementará a tabela de espalhamento (Hash). Uma tabela 
 
 typedef void* Hash;
 
-Hash new_hash(int size);
-void hash_insert(Hash hash, char* key, void* data);
-int hash_index(int size, char *key); /*TEMPORARIAMENTE NO .h, RETIRAR*/
-void *hash_get(Hash hash, char *key);
-void *hash_delete(Hash hash, char *key);
-void hash_free(Hash hash, void (*destroy)(void *a));
+Hash new_hash(int size); /* Retorna uma nova tabela de espalhamento */
+void hash_insert(Hash hash, char* key, void* data); /* Insere o dado na tabela e o associa à chave passada */
+void *hash_get(Hash hash, char *key); /* Retorna o dado associado à chave passada, ou NULL se não houver dado associado à chave. */
+void *hash_delete(Hash hash, char *key); /* Remove o dado associado à chave passada e o retorna */
+void hash_free(Hash hash, void (*destroy)(void *a)); /* Remove e desaloca a tabela inteira, Usa o método destroy passado para desalocar os dados */
 
 #endif
