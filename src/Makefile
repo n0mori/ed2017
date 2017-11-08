@@ -1,8 +1,8 @@
 cc = gcc -ansi -pedantic -g -lm -Wall
 deps_t2 = t2.o svg.o Geo.o Rect.o Circ.o Nick_string.o Elemento.o ListaEstatica.o
 deps_geo = Geo.o Circ.o Rect.o
-deps_cidade = Cidade.o Quadra.o Hidrante.o Semaforo.o Torre.o
-deps_sorts = Sorting.o Comparacao.o
+deps_cidade = Cidade.o Quadra.o Hidrante.o Semaforo.o Torre.o Hash.o Comparacao.o Comercio.o Pessoa.o
+deps_sorts = Sorting.o
 deps_siguel = $(deps_cidade) $(deps_geo) svg.o Nick_string.o Lista.o Elemento.o $(deps_sorts) Quadtree.o Ponto.o Pilha.o Convex.o
 unit = unit_tests
 

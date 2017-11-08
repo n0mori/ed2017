@@ -90,3 +90,13 @@ void hash_free(Hash hash, void (*destroy)(void *a)) {
   free(h->arr);
   free(h);
 }
+
+void hash_delete_all(Hash hash) {
+  int i;
+  StHash h = (StHash) hash;
+  for (i = 0; i < h->size; i++) {
+    free_lista(h->arr[i]);
+  }
+  free(h->arr);
+  free(h);
+}

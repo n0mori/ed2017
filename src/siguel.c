@@ -11,14 +11,15 @@
 #include "modules/Quadtree/Quadtree.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
-  FILE *in, *file_txt, *file_qry, *file_svg;
+  char *ec = alloc_inicial();
+  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec;
   Cidade city = new_cidade();
 
   acc0 = 0;
@@ -29,6 +30,7 @@ int main(int argc, char *argv[]) {
   cpd = 0;
   bool_qry = 0;
   bool_f = 0;
+  bool_ec = 0;
   bool_convex = 1;
   sprintf(cfq, "white");
   sprintf(csq, "black");
@@ -55,6 +57,9 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-q", argv[i])) {
       qry_name = argv[++i];
       bool_qry = 1;
+    } else if (!strcmp("-ec", argv[i])) {
+      ec_name = argv[++i];
+      bool_ec = 1;
     } else if (!strcmp("-id", argv[i])) {
       puts("Nicolas Jashchenko Omori - 201600560295");
     } else if (!strcmp("-noconvex", argv[i])) {
@@ -84,6 +89,13 @@ int main(int argc, char *argv[]) {
     retira_path(qry);
     geo_saida = concatena(geo_saida, "-");
     geo_saida = concatena(geo_saida, qry);
+    retira_extensao(geo_saida);
+  }
+  if (bool_ec) {
+    ec = concatena(ec, ec_name);
+    retira_path(ec);
+    geo_saida = concatena(geo_saida, "-");
+    geo_saida = concatena(geo_saida, geo);
     retira_extensao(geo_saida);
   }
 
@@ -308,6 +320,37 @@ int main(int argc, char *argv[]) {
   }
   fclose(in);
   free(full_name);
+
+  if (bool_ec) {
+    full_name = alloc_inicial();
+    full_name = concatena(full_name, bed);
+    full_name = concatena(full_name, ec_name);
+    file_ec = fopen(full_name, "r");
+    if (file_ec == NULL) {
+      puts("Não consegui encontrar o arquivo ec! Saindo...");
+      exit(1);
+    }
+
+    while (!feof(file_ec)) {
+      fgets(buffer, MAX_BUFFER, file_ec);
+      if (buffer[0] == 't') {
+        char codt[100], descricao[100];
+        char *desc = alloc_inicial();
+        sscanf(buffer, "t %s %[^\r\n]", codt, descricao);
+        desc = concatena(desc, descricao);
+        hash_insert(city.tipo_comercio, codt, desc);
+      } else if (buffer[0] == 'e') {
+        char codt[100], cep[100], face, nome[100], cnpj[100];
+        int numero;
+        Comercio c;
+        sscanf(buffer, "e %[^ ] %[^ ] %c %d %[^ ] %[^\r\n]", codt, cep, &face, &numero, cnpj, nome);
+        c = new_comercio(codt, cep, face, numero, cnpj, nome);
+        hash_insert(city.estabelecimentos, cnpj, c);
+      }
+      buffer[0] = 0;
+    }
+  }
+
 
   if (bool_convex) {
     Pilha stk_quadras = new_pilha();
@@ -593,6 +636,7 @@ int main(int argc, char *argv[]) {
   free(geo_saida);
   free(bsd);
   free(bed);
+  free(ec);
 
   return 0;
 }

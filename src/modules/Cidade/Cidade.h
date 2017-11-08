@@ -14,6 +14,10 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Hidrante/Hidrante.h"
 #include "../Semaforo/Semaforo.h"
 #include "../Torre/Torre.h"
+#include "../Hash/Hash.h"
+#include "../Comparacao/Comparacao.h"
+#include "../Pessoa/Pessoa.h"
+#include "../Comercio/Comercio.h"
 
 typedef struct cidade {
   Lista lista_quadras;
@@ -26,6 +30,13 @@ typedef struct cidade {
   Quadtree qt_semaforos;
   Quadtree qt_torres;
   Quadtree qt_formas;
+  Hash cpf_cep;
+  Hash numcel_pessoa;
+  Hash numcel_torre;
+  Hash tipo_comercio;
+  Hash pessoas;
+  Hash cep_quadra;
+  Hash estabelecimentos;
 } Cidade;
 
 Cidade new_cidade();

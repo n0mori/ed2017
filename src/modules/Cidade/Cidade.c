@@ -12,6 +12,13 @@ Cidade new_cidade() {
   c.qt_semaforos = new_quadtree();
   c.qt_torres = new_quadtree();
   c.qt_formas = new_quadtree();
+  c.cpf_cep = new_hash(31);
+  c.numcel_pessoa = new_hash(31);
+  c.numcel_torre = new_hash(31);
+  c.tipo_comercio = new_hash(31);
+  c.pessoas = new_hash(31);
+  c.cep_quadra = new_hash(31);
+  c.estabelecimentos = new_hash(31);
   return c;
 }
 
@@ -59,12 +66,20 @@ void free_cidade(Cidade c) {
     free(e);
   }
   free_lista(c.lista_formas);
+
   free_quadtree(c.qt_quadras);
   free_quadtree(c.qt_hidrantes);
   free_quadtree(c.qt_semaforos);
   free_quadtree(c.qt_torres);
   quadtree_percorre(quadtree_root(c.qt_formas), destroy_dado_elemento);
   free_quadtree(c.qt_formas);
+
+  hash_free(c.cpf_cep, free);
+  hash_delete_all(c.numcel_pessoa);
+  hash_delete_all(c.numcel_torre);
+  hash_free(c.tipo_comercio, free);
+  hash_free(c.pessoas, free);
+  hash_delete_all(c.cep_quadra);
 }
 
 void remove_quadras_in_rect(Cidade c, FILE *f, Rect *r, int *cmp, int *del) {
@@ -266,31 +281,49 @@ void remove_torres_in_circ(Cidade c, FILE *f, Circ *ci) {
 
 void search_cep_or_id(Cidade c, FILE *f, char *id) {
   Node *n;
+  Lista hidrantes = create_lista();
+  Lista semaforos = create_lista();
+  Lista torres = create_lista();
+  Quadra q = hash_get(c.cep_quadra, id);
+
+  if (q != NULL) {
+    fprintf(f, "Quadra - x: %f y: %f\n", quadra_get_x(q), quadra_get_y(q));
+  }
+
+  quadtree_filter_to_list(c.qt_hidrantes, hidrantes, cmp_hidrante_string, id);
+  quadtree_filter_to_list(c.qt_semaforos, semaforos, cmp_semaforo_string, id);
+  quadtree_filter_to_list(c.qt_torres, torres, cmp_torre_string, id);
+
+  /*
+  Node *n;
   for (n = get_first(c.lista_quadras); n != NULL; n = get_next(c.lista_quadras, n)) {
     Quadra q = (Quadra) get(c.lista_quadras, n);
     if (strcmp(quadra_get_cep(q), id) == 0) {
       fprintf(f, "Quadra - x: %f y: %f\n", quadra_get_x(q), quadra_get_y(q));
     }
   }
+  */
 
-  for (n = get_first(c.lista_hidrantes); n != NULL; n = get_next(c.lista_hidrantes, n)) {
-    Hidrante h = (Hidrante) get(c.lista_hidrantes, n);
-    if (strcmp(hidrante_get_id(h), id) == 0) {
-      fprintf(f, "Hidrantes - x: %f y: %f\n", hidrante_get_x(h), hidrante_get_y(h));
-    }
+  for (n = get_first(hidrantes); n != NULL; n = get_next(hidrantes, n)) {
+    Hidrante h = (Hidrante) get(hidrantes, n);
+    fprintf(f, "Hidrantes - x: %f y: %f\n", hidrante_get_x(h), hidrante_get_y(h));
   }
 
-  for (n = get_first(c.lista_semaforos); n != NULL; n = get_next(c.lista_semaforos, n)) {
-    Semaforo s = (Semaforo) get(c.lista_semaforos, n);
-    if (strcmp(semaforo_get_id(s), id) == 0) {
-      fprintf(f, "Semaforo - x: %f y: %f\n", semaforo_get_x(s), semaforo_get_y(s));
-    }
+  for (n = get_first(semaforos); n != NULL; n = get_next(semaforos, n)) {
+    Semaforo s = (Semaforo) get(semaforos, n);
+    fprintf(f, "Semaforo - x: %f y: %f\n", semaforo_get_x(s), semaforo_get_y(s));
   }
 
-  for (n = get_first(c.lista_torres); n != NULL; n = get_next(c.lista_torres, n)) {
-    Torre t = (Torre) get(c.lista_torres, n);
-    if (strcmp(torre_get_id(t), id) == 0) {
-      fprintf(f, "Torre - x: %f y: %f\n", torre_get_x(t), torre_get_y(t));
-    }
+  for (n = get_first(torres); n != NULL; n = get_next(torres, n)) {
+    Torre t = (Torre) get(torres, n);
+    fprintf(f, "Torre - x: %f y: %f\n", torre_get_x(t), torre_get_y(t));
   }
+
+  while (length_lista(hidrantes) > 0) remove_first(hidrantes);
+  while (length_lista(semaforos) > 0) remove_first(semaforos);
+  while (length_lista(torres) > 0) remove_first(torres);
+
+  free_lista(hidrantes);
+  free_lista(semaforos);
+  free_lista(torres);
 }
