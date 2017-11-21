@@ -11,15 +11,16 @@
 #include "modules/Quadtree/Quadtree.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec, bool_pm;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name, *pm_name;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
   char *ec = alloc_inicial();
-  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec;
+  char *pm = alloc_inicial();
+  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec, *file_pm;
   Cidade city = new_cidade();
 
   acc0 = 0;
@@ -31,6 +32,7 @@ int main(int argc, char *argv[]) {
   bool_qry = 0;
   bool_f = 0;
   bool_ec = 0;
+  bool_pm = 0;
   bool_convex = 1;
   sprintf(cfq, "white");
   sprintf(csq, "black");
@@ -60,6 +62,9 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-ec", argv[i])) {
       ec_name = argv[++i];
       bool_ec = 1;
+    } else if (!strcmp("-pm", argv[i])) {
+      pm_name = argv[++i];
+      bool_pm = 1;
     } else if (!strcmp("-id", argv[i])) {
       puts("Nicolas Jashchenko Omori - 201600560295");
     } else if (!strcmp("-noconvex", argv[i])) {
@@ -95,7 +100,14 @@ int main(int argc, char *argv[]) {
     ec = concatena(ec, ec_name);
     retira_path(ec);
     geo_saida = concatena(geo_saida, "-");
-    geo_saida = concatena(geo_saida, geo);
+    geo_saida = concatena(geo_saida, ec);
+    retira_extensao(geo_saida);
+  }
+  if (bool_pm) {
+    pm = concatena(pm, pm_name);
+    retira_path(pm);
+    geo_saida = concatena(geo_saida, "-");
+    geo_saida = concatena(geo_saida, pm);
     retira_extensao(geo_saida);
   }
 
@@ -349,8 +361,36 @@ int main(int argc, char *argv[]) {
       }
       buffer[0] = 0;
     }
+    fclose(file_ec);
   }
 
+  if (bool_pm) {
+    full_name = alloc_inicial();
+    full_name = concatena(full_name, bed);
+    full_name = concatena(full_name, pm_name);
+    file_pm = fopen(full_name, "r");
+    if (file_pm == NULL) {
+      puts("Não consegui encontrar o arquivo pm! Saindo...");
+      exit(1);
+    }
+
+    while (!feof(file_pm)) {
+      fgets(buffer, MAX_BUFFER, file_pm);
+
+      if (buffer[0] == 'p') {
+        char cpf[100], nome[100], sobrenome[100], sexo, nasc[100];
+        Pessoa p;
+        sscanf(buffer, "p %[^ ] %[^ ] %[^ ] %c %[^\r\n]", cpf, nome, sobrenome, &sexo, nasc);
+        p = new_pessoa(cpf, nome, sobrenome, sexo, nasc);
+        hash_insert(city.pessoas, cpf, p);
+      } else if (buffer[0] == 'm') {
+
+      }     
+
+      buffer[0] = 0;
+    }
+    fclose(file_pm);
+  }
 
   if (bool_convex) {
     Pilha stk_quadras = new_pilha();

@@ -1,5 +1,9 @@
 #include "Cidade.h"
 
+#ifndef TAMANHO_HASH
+#define TAMANHO_HASH 100
+#endif
+
 Cidade new_cidade() {
   Cidade c;
   c.lista_quadras = create_lista();
@@ -12,13 +16,13 @@ Cidade new_cidade() {
   c.qt_semaforos = new_quadtree();
   c.qt_torres = new_quadtree();
   c.qt_formas = new_quadtree();
-  c.cpf_cep = new_hash(31);
-  c.numcel_pessoa = new_hash(31);
-  c.numcel_torre = new_hash(31);
-  c.tipo_comercio = new_hash(31);
-  c.pessoas = new_hash(31);
-  c.cep_quadra = new_hash(31);
-  c.estabelecimentos = new_hash(31);
+  c.cpf_cep = new_hash(TAMANHO_HASH);
+  c.numcel_pessoa = new_hash(TAMANHO_HASH);
+  c.numcel_torre = new_hash(TAMANHO_HASH);
+  c.tipo_comercio = new_hash(TAMANHO_HASH);
+  c.pessoas = new_hash(TAMANHO_HASH);
+  c.cep_quadra = new_hash(TAMANHO_HASH);
+  c.estabelecimentos = new_hash(TAMANHO_HASH);
   return c;
 }
 
