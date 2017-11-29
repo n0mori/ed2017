@@ -2,18 +2,19 @@
 
 typedef struct morador {
   char cpf[100];
-  char cep[100];
-  char face;
-  int  numero;
+  Address address;
 }* StMorador;
 
-Morador new_morador(char *cpf, char *cep, char face, int numero) {
+Morador new_morador(char *cpf, char *cep, char face, int numero, char *complemento) {
   StMorador m = malloc(sizeof(struct morador));
   strcpy(m->cpf, cpf);
-  strcpy(m->cep, cep);
-  m->face = face;
-  m->numero = numero;
+  m->address = new_address(cep, face, numero, complemento);
   return m;
+}
+
+Address morador_get_address(Morador m) {
+  StMorador morador = (StMorador) m;
+  return morador->address;
 }
 
 char *morador_get_cpf(Morador m) {
@@ -22,20 +23,22 @@ char *morador_get_cpf(Morador m) {
 }
 
 char *morador_get_cep(Morador m) {
-  StMorador morador = (StMorador) m;
-  return morador->cep;
+  return address_get_cep(morador_get_address(m));
 }
 
 char morador_get_face(Morador m) {
-  StMorador morador = (StMorador) m;
-  return morador->face;
+  return address_get_face(morador_get_address(m));
 }
 
 int morador_get_numero(Morador m) {
-  StMorador morador = (StMorador) m;
-  return morador->numero;
+  return address_get_numero(morador_get_address(m));
 }
 
 int cmp_morador_cpf(Morador m, void *cpf) {
   return strcmp(morador_get_cpf(m), cpf) == 0;
+}
+
+void free_morador(Morador m) {
+  free(morador_get_address(m));
+  free(m);
 }

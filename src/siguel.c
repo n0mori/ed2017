@@ -384,7 +384,12 @@ int main(int argc, char *argv[]) {
         p = new_pessoa(cpf, nome, sobrenome, sexo, nasc);
         hash_insert(city.pessoas, cpf, p);
       } else if (buffer[0] == 'm') {
-
+        char cpf[100], cep[100], face, complemento[100];
+        int numero;
+        Morador m;
+        sscanf(buffer, "p %[^ ] %[^ ] %c %d %[^\r\n]", cpf, cep, &face, &numero, complemento);
+        m = new_morador(cpf, cep, face, numero, complemento);
+        hash_insert(city.moradores, cpf, m);
       }     
 
       buffer[0] = 0;

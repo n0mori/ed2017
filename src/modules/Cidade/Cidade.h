@@ -18,6 +18,7 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Comparacao/Comparacao.h"
 #include "../Pessoa/Pessoa.h"
 #include "../Comercio/Comercio.h"
+#include "../Morador/Morador.h"
 
 typedef struct cidade {
   Lista lista_quadras;
@@ -37,6 +38,7 @@ typedef struct cidade {
   Hash pessoas;
   Hash cep_quadra;
   Hash estabelecimentos;
+  Hash moradores;
 } Cidade;
 
 Cidade new_cidade();

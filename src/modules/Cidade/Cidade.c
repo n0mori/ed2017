@@ -23,6 +23,7 @@ Cidade new_cidade() {
   c.pessoas = new_hash(TAMANHO_HASH);
   c.cep_quadra = new_hash(TAMANHO_HASH);
   c.estabelecimentos = new_hash(TAMANHO_HASH);
+  c.moradores = new_hash(TAMANHO_HASH);
   return c;
 }
 
@@ -84,6 +85,8 @@ void free_cidade(Cidade c) {
   hash_free(c.tipo_comercio, free);
   hash_free(c.pessoas, free);
   hash_delete_all(c.cep_quadra);
+  hash_free(c.estabelecimentos, free_comercio);
+  hash_free(c.moradores, free_morador);
 }
 
 void remove_quadras_in_rect(Cidade c, FILE *f, Rect *r, int *cmp, int *del) {
