@@ -327,6 +327,22 @@ int main(int argc, char *argv[]) {
       sscanf(buffer, "cs %[^ ] %s", cfs, css);
     } else if (buffer[0] == 'c' && buffer[1] == 't') {
       sscanf(buffer, "ct %[^ ] %s", cft, cst);
+    } else if (buffer[0] == 's' && buffer[1] == 'u') {
+      char id[100];
+      Torre t;
+      sscanf(buffer, "su %s", id);
+      t = search_lista(city.lista_torres, cmp_torre_string, id);
+      if (t != NULL) {
+        torre_set_operadora(t, 's');
+      }
+    } else if (buffer[0] == 'u' && buffer[1] == 'm') {
+      char id[100];
+      Torre t;
+      sscanf(buffer, "um %s", id);
+      t = search_lista(city.lista_torres, cmp_torre_string, id);
+      if (t != NULL) {
+        torre_set_operadora(t, 'u');
+      }
     }
     buffer[0] = 0;
   }
@@ -387,7 +403,7 @@ int main(int argc, char *argv[]) {
         char cpf[100], cep[100], face, complemento[100];
         int numero;
         Morador m;
-        sscanf(buffer, "p %[^ ] %[^ ] %c %d %[^\r\n]", cpf, cep, &face, &numero, complemento);
+        sscanf(buffer, "m %[^ ] %[^ ] %c %d %[^\r\n]", cpf, cep, &face, &numero, complemento);
         m = new_morador(cpf, cep, face, numero, complemento);
         hash_insert(city.moradores, cpf, m);
       }     

@@ -23,6 +23,7 @@ char* torre_get_fill(Torre t);
 char* torre_get_stroke(Torre t);
 void torre_set_range(Torre t, double range);
 void torre_range_pontos(Torre t, Lista *l);
+void torre_set_operadora(Torre t, char codigo);
 int torre_inside_circ(Torre t, void *c);
 int torre_inside_rect(Torre t, void *r);
 

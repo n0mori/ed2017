@@ -2,7 +2,7 @@
 
 typedef struct torre {
   double x, y, range;
-  char id[100], fill[100], stroke[100];
+  char id[100], fill[100], stroke[100], operadora;
 }* StTorre;
 
 Torre new_torre(double x, double y, char *id, char *fill, char *stroke) {
@@ -11,6 +11,7 @@ Torre new_torre(double x, double y, char *id, char *fill, char *stroke) {
   t->x = x;
   t->y = y;
   t->range = 0;
+  t->operadora = 0;
   strcpy(t->id, id);
   strcpy(t->fill, fill);
   strcpy(t->stroke, stroke);
@@ -50,6 +51,16 @@ char* torre_get_stroke(Torre t) {
 void torre_set_range(Torre t, double range) {
   StTorre torre = (StTorre) t;
   torre->range = range;
+}
+
+char torre_get_operadora(Torre t) {
+  StTorre torre = (StTorre) t;
+  return torre->operadora;
+}
+
+void torre_set_operadora(Torre t, char codigo) {
+  StTorre torre = (StTorre) t;
+  torre->operadora = codigo;
 }
 
 void torre_range_pontos(Torre t, Lista *l) {
