@@ -275,8 +275,11 @@ int main(int argc, char *argv[]) {
     } else if (buffer[0] == 'q') {
       char cep[100];
       double x, y, width, height;
+      Quadra q;
       sscanf(buffer, "q %lf %lf %lf %lf %s", &x, &y, &width, &height, cep);
-      insere_quadra(city, new_quadra(x, y, width, height, cep, cfq, csq), &cpi, &ins);
+      q = new_quadra(x, y, width, height, cep, cfq, csq);
+      insere_quadra(city, q, &cpi, &ins);
+      hash_insert(city.cep_quadra, cep, q);
     } else if (buffer[0] == 'h' && buffer[1] == ' ') {
       char id[100];
       double x, y;
