@@ -544,7 +544,7 @@ int main(int argc, char *argv[]) {
         }
         fclose(file_txt);
         free(ci);
-      } else if (buffer[0] == 'c') {
+      } else if (buffer[0] == 'c' && buffer[1] == 'r' && buffer[2] == 'd' && buffer[3] == '?') {
         char id[100];
         sscanf(buffer, "crd? %s", id);
         file_txt = fopen(txt, "a+");
