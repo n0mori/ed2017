@@ -19,6 +19,7 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Pessoa/Pessoa.h"
 #include "../Comercio/Comercio.h"
 #include "../Morador/Morador.h"
+#include "../Celular/Celular.h"
 
 typedef struct cidade {
   Lista lista_quadras;
@@ -34,6 +35,8 @@ typedef struct cidade {
   Hash cpf_cep;
   Hash numcel_pessoa;
   Hash numcel_torre;
+  Hash sercomtuel;
+  Hash uelmobile;
   Hash tipo_comercio;
   Hash pessoas;
   Hash cep_quadra;
@@ -58,5 +61,6 @@ void remove_hidrantes_in_circ(Cidade c, FILE *f, Circ *ci);
 void remove_semaforos_in_circ(Cidade c, FILE *f, Circ *ci);
 void remove_torres_in_circ(Cidade c, FILE *f, Circ *ci);
 void search_cep_or_id(Cidade c, FILE *f, char *id);
+char* conectar_celular(Cidade c, Celular celular);
 
 #endif

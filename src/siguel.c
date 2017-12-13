@@ -11,16 +11,17 @@
 #include "modules/Quadtree/Quadtree.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec, bool_pm;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec, bool_pm, bool_tm;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name, *pm_name;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name, *pm_name, *tm_name;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
   char *ec = alloc_inicial();
+  char *tm = alloc_inicial();
   char *pm = alloc_inicial();
-  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec, *file_pm;
+  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec, *file_pm, *file_tm;
   Cidade city = new_cidade();
 
   acc0 = 0;
@@ -33,6 +34,7 @@ int main(int argc, char *argv[]) {
   bool_f = 0;
   bool_ec = 0;
   bool_pm = 0;
+  bool_tm = 0;
   bool_convex = 1;
   sprintf(cfq, "white");
   sprintf(csq, "black");
@@ -65,6 +67,9 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-pm", argv[i])) {
       pm_name = argv[++i];
       bool_pm = 1;
+    } else if (!strcmp("-tm", argv[i])) {
+      tm_name = argv[++i];
+      bool_tm = 1;
     } else if (!strcmp("-id", argv[i])) {
       puts("Nicolas Jashchenko Omori - 201600560295");
     } else if (!strcmp("-noconvex", argv[i])) {
@@ -108,6 +113,13 @@ int main(int argc, char *argv[]) {
     retira_path(pm);
     geo_saida = concatena(geo_saida, "-");
     geo_saida = concatena(geo_saida, pm);
+    retira_extensao(geo_saida);
+  }
+  if (bool_tm) {
+    tm = concatena(tm, tm_name);
+    retira_path(tm);
+    geo_saida = concatena(geo_saida, "-");
+    geo_saida = concatena(geo_saida, tm);
     retira_extensao(geo_saida);
   }
 
@@ -416,6 +428,44 @@ int main(int argc, char *argv[]) {
     fclose(file_pm);
   }
 
+  if (bool_tm) {
+    full_name = alloc_inicial();
+    full_name = concatena(full_name, bed);
+    full_name = concatena(full_name, tm_name);
+    file_tm = fopen(full_name, "r");
+    if (file_tm == NULL) {
+      puts("Não consegui encontrar o arquivo tm! Saindo...");
+      exit(1);
+    }
+
+    while (!feof(file_tm)) {
+      char cpf[100], numcel[100];
+      Celular c;
+      fgets(buffer, MAX_BUFFER, file_tm);
+
+      if (buffer[0] == 's' && buffer[1] == 'u') {
+        char *pessoa = alloc_inicial();
+        sscanf(buffer, "su %[^ ] %s", cpf, numcel);
+        concatena(pessoa, cpf);
+        c = new_celular(cpf, numcel, 's');
+        hash_insert(city.sercomtuel, numcel, c);
+        hash_insert(city.numcel_pessoa, numcel, pessoa);
+        pessoa_set_celular(hash_get(city.pessoas, cpf), c);
+      } else if (buffer[0] == 'u' && buffer[1] == 'm') {
+        char *pessoa = alloc_inicial();
+        sscanf(buffer, "um %[^ ] %s", cpf, numcel);
+        concatena(pessoa, cpf);
+        c = new_celular(cpf, numcel, 'u');
+        hash_insert(city.uelmobile, numcel, c);
+        hash_insert(city.numcel_pessoa, numcel, pessoa);
+        pessoa_set_celular(hash_get(city.pessoas, cpf), c);
+      }
+
+      buffer[0] = 0;
+    }
+    fclose(file_tm);
+  }
+
   if (bool_convex) {
     Pilha stk_quadras = new_pilha();
     Pilha stk_hidrantes = new_pilha();
@@ -508,7 +558,11 @@ int main(int argc, char *argv[]) {
 
     while (!feof(file_qry)) {
       fgets(buffer, MAX_BUFFER, file_qry);
-      if (buffer[0] == 'd') {
+      if (buffer[0] == 'd' 
+          && (buffer[1] == 'q'
+          || buffer[1] == 'h' 
+          || buffer[1] == 's'
+          || buffer[1] == 't' )) {
         Rect *r;
         double x, y, width, height;
         sscanf(buffer, "d%*c %lf %lf %lf %lf", &x, &y, &width, &height);
@@ -665,7 +719,87 @@ int main(int argc, char *argv[]) {
           remove_first(towers);
         }
         free(towers);
+      } else if (buffer[0] == 'm' && buffer[1] == 'v') {
+        Celular origem, destino;
+        char opdest, oporig, numero[100];
+        Pessoa pessoa;
+        sscanf(buffer, "mv %c %s", &opdest, numero);
+        if (opdest == 's') {
+          oporig = 'u';
+          origem = hash_delete(city.uelmobile, numero);
+          destino = hash_get(city.sercomtuel, numero);
+        } else if (opdest == 'u') {
+          origem = hash_delete(city.sercomtuel, numero);
+          destino = hash_get(city.uelmobile, numero);
+        }
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        if (origem == NULL || destino != NULL) {
+          fputs("Erro, numero inexistente na operadora de origem ou existente na operadora destino", file_txt);
+          fclose(file_txt);
+          continue;
+        }
+
+        pessoa = hash_get(city.numcel_pessoa, pessoa);
+        celular_set_operadora(origem, opdest);
+        fprintf(file_txt, "Celular %s pertencente a %s, migrou de ", celular_get_numero(origem), pessoa_get_nome(pessoa));
+        
+        if (opdest == 's') {
+          hash_insert(city.sercomtuel, numero, origem);
+          fputs("Sercomtuel para UELMobile.\n", file_txt);
+        } else if (opdest == 'u') {
+          hash_insert(city.uelmobile, numero, origem);
+          fputs("UELMobile para Sercomtuel.\n", file_txt);
+        }
+
+        /* TODO: reconectar se o celular estiver conectado */
+
+        fclose(file_txt);
+      } else if (buffer[0] == 'm' && buffer[1] == '?') {
+        Lista moradores = create_lista();
+        Node n;
+        char cep[100];
+        
+        sscanf("m? %s", cep);
+
+        hash_filter(city.moradores, moradores, cmp_morador_cep, cep);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        for (n = get_first(moradores); n != NULL; n = get_next(moradores, n)) {
+          Morador m = get(moradores, n);
+          morador_imprime_dados(m, hash_get(city.pessoas, morador_get_cpf(m)), file_txt);
+        }
+
+        while (length_lista(moradores) > 0) {
+          remove_first(moradores);
+        }
+        free(moradores);
+
+        fclose(file_txt);
+
+      } else if (buffer[0] == 'm' && buffer[1] == 'r' && buffer[2] == '?') {
+      } else if (buffer[0] == 'd' && buffer[1] == 'm' && buffer[2] == '?') {
+      } else if (buffer[0] == 'd' && buffer[1] == 'e' && buffer[2] == '?') {
+      } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == 'n') {
+      } else if (buffer[0] == 'm' && buffer[1] == 's' && buffer[2] == 'e') {
+      } else if (buffer[0] == 'r' && buffer[1] == 'i' && buffer[2] == 'p') {
+      } else if (buffer[0] == 'l' && buffer[1] == 'k' && buffer[2] == '?') {
+      } else if (buffer[0] == 'r' && buffer[1] == 'b' && buffer[2] == '?') {
+      } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == '?') {
+      } else if (buffer[0] == 'l' && buffer[1] == 'n' && buffer[2] == 'r') {
+      } else if (buffer[0] == 'e' && buffer[1] == 'c' && buffer[2] == 'q') {
+      } else if (buffer[0] == 'e' && buffer[1] == 'c' && buffer[2] == 'r') {
+      } else if (buffer[0] == 't' && buffer[1] == 'e' && buffer[2] == 'c' && buffer[3] == 'q') {
+      } else if (buffer[0] == 't' && buffer[1] == 'e' && buffer[2] == 'c' && buffer[3] == 'r') {
+      } else if (buffer[0] == 'd' && buffer[1] == 'c' && buffer[2] == '?') {
+      } else if (buffer[0] == 'l' && buffer[1] == 'e' && buffer[2] == 'c') {
+      } else if (buffer[0] == 'l' && buffer[1] == 'c' && buffer[2] == 'c') {
+      } else if (buffer[0] == 'd' && buffer[1] == 'p' && buffer[2] == 'r') {
       }
+
       buffer[0] = 0;
     }
 

@@ -18,6 +18,7 @@ void hash_insert(Hash hash, char* key, void* data); /* Insere o dado na tabela e
 void *hash_get(Hash hash, char *key); /* Retorna o dado associado à chave passada, ou NULL se não houver dado associado à chave. */
 void *hash_delete(Hash hash, char *key); /* Remove o dado associado à chave passada e o retorna */
 void hash_free(Hash hash, void (*destroy)(void *a)); /* Remove e desaloca a tabela inteira, Usa o método destroy passado para desalocar os dados */
+void hash_filter(Hash hash, Lista filtrados, int (*cmp)(void *a, void *b), void *comparado);
 void hash_delete_all(Hash hash);
 
 #endif

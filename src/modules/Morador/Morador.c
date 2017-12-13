@@ -38,7 +38,23 @@ int cmp_morador_cpf(Morador m, void *cpf) {
   return strcmp(morador_get_cpf(m), cpf) == 0;
 }
 
+int cmp_morador_cep(Morador m, void *cep) {
+  return strcmp(morador_get_cep(m), cep) == 0;
+}
+
 void free_morador(Morador m) {
   free(morador_get_address(m));
   free(m);
+}
+
+void morador_imprime_dados(Morador m, Pessoa p, FILE *out) {
+  /* nome, sobrenome, cep, face, numero, celular, operadora */
+  fprintf(out, "%s %s %s %c %d %s %c\n", 
+          pessoa_get_nome(p), 
+          pessoa_get_sobrenome(p), 
+          morador_get_cep(m), 
+          morador_get_face(m), 
+          morador_get_numero(m),
+          celular_get_numero(pessoa_get_celular(p)),
+          celular_get_operadora(pessoa_get_celular(p)));
 }

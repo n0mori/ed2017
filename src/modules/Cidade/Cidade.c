@@ -19,6 +19,8 @@ Cidade new_cidade() {
   c.cpf_cep = new_hash(TAMANHO_HASH);
   c.numcel_pessoa = new_hash(TAMANHO_HASH);
   c.numcel_torre = new_hash(TAMANHO_HASH);
+  c.sercomtuel = new_hash(TAMANHO_HASH);
+  c.uelmobile = new_hash(TAMANHO_HASH);
   c.tipo_comercio = new_hash(TAMANHO_HASH);
   c.pessoas = new_hash(TAMANHO_HASH);
   c.cep_quadra = new_hash(TAMANHO_HASH);
@@ -82,6 +84,8 @@ void free_cidade(Cidade c) {
   hash_free(c.cpf_cep, free);
   hash_delete_all(c.numcel_pessoa);
   hash_delete_all(c.numcel_torre);
+  hash_free(c.sercomtuel, free);
+  hash_free(c.uelmobile, free);
   hash_free(c.tipo_comercio, free);
   hash_free(c.pessoas, free);
   hash_delete_all(c.cep_quadra);

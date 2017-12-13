@@ -9,6 +9,7 @@ entre outros.
 
 #include <stdlib.h>
 #include <string.h>
+#include "../Celular/Celular.h"
 
 typedef void* Pessoa;
 
@@ -18,6 +19,8 @@ char *pessoa_get_nome(Pessoa p);
 char *pessoa_get_sobrenome(Pessoa p);
 char pessoa_get_sexo(Pessoa p);
 char *pessoa_get_nasc(Pessoa p);
+Celular pessoa_get_celular(Pessoa p);
 int cmp_pessoa_cpf(Pessoa p, void *cpf);
+void pessoa_set_celular(Pessoa p, Celular celular);
 
 #endif

@@ -100,3 +100,18 @@ void hash_delete_all(Hash hash) {
   free(h->arr);
   free(h);
 }
+
+void hash_filter(Hash hash, Lista filtrados, int (*cmp)(void *a, void *b), void *comparado) {
+  int i;
+  StHash h = (StHash) hash;
+  for (i = 0; i < h->size; i++) {
+    Node n;
+    for (n = get_first(h->arr[i]); n != NULL; n = get_next(h->arr[i], n)) {
+      HashPack hp = get(h->arr[i], n);
+      void *a = hp->data;
+      if (cmp(a, comparado)) {
+        insert_last(filtrados, a);
+      }
+    }
+  }
+}
