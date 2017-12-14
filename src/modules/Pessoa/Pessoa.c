@@ -6,6 +6,7 @@ typedef struct stPessoa {
   char sobrenome[100];
   char sexo;
   char nasc[100]; 
+  int vivo;
   Celular celular;
 }* Person;
 
@@ -17,6 +18,7 @@ Pessoa new_pessoa(char *cpf, char *nome, char *sobrenome, char sexo, char *nasc)
   strcpy(p->sobrenome, sobrenome);
   p->sexo = sexo;
   strcpy(p->nasc, nasc);
+  p->vivo = 1;
   return pessoa;
 }
 
@@ -57,4 +59,14 @@ int cmp_pessoa_cpf(Pessoa p, void *cpf) {
 void pessoa_set_celular(Pessoa p, Celular celular) {
   Person person = (Person) p;
   person->celular = celular;
+}
+
+int pessoa_viva(Pessoa p) {
+  Person person = (Person) p;
+  return person->vivo;
+}
+
+void kill_pessoa(Pessoa p) {
+  Person person = (Person) p;
+  person->vivo = 0;
 }

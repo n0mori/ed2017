@@ -49,12 +49,15 @@ void free_morador(Morador m) {
 
 void morador_imprime_dados(Morador m, Pessoa p, FILE *out) {
   /* nome, sobrenome, cep, face, numero, celular, operadora */
-  fprintf(out, "%s %s %s %c %d %s %c\n", 
+  Celular c = pessoa_get_celular(p);
+  fprintf(out, "%s %s %s %c %d", 
           pessoa_get_nome(p), 
           pessoa_get_sobrenome(p), 
           morador_get_cep(m), 
           morador_get_face(m), 
-          morador_get_numero(m),
-          celular_get_numero(pessoa_get_celular(p)),
-          celular_get_operadora(pessoa_get_celular(p)));
+          morador_get_numero(m));
+  
+  if (c != NULL) {
+    fprintf(out, "%s %c\n", celular_get_numero(c), celular_get_operadora(c));
+  }
 }

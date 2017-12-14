@@ -11,6 +11,7 @@ Cidade new_cidade() {
   c.lista_semaforos = create_lista();
   c.lista_torres = create_lista();
   c.lista_formas = create_lista();
+  c.printable_people = create_lista();
   c.qt_quadras = new_quadtree();
   c.qt_hidrantes = new_quadtree();
   c.qt_semaforos = new_quadtree();
@@ -73,6 +74,10 @@ void free_cidade(Cidade c) {
     free(e);
   }
   free_lista(c.lista_formas);
+  while (length_lista(c.printable_people)) {
+    remove_first(c.printable_people);
+  }
+  free(c.printable_people);
 
   free_quadtree(c.qt_quadras);
   free_quadtree(c.qt_hidrantes);
@@ -337,4 +342,29 @@ void search_cep_or_id(Cidade c, FILE *f, char *id) {
   free_lista(hidrantes);
   free_lista(semaforos);
   free_lista(torres);
+}
+
+Ponto cidade_get_ponto_address(Cidade c, Address a) {
+  Ponto p;
+  Quadra q = hash_get(c.cep_quadra, address_get_cep(a));
+  char face = address_get_face(a);
+  int numero = address_get_numero(a);
+  double x, y;
+
+  if (face == 'S' || face == 's') {
+    x = quadra_get_x(q) + numero;
+    y = quadra_get_y(q);
+  } else if (face == 'N' || face == 'n') {
+    x = quadra_get_x(q) + numero;
+    y = quadra_get_y(q) + quadra_get_height(q);
+  } else if (face == 'O' || face == 'o') {
+    x = quadra_get_x(q) + quadra_get_width(q);
+    y = quadra_get_y(q) + numero;
+  } else if (face == 'L' || face == 'l') {
+    x = quadra_get_x(q);
+    y = quadra_get_y(q) + numero;
+  }
+
+  p = new_ponto(x, y);
+  return p;
 }

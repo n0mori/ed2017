@@ -736,8 +736,9 @@ int main(int argc, char *argv[]) {
         file_txt = fopen(txt, "a+");
         fputs(buffer, file_txt);
         if (origem == NULL || destino != NULL) {
-          fputs("Erro, numero inexistente na operadora de origem ou existente na operadora destino", file_txt);
+          fputs("Erro, numero inexistente na operadora de origem ou existente na operadora destino\n", file_txt);
           fclose(file_txt);
+          buffer[0] = 0;
           continue;
         }
 
@@ -761,12 +762,16 @@ int main(int argc, char *argv[]) {
         Node n;
         char cep[100];
         
-        sscanf("m? %s", cep);
+        sscanf(buffer, "m? %s", cep);
 
         hash_filter(city.moradores, moradores, cmp_morador_cep, cep);
 
         file_txt = fopen(txt, "a+");
         fputs(buffer, file_txt);
+
+        if (length_lista(moradores) == 0) {
+          fputs("não existem moradores nesse bairro\n", file_txt);
+        }
 
         for (n = get_first(moradores); n != NULL; n = get_next(moradores, n)) {
           Morador m = get(moradores, n);
@@ -781,7 +786,72 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
 
       } else if (buffer[0] == 'm' && buffer[1] == 'r' && buffer[2] == '?') {
+        Lista quadras = create_lista();
+        Node n;
+        double x, y, width, height;
+        Rect *r;
+
+        sscanf(buffer, "mr? %lf %lf %lf %lf", &x, &y, &width, &height);
+        r = new_rect(width, height, x, y, "");
+
+        quadtree_filter_to_list(quadtree_root(city.qt_quadras), quadras, quadra_inside_rect, r);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        
+        if (length_lista(quadras) == 0) {
+          fputs("não existem quadras nessa região\n", file_txt);
+        }
+
+        for (n = get_first(quadras); n != NULL; n = get_next(quadras, n)) {
+          Lista moradores = create_lista();
+          Node no;
+
+          for (no = get_first(moradores); no != NULL; no = get_next(moradores, no)) {
+            Morador m = get(moradores, no);
+            morador_imprime_dados(m, hash_get(city.pessoas, morador_get_cpf(m)), file_txt);
+          }
+
+          while (length_lista(moradores) > 0) {
+            remove_first(moradores);
+          }
+          free(moradores);
+        }
+
+        while (length_lista(quadras) > 0) {
+          remove_first(quadras);
+        }
+        free(quadras);
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'd' && buffer[1] == 'm' && buffer[2] == '?') {
+        char cpf[100];
+        Morador m;
+        Ponto p;
+        
+        sscanf(buffer, "dm? %s", cpf);
+
+        m = hash_get(city.moradores, cpf);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (m == NULL) {
+          fputs("não existe morador com esse cpf!\n", file_txt);
+          buffer[0] = 0;
+          fclose(file_txt);
+          continue;
+        }
+
+        insert_last(city.printable_people, m);
+        morador_imprime_dados(m, hash_get(city.pessoas, cpf), file_txt);
+        p = cidade_get_ponto_address(city, morador_get_address(m));
+
+        fprintf(file_txt, "%f %f\n", get_x(p), get_y(p));
+
+        fclose(file_txt);
+        free(p);
       } else if (buffer[0] == 'd' && buffer[1] == 'e' && buffer[2] == '?') {
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == 'n') {
       } else if (buffer[0] == 'm' && buffer[1] == 's' && buffer[2] == 'e') {
