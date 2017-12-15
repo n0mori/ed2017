@@ -29,6 +29,7 @@ typedef struct cidade {
   Lista lista_torres;
   Lista lista_formas;
   Lista printable_people;
+  Lista printable_comercios;
   Quadtree qt_quadras;
   Quadtree qt_hidrantes;
   Quadtree qt_semaforos;

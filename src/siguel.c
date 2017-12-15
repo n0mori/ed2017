@@ -721,11 +721,10 @@ int main(int argc, char *argv[]) {
         free(towers);
       } else if (buffer[0] == 'm' && buffer[1] == 'v') {
         Celular origem, destino;
-        char opdest, oporig, numero[100];
+        char opdest, numero[100];
         Pessoa pessoa;
         sscanf(buffer, "mv %c %s", &opdest, numero);
         if (opdest == 's') {
-          oporig = 'u';
           origem = hash_delete(city.uelmobile, numero);
           destino = hash_get(city.sercomtuel, numero);
         } else if (opdest == 'u') {
@@ -853,6 +852,32 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
         free(p);
       } else if (buffer[0] == 'd' && buffer[1] == 'e' && buffer[2] == '?') {
+        char cnpj[100];
+        Comercio c;
+        Ponto p;
+        
+        sscanf(buffer, "de? %s", cnpj);
+
+        c = hash_get(city.estabelecimentos, cnpj);
+        
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (c == NULL) {
+          fputs("não existe estabelecimento com esse cnpj!\n", file_txt);
+          buffer[0] = 0;
+          fclose(file_txt);
+          continue;
+        }
+
+        insert_last(city.printable_comercios, c);
+        fprintf(file_txt, "%s - %s\n", comercio_get_nome(c), (char*) hash_get(city.tipo_comercio, comercio_get_codt(c)));
+        p = cidade_get_ponto_address(city, comercio_get_address(c));
+
+        fprintf(file_txt, "%f %f\n", get_x(p), get_y(p));
+        
+        fclose(file_txt);
+
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == 'n') {
       } else if (buffer[0] == 'm' && buffer[1] == 's' && buffer[2] == 'e') {
       } else if (buffer[0] == 'r' && buffer[1] == 'i' && buffer[2] == 'p') {
