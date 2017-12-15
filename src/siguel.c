@@ -9,6 +9,7 @@
 #include "modules/Comparacao/Comparacao.h"
 #include "modules/Convex/Convex.h"
 #include "modules/Quadtree/Quadtree.h"
+#include "modules/Connection/Connection.h"
 
 int main(int argc, char *argv[]) {
   int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec, bool_pm, bool_tm;
@@ -880,6 +881,70 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
 
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == 'n') {
+        Lista torres = create_lista();
+        Node n;
+        Torre near;
+        double menor, dist;
+        char numcel[100], cep[100], face, op;
+        int num;
+        Address a;
+        Celular c;
+        Pessoa p;
+        Ponto pt;
+
+        sscanf(buffer, "con %s %s %c %d", numcel, cep, &face, &num);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        a = new_address(cep, face, num, "");
+        pt = cidade_get_ponto_address(city, a);
+        p = hash_get(city.numcel_pessoa, numcel);
+        c = hash_get(city.sercomtuel, numcel);
+        op = 's';
+        if (c == NULL) {
+          c = hash_get(city.uelmobile, numcel);
+          op = 'u';
+        }
+
+        if (c == NULL) {
+          fputs("numero celular não encontrado\n", file_txt);
+          fclose(file_txt);
+          free(torres);
+          buffer[0] = 0;
+          continue;
+        }
+
+        quadtree_filter_to_list(quadtree_root(city.qt_torres), torres, cmp_torre_operadora, &op);
+
+        near = get(get_first(torres), torres);
+        menor = distancia(get_x(pt), get_y(pt), torre_get_x(near), torre_get_y(near));
+
+        for (n = get_first(torres); n != NULL; n = get_next(torres, n)) {
+          dist = distancia(get_x(pt), get_y(pt), torre_get_x(get(torres, n)), torre_get_y(get(torres, n)));
+          if (dist < menor) {
+            menor = dist;
+            near = get(torres, n);
+          }
+        }
+
+        insert_last(city.printable_connections, new_connection(p, new_ponto(torre_get_x(near), torre_get_y(near))));
+        fprintf(file_txt, "%s %s %c %s x:%f y:%f distancia:%f\n", 
+                pessoa_get_cpf(p), 
+                pessoa_get_nome(p), 
+                op, 
+                torre_get_id(near), 
+                torre_get_x(near), 
+                torre_get_y(near),
+                dist);
+
+        fclose(file_txt);
+
+        while (length_lista(torres) > 0) {
+          remove_first(torres);
+        }
+        free(torres);
+
       } else if (buffer[0] == 'm' && buffer[1] == 's' && buffer[2] == 'e') {
         Lista quadras = create_lista();
         Node n;

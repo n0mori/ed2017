@@ -13,6 +13,7 @@ Cidade new_cidade() {
   c.lista_formas = create_lista();
   c.printable_people = create_lista();
   c.printable_comercios = create_lista();
+  c.printable_connections = create_lista();
   c.qt_quadras = new_quadtree();
   c.qt_hidrantes = new_quadtree();
   c.qt_semaforos = new_quadtree();
@@ -83,6 +84,10 @@ void free_cidade(Cidade c) {
     remove_first(c.printable_comercios);
   }
   free(c.printable_comercios);
+  while (length_lista(c.printable_connections)) {
+    free_connection(remove_first(c.printable_connections));
+  }
+  free(c.printable_connections);
 
   free_quadtree(c.qt_quadras);
   free_quadtree(c.qt_hidrantes);

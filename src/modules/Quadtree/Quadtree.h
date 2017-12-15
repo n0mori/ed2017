@@ -9,6 +9,8 @@ aos pontos cardeais até que encontremos um espaço vazio.
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Lista/Lista.h"
+#include "../Ponto/Ponto.h"
+#include "../Geo/Geo.h"
 
 typedef void* Quadtree;
 typedef void* QNode;

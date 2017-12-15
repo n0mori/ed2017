@@ -88,3 +88,7 @@ int torre_inside_rect(Torre t, void *r) {
   Rect *rect = (Rect*) r;
   return rect_interno(*rect, torre_get_x(t), torre_get_y(t));
 }
+
+int cmp_torre_operadora(Torre t, void *op) {
+  return (torre_get_operadora(t) == *((char*) op));
+}
