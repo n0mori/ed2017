@@ -59,5 +59,7 @@ void morador_imprime_dados(Morador m, Pessoa p, FILE *out) {
   
   if (c != NULL) {
     fprintf(out, "%s %c\n", celular_get_numero(c), celular_get_operadora(c));
+  } else {
+    fputs("\n", out);
   }
 }

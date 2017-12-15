@@ -805,6 +805,7 @@ int main(int argc, char *argv[]) {
         for (n = get_first(quadras); n != NULL; n = get_next(quadras, n)) {
           Lista moradores = create_lista();
           Node no;
+          hash_filter(city.moradores, moradores, cmp_morador_cep, quadra_get_cep(get(quadras, n)));
 
           for (no = get_first(moradores); no != NULL; no = get_next(moradores, no)) {
             Morador m = get(moradores, no);
@@ -880,6 +881,62 @@ int main(int argc, char *argv[]) {
 
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == 'n') {
       } else if (buffer[0] == 'm' && buffer[1] == 's' && buffer[2] == 'e') {
+        Lista quadras = create_lista();
+        Node n;
+        char sexo, tipo[100];
+        double x, y, width, height;
+        Rect *r;
+
+        sscanf(buffer, "mr? %c %s %lf %lf %lf %lf", &sexo, tipo, &x, &y, &width, &height);
+        r = new_rect(width, height, x, y, "");
+
+        quadtree_filter_to_list(quadtree_root(city.qt_quadras), quadras, quadra_inside_rect, r);
+
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        
+        if (length_lista(quadras) == 0) {
+          fputs("não existem quadras nessa região\n", file_txt);
+        }
+
+        for (n = get_first(quadras); n != NULL; n = get_next(quadras, n)) {
+          Lista stabs = create_lista();
+          Comercio q;
+          hash_filter(city.estabelecimentos, stabs, cmp_comercio_codt, tipo);
+          q = search_lista(stabs, cmp_comercio_cep, quadra_get_cep(get(quadras, n)));
+
+          if (q != NULL) {
+            Lista moradores = create_lista();
+            Node no;
+            hash_filter(city.moradores, moradores, cmp_morador_cep, quadra_get_cep(get(quadras, n)));
+
+            for (no = get_first(moradores); no != NULL; no = get_next(moradores, no)) {
+              Morador m = get(moradores, no);
+              if (pessoa_get_sexo(hash_get(city.pessoas, morador_get_cpf(m))) == sexo) {
+                morador_imprime_dados(m, hash_get(city.pessoas, morador_get_cpf(m)), file_txt);
+              }
+            }
+
+            while (length_lista(moradores) > 0) {
+              remove_first(moradores);
+            }
+            free(moradores);
+          }
+
+          while (length_lista(stabs) > 0) {
+            remove_first(stabs);
+          }
+          free(stabs);
+        }
+
+        while (length_lista(quadras) > 0) {
+          remove_first(quadras);
+        }
+        free(quadras);
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'r' && buffer[1] == 'i' && buffer[2] == 'p') {
       } else if (buffer[0] == 'l' && buffer[1] == 'k' && buffer[2] == '?') {
       } else if (buffer[0] == 'r' && buffer[1] == 'b' && buffer[2] == '?') {

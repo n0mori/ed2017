@@ -22,6 +22,8 @@ int  comercio_get_num(Comercio c);
 char *comercio_get_cnpj(Comercio c);
 char *comercio_get_nome(Comercio c);
 int  cmp_comercio_cnpj(Comercio c, void *key);
+int  cmp_comercio_codt(Comercio c, void *key);
+int  cmp_comercio_cep(Comercio c, void *key);
 void free_comercio(Comercio c);
 
 #endif

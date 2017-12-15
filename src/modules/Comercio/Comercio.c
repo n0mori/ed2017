@@ -52,6 +52,14 @@ int cmp_comercio_cnpj(Comercio c, void *key) {
   return strcmp(comercio_get_cnpj(c), key) == 0;
 }
 
+int cmp_comercio_codt(Comercio c, void *key) {
+  return strcmp(comercio_get_codt(c), key) == 0;
+}
+
+int cmp_comercio_cep(Comercio c, void *key) {
+  return strcmp(comercio_get_cep(c), key) == 0;
+}
+
 void free_comercio(Comercio c) {
   free(comercio_get_address(c));
   free(c);
