@@ -21,6 +21,7 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Morador/Morador.h"
 #include "../Celular/Celular.h"
 #include "../Ponto/Ponto.h"
+#include "../Connection/Connection.h"
 
 typedef struct cidade {
   Lista lista_quadras;
@@ -31,6 +32,7 @@ typedef struct cidade {
   Lista printable_people;
   Lista printable_comercios;
   Lista printable_connections;
+  Lista printable_phones;
   Quadtree qt_quadras;
   Quadtree qt_hidrantes;
   Quadtree qt_semaforos;
@@ -65,7 +67,7 @@ void remove_hidrantes_in_circ(Cidade c, FILE *f, Circ *ci);
 void remove_semaforos_in_circ(Cidade c, FILE *f, Circ *ci);
 void remove_torres_in_circ(Cidade c, FILE *f, Circ *ci);
 void search_cep_or_id(Cidade c, FILE *f, char *id);
-char* conectar_celular(Cidade c, Celular celular);
+Torre conectar_celular(Cidade c, Celular celular, Address a);
 Ponto cidade_get_ponto_address(Cidade c, Address a);
 
 #endif

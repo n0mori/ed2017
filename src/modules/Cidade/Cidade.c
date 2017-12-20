@@ -14,6 +14,7 @@ Cidade new_cidade() {
   c.printable_people = create_lista();
   c.printable_comercios = create_lista();
   c.printable_connections = create_lista();
+  c.printable_phones = create_lista();
   c.qt_quadras = new_quadtree();
   c.qt_hidrantes = new_quadtree();
   c.qt_semaforos = new_quadtree();
@@ -88,6 +89,7 @@ void free_cidade(Cidade c) {
     free_connection(remove_first(c.printable_connections));
   }
   free(c.printable_connections);
+  free_lista(c.printable_phones);
 
   free_quadtree(c.qt_quadras);
   free_quadtree(c.qt_hidrantes);
@@ -352,6 +354,37 @@ void search_cep_or_id(Cidade c, FILE *f, char *id) {
   free_lista(hidrantes);
   free_lista(semaforos);
   free_lista(torres);
+}
+
+Torre conectar_celular(Cidade c, Celular celular, Address a) {
+  Torre near;
+  Lista torres = create_lista();
+  Node n;
+  double menor, dist;
+  Ponto pt = cidade_get_ponto_address(c, a);
+  char op = celular_get_operadora(celular);
+
+  quadtree_filter_to_list(quadtree_root(c.qt_torres), torres, cmp_torre_operadora, &op);
+
+  near = get(get_first(torres), torres);
+  menor = distancia(get_x(pt), get_y(pt), torre_get_x(near), torre_get_y(near));
+
+  for (n = get_first(torres); n != NULL; n = get_next(torres, n)) {
+    dist = distancia(get_x(pt), get_y(pt), torre_get_x(get(torres, n)), torre_get_y(get(torres, n)));
+    if (dist < menor) {
+      menor = dist;
+      near = get(torres, n);
+    }
+  }
+
+  while (length_lista(torres) > 0) {
+    remove_first(torres);
+  }
+  free(torres);
+
+  celular_conecta(celular, torre_get_id(near));
+
+  return near;
 }
 
 Ponto cidade_get_ponto_address(Cidade c, Address a) {

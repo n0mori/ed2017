@@ -50,3 +50,7 @@ void celular_disconecta(Celular c) {
   StCelular celular = (StCelular) c;
   celular->torre[0] = 0;
 }
+
+int cmp_celular_torre(Celular c, void *id) {
+  return(strcmp(celular_get_torre(c), id) == 0);
+}

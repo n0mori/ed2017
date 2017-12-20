@@ -151,7 +151,7 @@ void free_quadtree(Quadtree q) {
   free(q);
 }
 
-void quadtree_filter_to_list(QNode q, Lista *l, int (*compar)(void *a, void *b), void *comparado) {
+void quadtree_filter_to_list(QNode q, Lista l, int (*compar)(void *a, void *b), void *comparado) {
   st_quadnode node = (st_quadnode) q;
   if (q == NULL) {
     return;

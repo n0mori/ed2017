@@ -70,3 +70,11 @@ void kill_pessoa(Pessoa p) {
   Person person = (Person) p;
   person->vivo = 0;
 }
+
+void pessoa_imprime_dados(Pessoa p, FILE *out) {
+  fprintf(out, "%s %s %s %s\n",
+          pessoa_get_nome(p),
+          pessoa_get_sobrenome(p),
+          pessoa_get_cpf(p),
+          pessoa_get_nasc(p));
+}

@@ -72,6 +72,7 @@ void print_rect_points(FILE *fsvg, Rect *r, char *cor) {
 }
 
 void print_svg_cidade(char *svg, Cidade c) {
+  Node n;
 
   FILE *file_svg = fopen(svg, "w");
   fprintf(file_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
@@ -123,6 +124,41 @@ void print_svg_cidade(char *svg, Cidade c) {
   quadtree_percorre_print(quadtree_root(c.qt_semaforos), file_svg, print_svg_semaforo);
   quadtree_percorre_print(quadtree_root(c.qt_torres), file_svg, print_svg_torre);
   quadtree_percorre_print(quadtree_root(c.qt_formas), file_svg, print_svg_elemento);
+
+  for (n = get_first(c.printable_people); n != NULL; n = get_next(c.printable_people, n)) {
+    Morador m = get(c.printable_people, n);
+    Ponto p = cidade_get_ponto_address(c, morador_get_address(m));
+
+    fprintf(file_svg, "<circ cx=\"%f\" cy=\"%f\" r=\"10\" fill=\"burlywood\" />",
+            get_x(p), 
+            get_y(p));    
+  }
+
+  for (n = get_first(c.printable_comercios); n != NULL; n = get_next(c.printable_comercios, n)) {
+    Comercio com = get(c.printable_comercios, n);
+    Ponto p = cidade_get_ponto_address(c, comercio_get_address(com));
+
+    fprintf(file_svg, "<circ cx=\"%f\" cy=\"%f\" r=\"20\" fill=\"navy\"/>",
+            get_x(p), 
+            get_y(p));
+  }
+
+  for (n = get_first(c.printable_connections); n != NULL; n = get_next(c.printable_connections, n)) {
+    Connection con = get(c.printable_connections, n);
+
+    fprintf(file_svg, "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" stroke=\"gold\" stroke-width=\"7\"/>",
+            connection_get_xa(con), 
+            connection_get_ya(con),
+            connection_get_xb(con),
+            connection_get_yb(con));
+  }
+
+  for (n = get_first(c.printable_phones); n != NULL; n = get_next(c.printable_phones, n)) {
+    Ponto p = get(c.printable_phones, n);
+
+    fprintf(file_svg, "<rect x=\"%f\" y=\"%f\" width=\"16\" height=\"16\" />",
+            get_x(p), get_y(p));
+  }
 
   fprintf(file_svg, "</svg>");
   fclose(file_svg);

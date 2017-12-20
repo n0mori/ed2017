@@ -19,5 +19,6 @@ void celular_set_operadora(Celular c, char opdest);
 char* celular_get_torre(Celular c);
 void celular_conecta(Celular c, char *id_torre);
 void celular_disconecta(Celular c);
+int cmp_celular_torre(Celular c, void *id);
 
 #endif

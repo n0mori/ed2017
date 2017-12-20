@@ -412,14 +412,15 @@ int main(int argc, char *argv[]) {
       if (buffer[0] == 'p') {
         char cpf[100], nome[100], sobrenome[100], sexo, nasc[100];
         Pessoa p;
-        sscanf(buffer, "p %[^ ] %[^ ] %[^ ] %c %[^\r\n]", cpf, nome, sobrenome, &sexo, nasc);
+        sscanf(buffer, "p %s %s %s %c %s", cpf, nome, sobrenome, &sexo, nasc);
         p = new_pessoa(cpf, nome, sobrenome, sexo, nasc);
+        /*printf("%s %s %s, %c %s\n", pessoa_get_cpf(p), pessoa_get_nome(p), pessoa_get_sobrenome(p), pessoa_get_sexo(p), pessoa_get_nasc(p));*/
         hash_insert(city.pessoas, cpf, p);
       } else if (buffer[0] == 'm') {
         char cpf[100], cep[100], face, complemento[100];
         int numero;
         Morador m;
-        sscanf(buffer, "m %[^ ] %[^ ] %c %d %[^\r\n]", cpf, cep, &face, &numero, complemento);
+        sscanf(buffer, "m %s %s %c %d %s", cpf, cep, &face, &numero, complemento);
         m = new_morador(cpf, cep, face, numero, complemento);
         hash_insert(city.moradores, cpf, m);
       }     
@@ -446,16 +447,16 @@ int main(int argc, char *argv[]) {
 
       if (buffer[0] == 's' && buffer[1] == 'u') {
         char *pessoa = alloc_inicial();
-        sscanf(buffer, "su %[^ ] %s", cpf, numcel);
-        concatena(pessoa, cpf);
+        sscanf(buffer, "su %s %s", cpf, numcel);
+        pessoa = concatena(pessoa, cpf);
         c = new_celular(cpf, numcel, 's');
         hash_insert(city.sercomtuel, numcel, c);
         hash_insert(city.numcel_pessoa, numcel, pessoa);
         pessoa_set_celular(hash_get(city.pessoas, cpf), c);
       } else if (buffer[0] == 'u' && buffer[1] == 'm') {
         char *pessoa = alloc_inicial();
-        sscanf(buffer, "um %[^ ] %s", cpf, numcel);
-        concatena(pessoa, cpf);
+        sscanf(buffer, "um %s %s", cpf, numcel);
+        pessoa = concatena(pessoa, cpf);
         c = new_celular(cpf, numcel, 'u');
         hash_insert(city.uelmobile, numcel, c);
         hash_insert(city.numcel_pessoa, numcel, pessoa);
@@ -722,13 +723,13 @@ int main(int argc, char *argv[]) {
         free(towers);
       } else if (buffer[0] == 'm' && buffer[1] == 'v') {
         Celular origem, destino;
-        char opdest, numero[100];
+        char opdest[100], numero[100];
         Pessoa pessoa;
-        sscanf(buffer, "mv %c %s", &opdest, numero);
-        if (opdest == 's') {
+        sscanf(buffer, "mv %s %s", opdest, numero);
+        if (strcmp(opdest, "su") == 0) {
           origem = hash_delete(city.uelmobile, numero);
           destino = hash_get(city.sercomtuel, numero);
-        } else if (opdest == 'u') {
+        } else if (strcmp(opdest, "um") == 0) {
           origem = hash_delete(city.sercomtuel, numero);
           destino = hash_get(city.uelmobile, numero);
         }
@@ -742,14 +743,14 @@ int main(int argc, char *argv[]) {
           continue;
         }
 
-        pessoa = hash_get(city.numcel_pessoa, pessoa);
-        celular_set_operadora(origem, opdest);
+        pessoa = hash_get(city.numcel_pessoa, numero);
+        celular_set_operadora(origem, opdest[0]);
         fprintf(file_txt, "Celular %s pertencente a %s, migrou de ", celular_get_numero(origem), pessoa_get_nome(pessoa));
         
-        if (opdest == 's') {
+        if (strcmp(opdest, "su") == 0) {
           hash_insert(city.sercomtuel, numero, origem);
           fputs("Sercomtuel para UELMobile.\n", file_txt);
-        } else if (opdest == 'u') {
+        } else if (strcmp(opdest, "um") == 0) {
           hash_insert(city.uelmobile, numero, origem);
           fputs("UELMobile para Sercomtuel.\n", file_txt);
         }
@@ -881,11 +882,8 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
 
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == 'n') {
-        Lista torres = create_lista();
-        Node n;
-        Torre near;
-        double menor, dist;
-        char numcel[100], cep[100], face, op;
+        Torre torre;
+        char numcel[100], cep[100], face, op, *cpf;
         int num;
         Address a;
         Celular c;
@@ -898,52 +896,38 @@ int main(int argc, char *argv[]) {
         fputs(buffer, file_txt);
 
         a = new_address(cep, face, num, "");
+        cpf = hash_get(city.numcel_pessoa, numcel);
+        p = hash_get(city.pessoas, cpf);
+
         pt = cidade_get_ponto_address(city, a);
-        p = hash_get(city.numcel_pessoa, numcel);
+
         c = hash_get(city.sercomtuel, numcel);
         op = 's';
         if (c == NULL) {
           c = hash_get(city.uelmobile, numcel);
           op = 'u';
         }
-
         if (c == NULL) {
           fputs("numero celular não encontrado\n", file_txt);
           fclose(file_txt);
-          free(torres);
           buffer[0] = 0;
           continue;
         }
 
-        quadtree_filter_to_list(quadtree_root(city.qt_torres), torres, cmp_torre_operadora, &op);
+        torre = conectar_celular(city, c, a);
 
-        near = get(get_first(torres), torres);
-        menor = distancia(get_x(pt), get_y(pt), torre_get_x(near), torre_get_y(near));
-
-        for (n = get_first(torres); n != NULL; n = get_next(torres, n)) {
-          dist = distancia(get_x(pt), get_y(pt), torre_get_x(get(torres, n)), torre_get_y(get(torres, n)));
-          if (dist < menor) {
-            menor = dist;
-            near = get(torres, n);
-          }
-        }
-
-        insert_last(city.printable_connections, new_connection(p, new_ponto(torre_get_x(near), torre_get_y(near))));
+        insert_last(city.printable_connections, new_connection(pt, new_ponto(torre_get_x(torre), torre_get_y(torre))));
         fprintf(file_txt, "%s %s %c %s x:%f y:%f distancia:%f\n", 
                 pessoa_get_cpf(p), 
                 pessoa_get_nome(p), 
                 op, 
-                torre_get_id(near), 
-                torre_get_x(near), 
-                torre_get_y(near),
-                dist);
+                torre_get_id(torre), 
+                torre_get_x(torre), 
+                torre_get_y(torre),
+                distancia(torre_get_x(torre), torre_get_y(torre), get_x(pt), get_y(pt)));
 
         fclose(file_txt);
 
-        while (length_lista(torres) > 0) {
-          remove_first(torres);
-        }
-        free(torres);
 
       } else if (buffer[0] == 'm' && buffer[1] == 's' && buffer[2] == 'e') {
         Lista quadras = create_lista();
@@ -1004,16 +988,221 @@ int main(int argc, char *argv[]) {
 
       } else if (buffer[0] == 'r' && buffer[1] == 'i' && buffer[2] == 'p') {
       } else if (buffer[0] == 'l' && buffer[1] == 'k' && buffer[2] == '?') {
+        Lista celulares = create_lista();
+        char id[100];
+
+        sscanf(buffer, "lk? %s", id);
+
+        hash_filter(city.sercomtuel, celulares, cmp_celular_torre, id);
+        hash_filter(city.uelmobile, celulares, cmp_celular_torre, id);
+        
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (length_lista(celulares) == 0) {
+          fputs("não existem celulares conectados nessa torre!\n", file_txt);
+        } else {
+          while (length_lista(celulares) > 0) {
+            Celular c = remove_first(celulares);
+            fprintf(file_txt, "%s\n", celular_get_numero(c));
+          }
+        }
+
+        free(celulares);
+        fclose(file_txt);
+
       } else if (buffer[0] == 'r' && buffer[1] == 'b' && buffer[2] == '?') {
+        char numcel[100], *id;
+        Celular c;
+        
+        sscanf(buffer, "rb? %s", numcel);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        c = hash_get(city.sercomtuel, numcel);
+        if (c == NULL) {
+          c = hash_get(city.uelmobile, numcel);
+        }
+        if (c == NULL) {
+          fputs("celular inexistente\n", file_txt);
+          fclose(file_txt);
+          buffer[0] = 0;
+          continue;
+        }
+
+        id = celular_get_torre(c);
+
+        fprintf(file_txt, "%s\n", id);
+
+        fclose(file_txt);
+        
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == '?') {
       } else if (buffer[0] == 'l' && buffer[1] == 'n' && buffer[2] == 'r') {
       } else if (buffer[0] == 'e' && buffer[1] == 'c' && buffer[2] == 'q') {
+        char cep[100];
+        Lista stabs = create_lista();
+
+        sscanf(buffer, "ecq? %s", cep);
+
+        hash_filter(city.estabelecimentos, stabs, cmp_comercio_cep, cep);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (length_lista(stabs) == 0) {
+          fputs("não existem estabelecimentos na quadra especificada.\n", file_txt);
+        } else {
+          while (length_lista(stabs) > 0) {
+            Comercio c = remove_first(stabs);
+            fprintf(file_txt, "%s - %s - %s - %s %c %d\n", 
+                    comercio_get_cnpj(c),
+                    comercio_get_nome(c),
+                    comercio_get_codt(c),
+                    comercio_get_cep(c),
+                    comercio_get_face(c),
+                    comercio_get_num(c));
+          }
+        }
+        free(stabs);
+        
+        fclose(file_txt);
+
       } else if (buffer[0] == 'e' && buffer[1] == 'c' && buffer[2] == 'r') {
+        Lista quadras = create_lista();
+        char tipo[100], str_x[100], str_y[100], str_w[100], str_h[100];
+        Rect *r;
+        double x, y, width, height;
+
+        str_x[0] = 0;
+        str_y[0] = 0;
+        str_w[0] = 0;
+        str_h[0] = 0;
+
+        sscanf(buffer, "ecr? %s %s %s %s %s", tipo, str_x, str_y, str_w, str_h);
+
+        if (strlen(str_x) > 0) {
+          sscanf(str_x, "%lf", &x);
+          sscanf(str_y, "%lf", &y);
+          sscanf(str_h, "%lf", &height);
+          sscanf(str_w, "%lf", &width);
+          r = new_rect(width, height, x, y, "");
+          quadtree_filter_to_list(quadtree_root(city.qt_quadras), quadras, quadra_inside_rect, r);
+        } else {
+          quadtree_filter_to_list(quadtree_root(city.qt_quadras), quadras, cmp_true, NULL);
+        }
+
+        file_txt = fopen(txt, "a+");
+
+        while (length_lista(quadras) > 0) {
+          Quadra q = remove_first(quadras);
+          Lista stabs = create_lista();
+
+          hash_filter(city.estabelecimentos, stabs, cmp_comercio_cep, quadra_get_cep(q));
+
+          while (length_lista(stabs) > 0) {
+            Comercio c = remove_first(stabs);
+            if (cmp_comercio_codt(c, tipo) == 0) {
+              fprintf(file_txt, "%s - %s - %s - %s %c %d\n", 
+                      comercio_get_cnpj(c),
+                      comercio_get_nome(c),
+                      comercio_get_codt(c),
+                      comercio_get_cep(c),
+                      comercio_get_face(c),
+                      comercio_get_num(c));
+            }
+          }
+          free(stabs);
+          
+        }
+        
+        fclose(file_txt);
+
       } else if (buffer[0] == 't' && buffer[1] == 'e' && buffer[2] == 'c' && buffer[3] == 'q') {
       } else if (buffer[0] == 't' && buffer[1] == 'e' && buffer[2] == 'c' && buffer[3] == 'r') {
       } else if (buffer[0] == 'd' && buffer[1] == 'c' && buffer[2] == '?') {
+        char numero[100], *cpf;
+        Pessoa p;
+
+        sscanf(buffer, "dc? %s", numero);
+
+        cpf = hash_get(city.numcel_pessoa, numero);
+
+        p = hash_get(city.pessoas, cpf);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (p == NULL) {
+          fputs("não existe pessoa com tal numero de celular.\n", file_txt);
+        } else {
+          pessoa_imprime_dados(p, file_txt);        
+        }
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'l' && buffer[1] == 'e' && buffer[2] == 'c') {
+        Pessoa p;
+        Morador m;
+        char numero[100], *cpf;
+
+        sscanf(buffer, "lec? %s", numero);
+        cpf = hash_get(city.numcel_pessoa, numero);
+        if (cpf != NULL) {
+          p = hash_get(city.pessoas, cpf);
+          m = hash_get(city.moradores, cpf);
+        }
+
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (m == NULL) {
+          if (p == NULL) {
+            fputs("esse numero de celular não tem dono\n", file_txt);
+          } else {
+            pessoa_imprime_dados(p, file_txt);
+          }
+        } else {
+          Ponto pt = cidade_get_ponto_address(city, morador_get_address(m));
+          morador_imprime_dados(m, p, file_txt);
+          insert_last(city.printable_phones, pt);
+        }
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'l' && buffer[1] == 'c' && buffer[2] == 'c') {
+        Pessoa p;
+        Morador m;
+        char numero[100], *cpf;
+
+        sscanf(buffer, "lcc? %s", numero);
+        cpf = hash_get(city.numcel_pessoa, numero);
+        if (cpf != NULL) {
+          p = hash_get(city.pessoas, cpf);
+          m = hash_get(city.moradores, cpf);
+        }
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (m == NULL) {
+          if (p == NULL) {
+            fputs("esse numero de celular não tem dono\n", file_txt);
+          } else {
+            pessoa_imprime_dados(p, file_txt);
+          }
+        } else if (p == NULL) {
+          fputs("esse numero de celular não tem dono\n", file_txt);
+        } else {
+          Ponto pt = cidade_get_ponto_address(city, morador_get_address(m));
+          morador_imprime_dados(m, p, file_txt);
+          fprintf(file_txt, "%f %f\n", get_x(pt), get_y(pt));
+          insert_last(city.printable_phones, pt);
+        }
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'd' && buffer[1] == 'p' && buffer[2] == 'r') {
       }
 
