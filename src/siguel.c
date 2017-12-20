@@ -1038,7 +1038,90 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
         
       } else if (buffer[0] == 'c' && buffer[1] == 'o' && buffer[2] == '?') {
+        char op[100], str_n[100];
+        int n = -1;
+        Lista clientes = create_lista();
+
+        str_n[0] = 0;
+
+        sscanf(buffer, "co? %s %s", op, str_n);
+
+        if (strlen(str_n) > 0) {
+          sscanf(str_n, "%d", &n);
+        }
+
+        cidade_query_clientes(city, clientes, op);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        while (length_lista(clientes) > 0) {
+          Pessoa p = remove_first(clientes);
+          if (n == -1 || n > 0) {
+            fprintf(file_txt, "%s - %s\n", pessoa_get_nome(p), celular_get_numero(pessoa_get_celular(p)));
+            n--;
+          }
+        }
+        free(clientes);
+
+        fclose(file_txt);
+        
       } else if (buffer[0] == 'l' && buffer[1] == 'n' && buffer[2] == 'r') {
+        char op[100], cop;
+        double x, y, width, height;
+        int len;
+        Lista torres = create_lista();
+        Rect *r;
+
+        op[0] = 0;
+
+        sscanf(buffer, "lnr? %lf %lf %lf %lf %s", &x, &y, &width, &height, op);
+
+        len = strlen(op);
+
+        if (len) {
+          if (op[0] == 's' && op[1] == 'u') {
+            cop = 's';
+          } else if (op[0] == 'u' && op[1] == 'm') {
+            cop = 'u';
+          }
+        } else {
+          cop = 0;
+        }
+
+        r = new_rect(width, height, x, y, "");
+
+        quadtree_filter_to_list(quadtree_root(city.qt_torres), torres, torre_inside_rect, r);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        while (length_lista(torres) > 0) {
+          Torre t = remove_first(torres);
+          if (!len || torre_get_operadora(t) == cop) {
+            Lista celulares = create_lista(t);
+
+            if (torre_get_operadora(t) == 's') {
+              hash_filter(city.sercomtuel, celulares, cmp_celular_torre, torre_get_id(t));
+            } else if (torre_get_operadora(t) == 'u') {
+              hash_filter(city.uelmobile, celulares, cmp_celular_torre, torre_get_id(t));
+            }
+
+            fprintf(file_txt, "%s\n", torre_get_id(t));
+
+            while(length_lista(celulares) > 0) {
+              Celular c = remove_first(celulares);
+              fprintf(file_txt, "\t%s\n", celular_get_numero(c));
+            }
+            free(celulares);
+
+          }
+        }
+        free(torres);
+
+        free(r);
+        fclose(file_txt);
+
       } else if (buffer[0] == 'e' && buffer[1] == 'c' && buffer[2] == 'q') {
         char cep[100];
         Lista stabs = create_lista();

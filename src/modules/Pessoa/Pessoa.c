@@ -19,6 +19,7 @@ Pessoa new_pessoa(char *cpf, char *nome, char *sobrenome, char sexo, char *nasc)
   p->sexo = sexo;
   strcpy(p->nasc, nasc);
   p->vivo = 1;
+  p->celular = NULL;
   return pessoa;
 }
 
@@ -54,6 +55,26 @@ Celular pessoa_get_celular(Pessoa p) {
 
 int cmp_pessoa_cpf(Pessoa p, void *cpf) {
   return strcmp(pessoa_get_cpf(p), cpf) == 0;
+}
+
+int cmp_pessoa_operadora(Pessoa p, void *op) {
+  Celular c = pessoa_get_celular(p);
+  char cop;
+  if (c == NULL) {
+    return 0;
+  }
+  cop = celular_get_operadora(c);
+  if (cop == 'u') {
+    return strcmp("um", op) == 0;
+  } else if (cop == 's') {
+    return strcmp("su", op) == 0;
+  } else {
+    return 0;
+  }
+}
+
+int cmp_pessoa_pessoa(Pessoa p, Pessoa r) {
+  return strcmp(pessoa_get_nome(p), pessoa_get_nome(r));
 }
 
 void pessoa_set_celular(Pessoa p, Celular celular) {

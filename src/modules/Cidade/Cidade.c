@@ -411,3 +411,8 @@ Ponto cidade_get_ponto_address(Cidade c, Address a) {
   p = new_ponto(x, y);
   return p;
 }
+
+void cidade_query_clientes(Cidade c, Lista query, char *op) {
+  hash_filter(c.pessoas, query, cmp_pessoa_operadora, op);
+  sort_lista(query, cmp_pessoa_pessoa);
+}

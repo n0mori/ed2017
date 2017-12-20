@@ -22,6 +22,7 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Celular/Celular.h"
 #include "../Ponto/Ponto.h"
 #include "../Connection/Connection.h"
+#include "../Sorting/Sorting.h"
 
 typedef struct cidade {
   Lista lista_quadras;
@@ -69,5 +70,6 @@ void remove_torres_in_circ(Cidade c, FILE *f, Circ *ci);
 void search_cep_or_id(Cidade c, FILE *f, char *id);
 Torre conectar_celular(Cidade c, Celular celular, Address a);
 Ponto cidade_get_ponto_address(Cidade c, Address a);
+void cidade_query_clientes(Cidade c, Lista query, char *op);
 
 #endif

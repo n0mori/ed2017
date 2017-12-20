@@ -22,6 +22,8 @@ char pessoa_get_sexo(Pessoa p);
 char *pessoa_get_nasc(Pessoa p);
 Celular pessoa_get_celular(Pessoa p);
 int cmp_pessoa_cpf(Pessoa p, void *cpf);
+int cmp_pessoa_operadora(Pessoa p, void *op);
+int cmp_pessoa_pessoa(Pessoa p, Pessoa r);
 void pessoa_set_celular(Pessoa p, Celular celular);
 void pessoa_imprime_dados(Pessoa p, FILE *out);
 
