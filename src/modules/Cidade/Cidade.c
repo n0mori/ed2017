@@ -416,3 +416,32 @@ void cidade_query_clientes(Cidade c, Lista query, char *op) {
   hash_filter(c.pessoas, query, cmp_pessoa_operadora, op);
   sort_lista(query, cmp_pessoa_pessoa);
 }
+
+void cidade_query_tipos(Cidade c, Lista quadras, Lista tipos) {
+  Node n, no, nod;
+  char *codt;
+  int achou;
+  Lista comercios = create_lista();
+
+  for (n = get_first(quadras); n != NULL; n = get_next(quadras, n)) {
+    Quadra q = get(quadras, n);
+    hash_filter(c.estabelecimentos, comercios, cmp_comercio_cep, quadra_get_cep(q));
+
+    for (no = get_first(comercios); no != NULL; no = get_next(comercios, no)) {
+      Comercio c = get(comercios, no);
+      codt = comercio_get_codt(c);
+
+      achou = 0;
+      for (nod = get_first(tipos); nod != NULL; nod = get_next(tipos, nod)) {
+        if (strcmp(codt, get(tipos, nod)) == 0) {
+          achou = 1;
+          break;
+        }
+      }
+
+      if (!achou) {
+        insert_last(tipos, codt);
+      }
+    }
+  }
+}

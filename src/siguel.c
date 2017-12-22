@@ -1202,7 +1202,77 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
 
       } else if (buffer[0] == 't' && buffer[1] == 'e' && buffer[2] == 'c' && buffer[3] == 'q') {
+        char cep[100];
+        Lista quadras = create_lista();
+        Lista tipos = create_lista(); 
+        Lista comercios = create_lista();
+        Quadra q;
+
+        sscanf(buffer, "tecq? %s", cep);
+
+        q = hash_get(city.cep_quadra, cep);        
+
+        insert_first(quadras, q);
+
+        cidade_query_tipos(city, quadras, tipos);
+        hash_filter(city.estabelecimentos, comercios, cmp_comercio_cep, quadra_get_cep(q));
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        while (length_lista(tipos) > 0) {
+          char *codt = remove_first(tipos);
+          Node n;
+
+          fprintf(file_txt, "%s: \n", codt);
+
+          for (n = get_first(comercios); n != NULL; n = get_next(comercios, n)) {
+            Comercio c = get(comercios, n);
+            if (cmp_comercio_codt(c, codt)) {
+              fprintf(file_txt, "\t%s - %s\n", comercio_get_cnpj(c), comercio_get_nome(c));
+            }
+          }
+        }
+        free(tipos);
+
+        while (length_lista(quadras) > 0) {
+          remove_first(quadras);
+        }
+        free(quadras);
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 't' && buffer[1] == 'e' && buffer[2] == 'c' && buffer[3] == 'r') {
+        double x, y, width, height;
+        Lista quadras = create_lista();
+        Lista tipos = create_lista();
+        Rect *r;
+
+        sscanf(buffer, "tecr? %lf %lf %lf %lf", &x, &y, &width, &height);
+
+        r = new_rect(width, height, x, y, "");
+
+        quadtree_filter_to_list(quadtree_root(city.qt_quadras), quadras, quadra_inside_rect, r);
+
+        cidade_query_tipos(city, quadras, tipos);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        while(length_lista(tipos) > 0) {
+          char *codt = remove_first(tipos);
+
+          fprintf(file_txt, "%s\n", codt);
+        }
+        free(tipos);
+
+        while(length_lista(quadras) > 0) {
+          remove_first(quadras);
+        }
+        free(quadras);
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'd' && buffer[1] == 'c' && buffer[2] == '?') {
         char numero[100], *cpf;
         Pessoa p;
