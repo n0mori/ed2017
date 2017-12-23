@@ -34,6 +34,7 @@ typedef struct cidade {
   Lista printable_comercios;
   Lista printable_connections;
   Lista printable_phones;
+  Lista necroterio;
   Quadtree qt_quadras;
   Quadtree qt_hidrantes;
   Quadtree qt_semaforos;
@@ -72,5 +73,7 @@ Torre conectar_celular(Cidade c, Celular celular, Address a);
 Ponto cidade_get_ponto_address(Cidade c, Address a);
 void cidade_query_clientes(Cidade c, Lista query, char *op);
 void cidade_query_tipos(Cidade c, Lista quadras, Lista tipos);
+void cidade_kill(Cidade c, char *cpf, FILE *out);
+void cidade_kikoho(Cidade c, Rect *r, FILE *out);
 
 #endif

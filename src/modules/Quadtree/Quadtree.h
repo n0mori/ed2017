@@ -24,5 +24,6 @@ int quadtree_percorre_print(QNode q, FILE *f, void (*lambda)(FILE *f, void *a));
 int quadtree_remove_conditional(QNode q, int (*compar)(void* a, void *b), void *comparado, int *acc, FILE *f, char* (*id)(void *a));
 void free_quadtree(Quadtree q);
 void quadtree_filter_to_list(QNode q, Lista l, int (*compar)(void *a, void *b), void *comparado);
+void quadtree_filter_remove(QNode q, Lista l, int (*compar)(void *a, void *b), void *comparado);
 
 #endif

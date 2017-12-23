@@ -15,6 +15,7 @@ Cidade new_cidade() {
   c.printable_comercios = create_lista();
   c.printable_connections = create_lista();
   c.printable_phones = create_lista();
+  c.necroterio = create_lista();
   c.qt_quadras = new_quadtree();
   c.qt_hidrantes = new_quadtree();
   c.qt_semaforos = new_quadtree();
@@ -90,6 +91,7 @@ void free_cidade(Cidade c) {
   }
   free(c.printable_connections);
   free_lista(c.printable_phones);
+  free_lista(c.necroterio);
 
   free_quadtree(c.qt_quadras);
   free_quadtree(c.qt_hidrantes);
@@ -394,6 +396,10 @@ Ponto cidade_get_ponto_address(Cidade c, Address a) {
   int numero = address_get_numero(a);
   double x, y;
 
+  if (q == NULL) {
+    return NULL;
+  }
+
   if (face == 'S' || face == 's') {
     x = quadra_get_x(q) + numero;
     y = quadra_get_y(q);
@@ -444,4 +450,138 @@ void cidade_query_tipos(Cidade c, Lista quadras, Lista tipos) {
       }
     }
   }
+}
+
+void cidade_kill(Cidade c, char *cpf, FILE *out) {
+  Pessoa p = hash_delete(c.pessoas, cpf);
+  Celular celular;
+  Morador m = hash_delete(c.moradores, cpf);
+
+
+  if (p == NULL) {
+    fputs("Não havia pessoa com tal cpf!\n", out);
+    return;
+  }
+
+  fprintf(out, "RIP: %s %s, portador do cpf %s, sexo %c, nascido em %s",
+          pessoa_get_nome(p),
+          pessoa_get_sobrenome(p),
+          pessoa_get_cpf(p),
+          pessoa_get_sexo(p),
+          pessoa_get_nasc(p));
+
+  if (m != NULL) {
+    fprintf(out, ", residia em %s, face %c, %d",
+            morador_get_cep(m),
+            morador_get_face(m),
+            morador_get_numero(m));
+
+    insert_last(c.necroterio, cidade_get_ponto_address(c, morador_get_address(m)));
+
+    free_morador(m);
+  }
+
+  celular = pessoa_get_celular(p);
+
+  if (celular != NULL) {
+    char op = celular_get_operadora(celular);
+
+    hash_delete(c.sercomtuel, celular_get_numero(celular));
+    hash_delete(c.uelmobile, celular_get_numero(celular));
+    hash_delete(c.numcel_pessoa, celular_get_numero(celular));
+
+    fprintf(out, ", usuario da linha movel %s, da operadora ", celular_get_numero(celular));
+
+    if (op == 's') {
+      fprintf(out, "SercomtUEL");
+    } else if (op == 'u') {
+      fprintf(out, "UELmobile");
+    }
+
+    free(celular);
+  }
+
+  free(p);
+  fprintf(out, "\n");
+}
+
+void cidade_kikoho(Cidade c, Rect *r, FILE *out) {
+  Lista quadras = create_lista();
+  Lista torres = create_lista();
+  Lista hidrantes = create_lista();
+  Lista semaforos = create_lista();
+  Lista celulares = create_lista();
+  Lista moradores = create_lista();
+  Lista comercios = create_lista();
+  
+  quadtree_filter_remove(quadtree_root(c.qt_quadras), quadras, quadra_inside_rect, r);
+  quadtree_filter_remove(quadtree_root(c.qt_hidrantes), hidrantes, hidrante_inside_rect, r);
+  quadtree_filter_remove(quadtree_root(c.qt_semaforos), semaforos, semaforo_inside_rect, r);
+  quadtree_filter_remove(quadtree_root(c.qt_torres), torres, torre_inside_rect, r);
+
+  fprintf(out, "Quadras demolidas: \n");
+  while (length_lista(quadras) > 0) {
+    Quadra q = remove_first(quadras);
+
+    fprintf(out, "\t%s\n", quadra_get_cep(q));
+    hash_filter(c.moradores, moradores, cmp_morador_cep, quadra_get_cep(q));
+    hash_filter(c.estabelecimentos, comercios, cmp_comercio_cep, quadra_get_cep(q));
+
+  }
+  free(quadras);
+
+  fprintf(out, "Moradores agora sem moradia: \n");
+  while (length_lista(moradores) > 0) {
+    Morador m = remove_first(moradores);
+    fprintf(out,"\t%s\n", morador_get_cpf(m));
+    hash_delete(c.moradores, morador_get_cep(m));
+  }
+  free(moradores);
+
+  fprintf(out, "Estabelecimentos comerciais demolidos: \n");
+  while (length_lista(comercios) > 0) {
+    Comercio com = remove_first(comercios);
+    fprintf(out,"\t%s\n", comercio_get_cnpj(com));
+    hash_delete(c.moradores, comercio_get_cep(com));
+  }
+  free(comercios);
+
+  fprintf(out, "Hidrantes demolidos: \n");
+  while (length_lista(hidrantes) > 0) {
+    Hidrante h = remove_first(hidrantes);
+
+    fprintf(out, "\t%s\n", hidrante_get_id(h));
+  }
+  free(hidrantes);
+
+  fprintf(out, "Semaforos demolidos: \n");
+  while (length_lista(semaforos) > 0) {
+    Semaforo s = remove_first(semaforos);
+
+    fprintf(out, "\t%s\n", semaforo_get_id(s));
+  }
+  free(semaforos);
+
+  fprintf(out, "Torres demolidas: \n");
+  while (length_lista(torres) > 0) {
+    Torre t = remove_first(torres);
+
+    fprintf(out, "\t%s\n", torre_get_id(t));
+    if (torre_get_operadora(t) == 's') {
+      hash_filter(c.sercomtuel, celulares, cmp_celular_torre, torre_get_id(t));
+    } else if (torre_get_operadora(t) == 'u') {
+      hash_filter(c.uelmobile, celulares, cmp_celular_torre, torre_get_id(t));
+    }
+
+  }
+  free(torres);
+
+  fprintf(out, "Celulares desconectados: \n");
+  while (length_lista(celulares) > 0) {
+    Celular cel = remove_first(celulares);
+    fprintf(out,"\t%s\n", celular_get_numero(cel));
+    celular_disconecta(cel);
+  }
+  free(celulares);
+  
 }

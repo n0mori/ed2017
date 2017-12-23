@@ -723,7 +723,7 @@ int main(int argc, char *argv[]) {
         free(towers);
       } else if (buffer[0] == 'm' && buffer[1] == 'v') {
         Celular origem, destino;
-        char opdest[100], numero[100];
+        char opdest[100], numero[100], *cpf;
         Pessoa pessoa;
         sscanf(buffer, "mv %s %s", opdest, numero);
         if (strcmp(opdest, "su") == 0) {
@@ -736,6 +736,7 @@ int main(int argc, char *argv[]) {
 
         file_txt = fopen(txt, "a+");
         fputs(buffer, file_txt);
+
         if (origem == NULL || destino != NULL) {
           fputs("Erro, numero inexistente na operadora de origem ou existente na operadora destino\n", file_txt);
           fclose(file_txt);
@@ -743,7 +744,8 @@ int main(int argc, char *argv[]) {
           continue;
         }
 
-        pessoa = hash_get(city.numcel_pessoa, numero);
+        cpf = hash_get(city.numcel_pessoa, numero);
+        pessoa = hash_get(city.pessoas, cpf);
         celular_set_operadora(origem, opdest[0]);
         fprintf(file_txt, "Celular %s pertencente a %s, migrou de ", celular_get_numero(origem), pessoa_get_nome(pessoa));
         
@@ -846,14 +848,13 @@ int main(int argc, char *argv[]) {
           continue;
         }
 
-        insert_last(city.printable_people, m);
-        morador_imprime_dados(m, hash_get(city.pessoas, cpf), file_txt);
         p = cidade_get_ponto_address(city, morador_get_address(m));
+        insert_last(city.printable_people, p);
+        morador_imprime_dados(m, hash_get(city.pessoas, cpf), file_txt);
 
         fprintf(file_txt, "%f %f\n", get_x(p), get_y(p));
 
         fclose(file_txt);
-        free(p);
       } else if (buffer[0] == 'd' && buffer[1] == 'e' && buffer[2] == '?') {
         char cnpj[100];
         Comercio c;
@@ -898,6 +899,13 @@ int main(int argc, char *argv[]) {
         a = new_address(cep, face, num, "");
         cpf = hash_get(city.numcel_pessoa, numcel);
         p = hash_get(city.pessoas, cpf);
+
+        if (p == NULL) {
+          fputs("essa pessoa não existe ou está morta\n", file_txt);
+          fclose(file_txt);
+          buffer[0] = 0;
+          continue;
+        }
 
         pt = cidade_get_ponto_address(city, a);
 
@@ -987,6 +995,17 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
 
       } else if (buffer[0] == 'r' && buffer[1] == 'i' && buffer[2] == 'p') {
+        char cpf[100];
+
+        sscanf(buffer, "rip %s", cpf);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        cidade_kill(city, cpf, file_txt);
+
+        fclose(file_txt);
+
       } else if (buffer[0] == 'l' && buffer[1] == 'k' && buffer[2] == '?') {
         Lista celulares = create_lista();
         char id[100];
@@ -1248,6 +1267,9 @@ int main(int argc, char *argv[]) {
         Lista tipos = create_lista();
         Rect *r;
 
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
         sscanf(buffer, "tecr? %lf %lf %lf %lf", &x, &y, &width, &height);
 
         r = new_rect(width, height, x, y, "");
@@ -1255,9 +1277,6 @@ int main(int argc, char *argv[]) {
         quadtree_filter_to_list(quadtree_root(city.qt_quadras), quadras, quadra_inside_rect, r);
 
         cidade_query_tipos(city, quadras, tipos);
-
-        file_txt = fopen(txt, "a+");
-        fputs(buffer, file_txt);
 
         while(length_lista(tipos) > 0) {
           char *codt = remove_first(tipos);
@@ -1277,14 +1296,14 @@ int main(int argc, char *argv[]) {
         char numero[100], *cpf;
         Pessoa p;
 
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
         sscanf(buffer, "dc? %s", numero);
 
         cpf = hash_get(city.numcel_pessoa, numero);
 
         p = hash_get(city.pessoas, cpf);
-
-        file_txt = fopen(txt, "a+");
-        fputs(buffer, file_txt);
 
         if (p == NULL) {
           fputs("não existe pessoa com tal numero de celular.\n", file_txt);
@@ -1299,6 +1318,9 @@ int main(int argc, char *argv[]) {
         Morador m;
         char numero[100], *cpf;
 
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
         sscanf(buffer, "lec? %s", numero);
         cpf = hash_get(city.numcel_pessoa, numero);
         if (cpf != NULL) {
@@ -1306,10 +1328,17 @@ int main(int argc, char *argv[]) {
           m = hash_get(city.moradores, cpf);
         }
 
+        if (p == NULL) {
+          fputs("esse numero de celular não tem dono\n", file_txt);
+        } else if (m == NULL) {
+          pessoa_imprime_dados(p, file_txt);
+        } else {
+          Ponto pt = cidade_get_ponto_address(city, morador_get_address(m));
+          morador_imprime_dados(m, p, file_txt);
+          insert_last(city.printable_phones, pt);
+        }
 
-        file_txt = fopen(txt, "a+");
-        fputs(buffer, file_txt);
-
+        /*
         if (m == NULL) {
           if (p == NULL) {
             fputs("esse numero de celular não tem dono\n", file_txt);
@@ -1321,6 +1350,7 @@ int main(int argc, char *argv[]) {
           morador_imprime_dados(m, p, file_txt);
           insert_last(city.printable_phones, pt);
         }
+        */
 
         fclose(file_txt);
 
@@ -1329,6 +1359,9 @@ int main(int argc, char *argv[]) {
         Morador m;
         char numero[100], *cpf;
 
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
         sscanf(buffer, "lcc? %s", numero);
         cpf = hash_get(city.numcel_pessoa, numero);
         if (cpf != NULL) {
@@ -1336,9 +1369,18 @@ int main(int argc, char *argv[]) {
           m = hash_get(city.moradores, cpf);
         }
 
-        file_txt = fopen(txt, "a+");
-        fputs(buffer, file_txt);
+        if (p == NULL) {
+          fputs("esse numero de celular não tem dono\n", file_txt);
+        } else if (m == NULL) {
+          pessoa_imprime_dados(p, file_txt);
+        } else {
+          Ponto pt = cidade_get_ponto_address(city, morador_get_address(m));
+          morador_imprime_dados(m, p, file_txt);
+          fprintf(file_txt, "%f %f\n", get_x(pt), get_y(pt));
+          insert_last(city.printable_phones, pt);
+        }
 
+        /*
         if (m == NULL) {
           if (p == NULL) {
             fputs("esse numero de celular não tem dono\n", file_txt);
@@ -1353,10 +1395,26 @@ int main(int argc, char *argv[]) {
           fprintf(file_txt, "%f %f\n", get_x(pt), get_y(pt));
           insert_last(city.printable_phones, pt);
         }
+        */
 
         fclose(file_txt);
 
       } else if (buffer[0] == 'd' && buffer[1] == 'p' && buffer[2] == 'r') {
+        double x, y, width, height;
+        Rect *r;
+
+        sscanf(buffer, "dpr %lf %lf %lf %lf", &x, &y, &width, &height);
+
+        r = new_rect(width, height, x, y, "");
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        cidade_kikoho(city, r, file_txt);
+
+        free(r);
+        fclose(file_txt);
+
       }
 
       buffer[0] = 0;

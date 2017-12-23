@@ -166,3 +166,20 @@ void quadtree_filter_to_list(QNode q, Lista l, int (*compar)(void *a, void *b), 
   quadtree_filter_to_list(node->se, l, compar, comparado);
   quadtree_filter_to_list(node->sw, l, compar, comparado);
 }
+
+void quadtree_filter_remove(QNode q, Lista l, int (*compar)(void *a, void *b), void *comparado) {
+  st_quadnode node = (st_quadnode) q;
+  if (q == NULL) {
+    return;
+  }
+
+  if (node->active && compar(node->valor, comparado)) {
+    insert_last(l, node->valor);
+    node->active = 0;
+  }
+
+  quadtree_filter_remove(node->ne, l, compar, comparado);
+  quadtree_filter_remove(node->nw, l, compar, comparado);
+  quadtree_filter_remove(node->se, l, compar, comparado);
+  quadtree_filter_remove(node->sw, l, compar, comparado);
+}

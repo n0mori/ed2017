@@ -256,7 +256,7 @@ void *search_lista(Lista l, int (*compar)(void* a, void *b), void *comparado) {
 
 void *seek_and_destroy_lista(Lista l, int (*compar)(void* a, void *b), void *comparado) {
   Node n;
-  for (n = get_first(l); n != NULL; get_next(l, n)) {
+  for (n = get_first(l); n != NULL; n = get_next(l, n)) {
     if (compar(get(l, n), comparado) == 1) {
       return remove_at(l, n);
     }

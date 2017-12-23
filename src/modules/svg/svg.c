@@ -126,8 +126,7 @@ void print_svg_cidade(char *svg, Cidade c) {
   quadtree_percorre_print(quadtree_root(c.qt_formas), file_svg, print_svg_elemento);
 
   for (n = get_first(c.printable_people); n != NULL; n = get_next(c.printable_people, n)) {
-    Morador m = get(c.printable_people, n);
-    Ponto p = cidade_get_ponto_address(c, morador_get_address(m));
+    Ponto p = get(c.printable_people, n);
 
     fprintf(file_svg, "<circ cx=\"%f\" cy=\"%f\" r=\"10\" fill=\"burlywood\" />",
             get_x(p), 
@@ -158,6 +157,13 @@ void print_svg_cidade(char *svg, Cidade c) {
 
     fprintf(file_svg, "<rect x=\"%f\" y=\"%f\" width=\"16\" height=\"16\" />",
             get_x(p), get_y(p));
+  }
+
+  for (n = get_first(c.necroterio); n != NULL; n = get_next(c.necroterio, n)) {
+    Ponto p = get(c.necroterio, n);
+
+    fprintf(file_svg, "<rect x=\"%f\" y=\"%f\" width=\"16\" height=\"16\" transform=\"rotate(45 %f %f)\" />",
+            get_x(p), get_y(p), get_x(p), get_y(p));
   }
 
   fprintf(file_svg, "</svg>");
