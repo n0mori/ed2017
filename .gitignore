@@ -2,3 +2,4 @@ src/*.o
 siguel
 *.svg
 src/tests/*
+LEIA-ME.txt
