@@ -43,6 +43,6 @@ void grafo_insert_edge(Grafo g, char *from, char *to, void *data);
 void *grafo_get_edge_data(Grafo g, char *from, char *to);
 void *grafo_remove_edge(Grafo g, char *from, char *to);
 int  grafo_adjacente(Grafo g, char *from, char *to);
-Lista grafo_adjacentes(Grafo g, char *id);
+void grafo_adjacentes(Grafo g, char *id, Lista l);
 
 #endif
