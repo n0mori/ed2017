@@ -105,6 +105,9 @@ Morador.o: modules/Morador/Morador.c
 Hash.o: modules/Hash/Hash.c
 	$(cc) -c modules/Hash/Hash.c
 
+Grafo.o: modules/Grafo/Grafo.c
+	$(cc) -c modules/Grafo/Grafo.c
+
 teste_lista.o: $(unit)/teste_lista.c
 	$(cc) -c $(unit)/teste_lista.c
 
@@ -152,6 +155,12 @@ teste_hash.o: $(unit)/teste_hash.c
 
 teste_hash: teste_hash.o Lista.o Hash.o Pessoa.o Comercio.o
 	$(cc) teste_hash.o Lista.o Hash.o Pessoa.o Comercio.o -o teste_hash
+
+teste_grafo.o: $(unit)/teste_grafo.c
+	$(cc) -c $(unit)/teste_grafo.c
+
+teste_grafo: teste_grafo.o Lista.o Hash.o Grafo.o
+	$(cc) teste_grafo.o Lista.o Hash.o Grafo.o -o teste_grafo
 
 clean:
 	rm -f *.o

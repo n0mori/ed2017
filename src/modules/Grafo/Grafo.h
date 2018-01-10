@@ -35,6 +35,8 @@ como encontrar caminhos e rotas.
 #include "../Lista/Lista.h"
 
 typedef void* Grafo;
+typedef void* Edge;
+typedef void* Vertex;
 
 Grafo new_grafo();
 void grafo_insert_vertex(Grafo g, char *id, void *data);
@@ -44,5 +46,6 @@ void *grafo_get_edge_data(Grafo g, char *from, char *to);
 void *grafo_remove_edge(Grafo g, char *from, char *to);
 int  grafo_adjacente(Grafo g, char *from, char *to);
 void grafo_adjacentes(Grafo g, char *id, Lista l);
+void *edge_get_data(Edge e);
 
 #endif

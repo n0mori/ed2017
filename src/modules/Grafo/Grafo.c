@@ -2,14 +2,14 @@
 
 typedef struct vertex {
   char id[100];
-  void *data
-}* Vertex;
+  void *data;
+}* StVertex;
 
 typedef struct edge {
   char from[100];
   char to[100];
   char *data;
-}* Edge;
+}* StEdge;
 
 typedef struct grafo {
   Hash vertices;
@@ -23,8 +23,8 @@ Grafo new_grafo() {
   return g;
 }
 
-Vertex new_vertex(char *id, void *data) {
-  Vertex v = malloc(sizeof(struct vertex));
+StVertex new_vertex(char *id, void *data) {
+  StVertex v = malloc(sizeof(struct vertex));
   strcpy(v->id, id);
   v->data = data;
   return v; 
@@ -32,18 +32,21 @@ Vertex new_vertex(char *id, void *data) {
 
 void grafo_insert_vertex(Grafo g, char *id, void *data) {
   StGrafo grafo = (StGrafo) g;
-  Vertex v = create_vertex(id, data);
+  StVertex v = new_vertex(id, data);
   hash_insert(grafo->vertices, id, v);
 }
 
 void *grafo_get_vertex_data(Grafo g, char *id) {
   StGrafo grafo = (StGrafo) g;
-  Vertex v = hash_get(grafo->vertices, id);
+  StVertex v = hash_get(grafo->vertices, id);
+  if (v == NULL) {
+    return NULL;
+  }
   return v->data;
 }
 
-Edge new_edge(char *from, char *to, void *data) {
-  Edge e = malloc(sizeof(struct edge));
+StEdge new_edge(char *from, char *to, void *data) {
+  StEdge e = malloc(sizeof(struct edge));
   strcpy(e->from, from);
   strcpy(e->to, to);
   e->data = data;
@@ -51,18 +54,18 @@ Edge new_edge(char *from, char *to, void *data) {
 }
 
 int cmp_edge_edge(void *a, void *b) {
-  Edge ea = (Edge) a;
-  Edge eb = (Edge) b;
+  StEdge ea = (StEdge) a;
+  StEdge eb = (StEdge) b;
 
   return (strcmp(ea->from, eb->from) == 0 && strcmp(ea->to, eb->to) == 0);
 }
 
 int cmp_edge_from(void *id, void *edge) {
-  Edge e = (Edge) edge;
+  StEdge e = (StEdge) edge;
   return strcmp(id, e->from) == 0;
 }
 
-void *free_edge(Edge e) {
+void *free_edge(StEdge e) {
   void *data = e->data;
   free(e);
   return data;
@@ -70,9 +73,13 @@ void *free_edge(Edge e) {
 
 void grafo_insert_edge(Grafo g, char *from, char *to, void *data) {
   StGrafo grafo = (StGrafo) g;
-  Edge e;
+  StEdge e;
+  StVertex vfrom, vto;
 
-  if (!grafo_adjacente(g, from, to)) {
+  vfrom = hash_get(grafo->vertices, from);
+  vto = hash_get(grafo->vertices, to);
+
+  if (vfrom == NULL || vto == NULL) {
     return;
   }
 
@@ -83,9 +90,8 @@ void grafo_insert_edge(Grafo g, char *from, char *to, void *data) {
 }
 
 void *grafo_get_edge_data(Grafo g, char *from, char *to) {
-  void *data;
   StGrafo grafo = (StGrafo) g;
-  Edge aux, e;
+  StEdge aux, e;
 
   if (!grafo_adjacente(g, from, to)) {
     return NULL;
@@ -103,7 +109,7 @@ void *grafo_get_edge_data(Grafo g, char *from, char *to) {
 void *grafo_remove_edge(Grafo g, char *from, char *to) {
   void *data;
   StGrafo grafo = (StGrafo) g;
-  Edge aux, e;
+  StEdge aux, e;
 
   if (!grafo_adjacente(g, from, to)) {
     return NULL;
@@ -111,7 +117,7 @@ void *grafo_remove_edge(Grafo g, char *from, char *to) {
 
   aux = new_edge(from, to, NULL);
 
-  e = search_lista(grafo->edges, cmp_edge_edge, aux);
+  e = seek_and_destroy_lista(grafo->edges, cmp_edge_edge, aux);
 
   free_edge(aux);
 
@@ -122,8 +128,8 @@ void *grafo_remove_edge(Grafo g, char *from, char *to) {
 
 int grafo_adjacente(Grafo g, char *from, char *to) {
   StGrafo grafo = (StGrafo) g;
-  Vertex vfrom, vto;
-  Edge aux, e;
+  StVertex vfrom, vto;
+  StEdge aux, e;
 
   vfrom = hash_get(grafo->vertices, from);
   vto = hash_get(grafo->vertices, to);
@@ -148,14 +154,18 @@ int grafo_adjacente(Grafo g, char *from, char *to) {
 
 void grafo_adjacentes(Grafo g, char *id, Lista l) {
   StGrafo grafo = (StGrafo) g;
-  Vertex v = hash_get(grafo->vertices, id);
   Node n;
 
   for (n = get_first(grafo->edges); n != NULL; n = get_next(grafo->edges, n)) {
-    Edge e = get(grafo->edges, n);
+    StEdge e = get(grafo->edges, n);
     if (cmp_edge_from(id, e)) {
       insert_last(l, e);
     }
   }
 
+}
+
+void *edge_get_data(Edge e) {
+  StEdge edge = (StEdge) e;
+  return edge->data;
 }
