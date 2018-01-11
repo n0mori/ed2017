@@ -9,7 +9,7 @@ typedef struct hash {
 }* StHash;
 
 typedef struct hashpack {
-  char key[100];
+  char key[250];
   void *data;
 }* HashPack;
 

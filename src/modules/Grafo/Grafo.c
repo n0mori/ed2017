@@ -13,13 +13,13 @@ typedef struct edge {
 
 typedef struct grafo {
   Hash vertices;
-  Lista edges;
+  Hash edges;
 }* StGrafo;
 
 Grafo new_grafo() {
   StGrafo g = malloc(sizeof(struct grafo));
   g->vertices = new_hash(98);
-  g->edges = create_lista();
+  g->edges = new_hash(98);
   return g;
 }
 
@@ -43,6 +43,14 @@ void *grafo_get_vertex_data(Grafo g, char *id) {
     return NULL;
   }
   return v->data;
+}
+
+char *edge_join(char *from, char *to) {
+  char *s = alloc_inicial();
+  s = concatena(s, from);
+  s = concatena(s, "-");
+  s = concatena(s, to);
+  return s;
 }
 
 StEdge new_edge(char *from, char *to, void *data) {
@@ -75,6 +83,7 @@ void grafo_insert_edge(Grafo g, char *from, char *to, void *data) {
   StGrafo grafo = (StGrafo) g;
   StEdge e;
   StVertex vfrom, vto;
+  char *key;
 
   vfrom = hash_get(grafo->vertices, from);
   vto = hash_get(grafo->vertices, to);
@@ -85,23 +94,24 @@ void grafo_insert_edge(Grafo g, char *from, char *to, void *data) {
 
   e = new_edge(from, to, data);
   
-  insert_first(grafo->edges, e);
+  key = edge_join(from, to);
+  hash_insert(grafo->edges, key, e);
+  free(key);
 
 }
 
 void *grafo_get_edge_data(Grafo g, char *from, char *to) {
   StGrafo grafo = (StGrafo) g;
-  StEdge aux, e;
+  StEdge e;
+  char *key;
 
-  if (!grafo_adjacente(g, from, to)) {
+  key = edge_join(from, to);
+
+  e = hash_get(grafo->edges, key);
+
+  if (e == NULL) {
     return NULL;
   }
-
-  aux = new_edge(from, to, NULL);
-
-  e = search_lista(grafo->edges, cmp_edge_edge, aux);
-
-  free_edge(aux);
 
   return e->data;
 }
@@ -109,17 +119,16 @@ void *grafo_get_edge_data(Grafo g, char *from, char *to) {
 void *grafo_remove_edge(Grafo g, char *from, char *to) {
   void *data;
   StGrafo grafo = (StGrafo) g;
-  StEdge aux, e;
+  StEdge e;
+  char *key;
 
-  if (!grafo_adjacente(g, from, to)) {
+  key = edge_join(from, to);
+
+  e = hash_get(grafo->edges, key);
+
+  if (e == NULL) {
     return NULL;
   }
-
-  aux = new_edge(from, to, NULL);
-
-  e = seek_and_destroy_lista(grafo->edges, cmp_edge_edge, aux);
-
-  free_edge(aux);
 
   data = free_edge(e);
   return data;
@@ -128,21 +137,12 @@ void *grafo_remove_edge(Grafo g, char *from, char *to) {
 
 int grafo_adjacente(Grafo g, char *from, char *to) {
   StGrafo grafo = (StGrafo) g;
-  StVertex vfrom, vto;
-  StEdge aux, e;
+  StEdge e;
+  char *key;
 
-  vfrom = hash_get(grafo->vertices, from);
-  vto = hash_get(grafo->vertices, to);
+  key = edge_join(from, to);
 
-  if (vfrom == NULL || vto == NULL) {
-    return 0;
-  }
-
-  aux = new_edge(from, to, NULL);
-
-  e = search_lista(grafo->edges, cmp_edge_edge, aux);
-
-  free_edge(aux);
+  e = hash_get(grafo->edges, key);
 
   if (e == NULL) {
     return 0;
@@ -154,15 +154,8 @@ int grafo_adjacente(Grafo g, char *from, char *to) {
 
 void grafo_adjacentes(Grafo g, char *id, Lista l) {
   StGrafo grafo = (StGrafo) g;
-  Node n;
 
-  for (n = get_first(grafo->edges); n != NULL; n = get_next(grafo->edges, n)) {
-    StEdge e = get(grafo->edges, n);
-    if (cmp_edge_from(id, e)) {
-      insert_last(l, e);
-    }
-  }
-
+  hash_filter(grafo->edges, l, cmp_edge_from, id);
 }
 
 void *edge_get_data(Edge e) {

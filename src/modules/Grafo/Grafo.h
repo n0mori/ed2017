@@ -9,7 +9,7 @@ como encontrar caminhos e rotas.
 |        Grafo        |
 |---------------------|
 |   vertices : Hash   |
-|   arestas  : List   |
+|   arestas  : Hash   |
 |---------------------|
 
 |---------------------|
@@ -33,6 +33,7 @@ como encontrar caminhos e rotas.
 #include <string.h>
 #include "../Hash/Hash.h"
 #include "../Lista/Lista.h"
+#include "../Nick_string/Nick_string.h"
 
 typedef void* Grafo;
 typedef void* Edge;

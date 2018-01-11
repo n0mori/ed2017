@@ -159,8 +159,8 @@ teste_hash: teste_hash.o Lista.o Hash.o Pessoa.o Comercio.o
 teste_grafo.o: $(unit)/teste_grafo.c
 	$(cc) -c $(unit)/teste_grafo.c
 
-teste_grafo: teste_grafo.o Lista.o Hash.o Grafo.o
-	$(cc) teste_grafo.o Lista.o Hash.o Grafo.o -o teste_grafo
+teste_grafo: teste_grafo.o Lista.o Hash.o Grafo.o Nick_string.o
+	$(cc) teste_grafo.o Lista.o Hash.o Grafo.o Nick_string.o -o teste_grafo
 
 clean:
 	rm -f *.o
