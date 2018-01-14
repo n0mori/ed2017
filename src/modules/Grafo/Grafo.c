@@ -48,7 +48,7 @@ void *grafo_get_vertex_data(Grafo g, char *id) {
 char *edge_join(char *from, char *to) {
   char *s = alloc_inicial();
   s = concatena(s, from);
-  s = concatena(s, "-");
+  s = concatena(s, " ");
   s = concatena(s, to);
   return s;
 }
