@@ -11,9 +11,10 @@ sistema viário e sua navegação (chegar de um ponto a outro no sistema viário
 #include "../Ponto/Ponto.h"
 
 typedef void* Vias;
+/*
 typedef void* Rua;
-typedef void* Esquina;
 typedef void* Rota;
+*/
 
 Vias new_vias();
 void vias_insert_esquina(char *id, double x, double y);
