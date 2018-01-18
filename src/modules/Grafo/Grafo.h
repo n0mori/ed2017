@@ -9,18 +9,18 @@ como encontrar caminhos e rotas.
 |        Grafo        |
 |---------------------|
 |   vertices : Hash   |
-|   arestas  : Hash   |
+|   edges    : Hash   |
 |---------------------|
 
 |---------------------|
-|       Vertice       |
+|       Vertex        |
 |---------------------|
 |     id  : string    |
 |    data : void*     |
 |---------------------|
 
 |---------------------|
-|       Vertice       |
+|        Edge         |
 |---------------------|
 |     id1 : string    |
 |     id2 : string    |

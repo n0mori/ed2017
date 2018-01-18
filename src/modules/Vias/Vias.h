@@ -9,6 +9,7 @@ sistema viário e sua navegação (chegar de um ponto a outro no sistema viário
 #include <stdlib.h>
 #include "../Grafo/Grafo.h"
 #include "../Ponto/Ponto.h"
+#include "../Rua/Rua.h"
 
 typedef void* Vias;
 /*

@@ -23,11 +23,36 @@ Rua new_rua(char *from, char *to, char *ldir, char *lesq, double comprimento, do
 }
 
 char* rua_get_from(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->from;
 }
 
-char* rua_get_to(Rua r);
-char* rua_get_ldir(Rua r);
-char* rua_get_lesq(Rua r);
-char* rua_get_nome(Rua r);
-double rua_get_comprimento(Rua r);
-double rua_get_velocidade(Rua r);
+char* rua_get_to(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->to;
+}
+
+char* rua_get_ldir(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->ldir;
+}
+
+char* rua_get_lesq(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->lesq;
+}
+
+char* rua_get_nome(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->nome;
+}
+
+double rua_get_comprimento(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->comprimento;
+}
+
+double rua_get_velocidade(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->velocidade;
+}
