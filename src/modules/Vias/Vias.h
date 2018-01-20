@@ -13,8 +13,8 @@ sistema viário e sua navegação (chegar de um ponto a outro no sistema viário
 typedef void* Vias;
 /*
 typedef void* Rua;
-typedef void* Rota;
 */
+typedef void* Rota;
 
 Vias new_vias();
 void vias_insert_esquina(char *id, double x, double y);
