@@ -23,6 +23,7 @@ indeterminada de quarteiroes, hidrantes, semaforos, torres de celular, etc.
 #include "../Ponto/Ponto.h"
 #include "../Connection/Connection.h"
 #include "../Sorting/Sorting.h"
+#include "../Register/Register.h"
 
 typedef struct cidade {
   Lista lista_quadras;
@@ -50,6 +51,7 @@ typedef struct cidade {
   Hash cep_quadra;
   Hash estabelecimentos;
   Hash moradores;
+  Hash registradores;
 } Cidade;
 
 Cidade new_cidade();
