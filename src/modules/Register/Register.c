@@ -21,3 +21,13 @@ void* register_get_data(Register r) {
   StReg reg = (StReg) r;
   return reg->data;
 }
+
+void regiser_set_type(Register r, char type) {
+  StReg reg = (StReg) r;
+  reg->type = type;
+}
+
+void regiser_set_data(Register r, void *data) {
+  StReg reg = (StReg) r;
+  reg->data = data;
+}

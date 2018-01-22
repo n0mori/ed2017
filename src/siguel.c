@@ -1415,6 +1415,72 @@ int main(int argc, char *argv[]) {
         free(r);
         fclose(file_txt);
 
+      } else if (buffer[0] == '@' && buffer[1] == 'f' && buffer[2] == '?') {
+        char fone[100], reg[100];
+        Register r, aux;
+        Celular c;
+
+        sscanf(buffer, "@f? %s %s", reg, fone);
+
+        c = hash_get(city.sercomtuel, reg);
+        if (c == NULL) {
+          c = hash_get(city.uelmobile, reg);
+        }
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (c == NULL) {
+          fputs("celular não encontrado\n", file_txt);
+        } else {
+          Morador m = hash_get(city.moradores, hash_get(city.numcel_pessoa, fone));
+          Ponto p = cidade_get_ponto_address(city, morador_get_address(m));
+          
+          cidade_insert_register(city, reg, 'p', p);
+        }
+
+        fclose(file_txt);
+
+      } else if (buffer[0] == '@' && buffer[1] == 'm' && buffer[2] == '?') {
+        char reg[100], cpf[100];
+        Morador m;
+        
+        sscanf(buffer, "@m? %s %s", reg, cpf);
+
+        m = hash_get(city.moradores, cpf);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (m == NULL) {
+          fputs("morador inexistente\n", file_txt);
+        } else {
+          Ponto p = cidade_get_ponto_address(city, morador_get_address(m));
+          cidade_insert_register(city, reg, 'p', p);
+        }
+
+        fclose(file_txt);
+
+      } else if (buffer[0] == '@' && buffer[1] == 'e' && buffer[2] == '?') {
+        char reg[100], cep[100], face;
+        int numero;
+        Address a;
+
+        sscanf(buffer, "@e? %s %s %c %d", reg, cep, &face, &numero);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        a = new_address(cep, face, numero, "");
+        Ponto p = cidade_get_ponto_address(city, a);
+        cidade_insert_register(city, reg, 'p', p);
+
+        fclose(file_txt);
+
+      } else if (buffer[0] == '@' && buffer[1] == 'g' && buffer[2] == '?') {
+      } else if (buffer[0] == '@' && buffer[1] == 'x' && buffer[2] == 'y') {
+      } else if (buffer[0] == '@' && buffer[1] == 't' && buffer[2] == 'p' && buffer[3] == '?') {
+      } else if (buffer[0] == 'p' && buffer[1] == '?') {
       }
 
       buffer[0] = 0;

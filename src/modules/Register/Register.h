@@ -12,5 +12,7 @@ typedef void* Register;
 Register new_register(char type, void *data);
 char register_get_type(Register r);
 void* register_get_data(Register r);
+void regiser_set_type(Register r, char type);
+void regiser_set_data(Register r, void *data);
 
 #endif

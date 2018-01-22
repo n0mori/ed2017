@@ -587,3 +587,15 @@ void cidade_kikoho(Cidade c, Rect *r, FILE *out) {
   free(celulares);
   
 }
+
+void cidade_insert_register(Cidade c, char *reg, char type, void *data) {
+  Register r = hash_get(c.registradores, reg);
+
+  if (r == NULL) {
+    r = new_register('p', data);
+    hash_insert(c.registradores, reg, r);
+  } else {
+    register_set_type(r, type);
+    register_set_data(r, data);
+  }
+}

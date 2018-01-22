@@ -77,5 +77,6 @@ void cidade_query_clientes(Cidade c, Lista query, char *op);
 void cidade_query_tipos(Cidade c, Lista quadras, Lista tipos);
 void cidade_kill(Cidade c, char *cpf, FILE *out);
 void cidade_kikoho(Cidade c, Rect *r, FILE *out);
+void cidade_insert_register(Cidade c, char *reg, char type, void *data);
 
 #endif
