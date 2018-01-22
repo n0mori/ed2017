@@ -1417,7 +1417,6 @@ int main(int argc, char *argv[]) {
 
       } else if (buffer[0] == '@' && buffer[1] == 'f' && buffer[2] == '?') {
         char fone[100], reg[100];
-        Register r, aux;
         Celular c;
 
         sscanf(buffer, "@f? %s %s", reg, fone);
@@ -1465,6 +1464,7 @@ int main(int argc, char *argv[]) {
         char reg[100], cep[100], face;
         int numero;
         Address a;
+        Ponto p;
 
         sscanf(buffer, "@e? %s %s %c %d", reg, cep, &face, &numero);
 
@@ -1472,7 +1472,7 @@ int main(int argc, char *argv[]) {
         fputs(buffer, file_txt);
 
         a = new_address(cep, face, numero, "");
-        Ponto p = cidade_get_ponto_address(city, a);
+        p = cidade_get_ponto_address(city, a);
         cidade_insert_register(city, reg, 'p', p);
 
         fclose(file_txt);
