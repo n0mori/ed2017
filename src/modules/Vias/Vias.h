@@ -18,8 +18,8 @@ typedef void* Rua;
 typedef void* Rota;
 
 Vias new_vias();
-void vias_insert_esquina(char *id, double x, double y);
-void vias_insert_rua(char *from, char *to, char *ldir, char *lesq, double comprimento, double velocidade, char *nome);
-Rota vias_calcular_rota(Ponto inicio, Ponto fim);
+void vias_insert_esquina(Vias v, char *id, double x, double y);
+void vias_insert_rua(Vias v, char *from, char *to, char *ldir, char *lesq, double comprimento, double velocidade, char *nome);
+Rota vias_calcular_rota(Vias v, Ponto inicio, Ponto fim);
 
 #endif

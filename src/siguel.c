@@ -12,17 +12,17 @@
 #include "modules/Connection/Connection.h"
 
 int main(int argc, char *argv[]) {
-  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec, bool_pm, bool_tm;
+  int i, acc0, acc, ins, cpi, del, cpd, bool_qry, bool_f, bool_convex, bool_ec, bool_pm, bool_tm, bool_via;
   char *bsd = alloc_inicial();
   char *bed = alloc_inicial();
-  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name, *pm_name, *tm_name;
+  char *geo_name, *full_name, buffer[MAX_BUFFER], *txt, *svg, *res, *geo_saida, *qry_name, *ec_name, *pm_name, *tm_name, *via_name;
   char cfq[100], csq[100], cfh[100], csh[100], cfs[100], css[100], cft[100], cst[100];
   char *geo = alloc_inicial();
   char *qry = alloc_inicial();
   char *ec = alloc_inicial();
   char *tm = alloc_inicial();
   char *pm = alloc_inicial();
-  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec, *file_pm, *file_tm;
+  FILE *in, *file_txt, *file_qry, *file_svg, *file_ec, *file_pm, *file_tm, *file_via;
   Cidade city = new_cidade();
 
   acc0 = 0;
@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
   bool_ec = 0;
   bool_pm = 0;
   bool_tm = 0;
+  bool_via = 0;
   bool_convex = 1;
   sprintf(cfq, "white");
   sprintf(csq, "black");
@@ -71,6 +72,9 @@ int main(int argc, char *argv[]) {
     } else if (!strcmp("-tm", argv[i])) {
       tm_name = argv[++i];
       bool_tm = 1;
+    } else if (!strcmp("-v", argv[i])) {
+      via_name = argv[++i];
+      bool_via = 1;
     } else if (!strcmp("-id", argv[i])) {
       puts("Nicolas Jashchenko Omori - 201600560295");
     } else if (!strcmp("-noconvex", argv[i])) {
@@ -466,6 +470,40 @@ int main(int argc, char *argv[]) {
       buffer[0] = 0;
     }
     fclose(file_tm);
+  }
+
+  if (bool_via) {
+    full_name = alloc_inicial();
+    full_name = concatena(full_name, bed);
+    full_name = concatena(full_name, via_name);
+    file_via = fopen(full_name, "r");
+    if (file_via == NULL) {
+      puts("Não consegui encontrar o arquivo via! Saindo...");
+      exit(1);
+    }
+
+    while (!feof(file_via)) {
+      fgets(buffer, MAX_BUFFER, file_via);
+      if (buffer[0] == 'v') {
+        char id[100];
+        double x, y;
+
+        sscanf(buffer, "v %s %lf %lf", id, &x, &y);
+        
+        vias_insert_esquina(city.vias, id, x, y);
+
+      } else if (buffer[0] == 'e') {
+        char i[100], j[100], lesq[100], ldir[100], nome[100];
+        double comprimento, velocidade;
+
+        sscanf(buffer, "v %s %s %s %s %lf %lf %s", i, j, ldir, lesq, &comprimento, &velocidade, nome);
+
+        vias_insert_rua(city.vias, i, j, ldir, lesq, comprimento, velocidade, nome);
+
+      }
+      buffer[0] = 0;
+    }
+    fclose(file_via);
   }
 
   if (bool_convex) {
@@ -1478,8 +1516,89 @@ int main(int argc, char *argv[]) {
         fclose(file_txt);
 
       } else if (buffer[0] == '@' && buffer[1] == 'g' && buffer[2] == '?') {
+        char reg[100], id[100];
+        Quadra q;
+        Hidrante h;
+        Semaforo s;
+        Torre t;
+        Ponto p = NULL;
+
+        sscanf(buffer, "@g? %s %s", reg, id);
+
+        q = search_lista(city.lista_quadras, cmp_quadra_string, id);
+        if (q != NULL) {
+          p = new_ponto(quadra_get_x(q), quadra_get_y(q));
+        }
+
+        h = search_lista(city.lista_hidrantes, cmp_hidrante_string, id);
+        if (h != NULL) {
+          p = new_ponto(hidrante_get_x(h), hidrante_get_y(h));
+        }
+
+        s = search_lista(city.lista_semaforos, cmp_semaforo_string, id);
+        if (s != NULL) {
+          p = new_ponto(semaforo_get_x(s), semaforo_get_y(s));
+        }
+
+        t = search_lista(city.lista_torres, cmp_torre_string, id);
+        if (t != NULL) {
+          p = new_ponto(torre_get_x(t), torre_get_y(t));
+        }
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        if (p == NULL) {
+          fputs("não existe equipamento urbano com esse id/cep\n", file_txt);
+        } else {
+          cidade_insert_register(city, reg, 'p', p);
+        }
+        
+        fclose(file_txt);
+
       } else if (buffer[0] == '@' && buffer[1] == 'x' && buffer[2] == 'y') {
+        char reg[100];
+        double x, y;
+        Ponto p;
+
+        sscanf(buffer, "@xy %s %lf %lf", reg, &x, &y);
+
+        p = new_ponto(x, y);
+
+        cidade_insert_register(city, reg, 'p', p);
+
       } else if (buffer[0] == '@' && buffer[1] == 't' && buffer[2] == 'p' && buffer[3] == '?') {
+        /*
+        char r1[100], r2[100], tp[100];
+        Comercio c;
+        Register r;
+        Ponto p = NULL;
+
+        sscanf(buffer, "@tp? %s %s %s", r1, tp, r2);
+
+        c = hash_get(city.estabelecimentos, tp);
+        r = hash_get(city.registradores, r2);
+
+        if (c == NULL || r == NULL) {
+          buffer[0] = 0;
+          continue;
+        }
+
+        if (register_get_type(r) == 'p') {
+          p = register_get_data(r);
+        }
+
+        if (p == NULL) {
+          buffer[0] = 0;
+          continue;
+        }
+
+        c = cidade_comercio_proximo(city, p);
+
+        if (c != NULL) {
+
+        }
+        */
       } else if (buffer[0] == 'p' && buffer[1] == '?') {
       }
 

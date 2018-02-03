@@ -32,6 +32,7 @@ Cidade new_cidade() {
   c.estabelecimentos = new_hash(TAMANHO_HASH);
   c.moradores = new_hash(TAMANHO_HASH);
   c.registradores = new_hash(20);
+  c.vias = new_vias();
   return c;
 }
 
@@ -112,6 +113,7 @@ void free_cidade(Cidade c) {
   hash_free(c.estabelecimentos, free_comercio);
   hash_free(c.moradores, free_morador);
   hash_delete_all(c.registradores);
+  /*algo para deletar as vias*/
 }
 
 void remove_quadras_in_rect(Cidade c, FILE *f, Rect *r, int *cmp, int *del) {
@@ -387,6 +389,29 @@ Torre conectar_celular(Cidade c, Celular celular, Address a) {
   free(torres);
 
   celular_conecta(celular, torre_get_id(near));
+
+  return near;
+}
+
+Comercio cidade_comercio_proximo(Cidade c, Ponto p) {
+  Comercio near = NULL;
+  double menor, dist;
+  Lista comercios = create_lista();
+
+  menor = -1;
+
+  hash_filter(c.estabelecimentos, comercios, cmp_true, NULL);
+
+  while (length_lista(comercios) > 0) {
+    Comercio co = remove_first(comercios);
+    Ponto pc = cidade_get_ponto_address(c, comercio_get_address(co));
+    dist = distancia(get_x(p), get_y(p), get_x(pc), get_y(pc));
+    free(pc);
+    if (dist < menor || menor == -1) {
+      menor = dist;
+      near = co;
+    }
+  }
 
   return near;
 }
