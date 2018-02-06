@@ -21,4 +21,4 @@ void vias_insert_rua(Vias v, char *from, char *to, char *ldir, char *lesq, doubl
   grafo_insert_edge(vias->g, from, to, rua);
 }
 
-Rota vias_calcular_rota(Vias v, Ponto inicio, Ponto fim);
+Lista vias_calcular_rota(Vias v, Ponto inicio, Ponto fim, int option);
