@@ -174,8 +174,8 @@ teste_grafo: teste_grafo.o Lista.o Hash.o Grafo.o Nick_string.o
 teste_vias.o: $(unit)/teste_vias.c
 	$(cc) -c $(unit)/teste_vias.c
 
-teste_vias: teste_vias.o Vias.o Grafo.o Lista.o Hash.o Rua.o Nick_string.o Ponto.o
-	$(cc) teste_vias.o Vias.o Grafo.o Lista.o Hash.o Rua.o Nick_string.o Ponto.o -o teste_vias
+teste_vias: teste_vias.o Vias.o Grafo.o Lista.o Hash.o Rua.o Nick_string.o Ponto.o $(deps_geo) Pilha.o
+	$(cc) teste_vias.o Vias.o Grafo.o Lista.o Hash.o Rua.o Nick_string.o Ponto.o $(deps_geo) Pilha.o -o teste_vias
 
 clean:
 	rm -f *.o

@@ -16,6 +16,10 @@ typedef struct grafo {
   Hash edges;
 }* StGrafo;
 
+int cmpt(void *a, void *b) {
+  return 1;
+}
+
 Grafo new_grafo() {
   StGrafo g = malloc(sizeof(struct grafo));
   g->vertices = new_hash(98);
@@ -161,4 +165,21 @@ void grafo_adjacentes(Grafo g, char *id, Lista l) {
 void *edge_get_data(Edge e) {
   StEdge edge = (StEdge) e;
   return edge->data;
+}
+
+void *vertex_get_data(Vertex v) {
+  StVertex vertex = (StVertex) v;
+  return vertex->data;
+}
+
+char *vertex_get_id(Vertex v) {
+  StVertex vertex = (StVertex) v;
+  return vertex->id;
+}
+
+Lista grafo_all_vertex(Grafo g) {
+  Lista list = create_lista();
+  StGrafo grafo = (StGrafo) g;
+  hash_filter(grafo->vertices, list, cmpt, NULL);
+  return list;
 }

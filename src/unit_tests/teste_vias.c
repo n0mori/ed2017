@@ -28,7 +28,7 @@ int main() {
   vias_insert_rua(v, "7", "8", "-", "-", 50, 30, "Paranagua");
   vias_insert_rua(v, "8", "9", "-", "-", 40, 30, "Paranagua");
 
-  
+  vias_calcular_rota(v, new_ponto(1, 1), new_ponto(90, 100), 1);
 
 
   return 0;
