@@ -158,8 +158,17 @@ int grafo_adjacente(Grafo g, char *from, char *to) {
 
 void grafo_adjacentes(Grafo g, char *id, Lista l) {
   StGrafo grafo = (StGrafo) g;
+  Lista edges = create_lista();
 
-  hash_filter(grafo->edges, l, cmp_edge_from, id);
+  hash_filter(grafo->edges, edges, cmp_edge_from, id);
+
+  while (length_lista(edges) > 0) {
+    StEdge e = (StEdge) remove_first(edges);
+    Vertex v = hash_get(grafo->vertices, e->to);
+    insert_last(l, v);
+  }
+  free(edges);
+
 }
 
 void *edge_get_data(Edge e) {
@@ -181,5 +190,12 @@ Lista grafo_all_vertex(Grafo g) {
   Lista list = create_lista();
   StGrafo grafo = (StGrafo) g;
   hash_filter(grafo->vertices, list, cmpt, NULL);
+  return list;
+}
+
+Lista grafo_all_edges(Grafo g) {
+  Lista list = create_lista();
+  StGrafo grafo = (StGrafo) g;
+  hash_filter(grafo->edges, list, cmpt, NULL);
   return list;
 }

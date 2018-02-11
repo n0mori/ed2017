@@ -51,5 +51,6 @@ void *edge_get_data(Edge e);
 void *vertex_get_data(Vertex v);
 char *vertex_get_id(Vertex v);
 Lista grafo_all_vertex(Grafo g);
+Lista grafo_all_edges(Grafo g);
 
 #endif

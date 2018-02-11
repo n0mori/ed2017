@@ -8,6 +8,7 @@ typedef struct rua {
   char nome[100];
   double comprimento;
   double velocidade;
+  double tempo;
 }* StRua;
 
 Rua new_rua(char *from, char *to, char *ldir, char *lesq, double comprimento, double velocidade, char *nome) {
@@ -19,6 +20,7 @@ Rua new_rua(char *from, char *to, char *ldir, char *lesq, double comprimento, do
   strcpy(rua->nome, nome);
   rua->comprimento = comprimento;
   rua->velocidade = velocidade;
+  rua->tempo = comprimento / velocidade;
   return rua;
 }
 
@@ -55,4 +57,9 @@ double rua_get_comprimento(Rua r) {
 double rua_get_velocidade(Rua r) {
   StRua rua = (StRua) r;
   return rua->velocidade;
+}
+
+double rua_get_tempo(Rua r) {
+  StRua rua = (StRua) r;
+  return rua->tempo;
 }

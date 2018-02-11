@@ -73,6 +73,8 @@ void print_rect_points(FILE *fsvg, Rect *r, char *cor) {
 
 void print_svg_cidade(char *svg, Cidade c) {
   Node n;
+  Lista ruas = grafo_all_edges(c.vias);
+  printf("%d\n", length_lista(ruas));
 
   FILE *file_svg = fopen(svg, "w");
   fprintf(file_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
@@ -164,6 +166,16 @@ void print_svg_cidade(char *svg, Cidade c) {
 
     fprintf(file_svg, "<rect x=\"%f\" y=\"%f\" width=\"16\" height=\"16\" transform=\"rotate(45 %f %f)\" />",
             get_x(p), get_y(p), get_x(p), get_y(p));
+  }
+
+  for (n = get_first(ruas); n != NULL; n = get_next(ruas, n)) {
+    Rua r = get(ruas, n);
+    Ponto a = grafo_get_vertex_data(c.vias, rua_get_from(r));
+    Ponto b = grafo_get_vertex_data(c.vias, rua_get_to(r));
+
+    fprintf(file_svg, "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" stroke=\"black\" stroke-width=\"3\"></line>\n",
+             get_x(a), get_y(a), get_x(b), get_y(b));
+    puts("");
   }
 
   fprintf(file_svg, "</svg>");

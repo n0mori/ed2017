@@ -1,5 +1,8 @@
 #ifndef VIAS__H
 #define VIAS__H
+#ifndef INF
+#define INF 1E+37
+#endif
 
 /*
 Vias é um módulo que se encarrega da representação de ruas e esquinas de um

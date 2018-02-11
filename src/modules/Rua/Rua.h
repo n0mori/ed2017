@@ -22,5 +22,6 @@ char* rua_get_lesq(Rua r);
 char* rua_get_nome(Rua r);
 double rua_get_comprimento(Rua r);
 double rua_get_velocidade(Rua r);
+double rua_get_tempo(Rua r);
 
 #endif
