@@ -20,7 +20,7 @@ Rua new_rua(char *from, char *to, char *ldir, char *lesq, double comprimento, do
   strcpy(rua->nome, nome);
   rua->comprimento = comprimento;
   rua->velocidade = velocidade;
-  rua->tempo = comprimento / velocidade;
+  rua->tempo = comprimento / (velocidade + 1E-10);
   return rua;
 }
 

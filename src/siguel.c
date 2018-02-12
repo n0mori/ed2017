@@ -1523,6 +1523,9 @@ int main(int argc, char *argv[]) {
 
       } else if (buffer[0] == '@' && buffer[1] == 'g' && buffer[2] == '?') {
         char reg[100], id[100];
+        Lista hidrantes = create_lista();
+        Lista semaforos = create_lista();
+        Lista torres = create_lista();
         Quadra q;
         Hidrante h;
         Semaforo s;
@@ -1531,22 +1534,26 @@ int main(int argc, char *argv[]) {
 
         sscanf(buffer, "@g? %s %s", reg, id);
 
-        q = search_lista(city.lista_quadras, cmp_quadra_string, id);
+        quadtree_filter_to_list(quadtree_root(city.qt_hidrantes), hidrantes, cmp_hidrante_string, id);
+        quadtree_filter_to_list(quadtree_root(city.qt_semaforos), semaforos, cmp_semaforo_string, id);
+        quadtree_filter_to_list(quadtree_root(city.qt_torres), torres, cmp_torre_string, id);
+
+        q = hash_get(city.cep_quadra, id);
         if (q != NULL) {
           p = new_ponto(quadra_get_x(q), quadra_get_y(q));
         }
 
-        h = search_lista(city.lista_hidrantes, cmp_hidrante_string, id);
+        h = search_lista(hidrantes, cmp_hidrante_string, id);
         if (h != NULL) {
           p = new_ponto(hidrante_get_x(h), hidrante_get_y(h));
         }
 
-        s = search_lista(city.lista_semaforos, cmp_semaforo_string, id);
+        s = search_lista(semaforos, cmp_semaforo_string, id);
         if (s != NULL) {
           p = new_ponto(semaforo_get_x(s), semaforo_get_y(s));
         }
 
-        t = search_lista(city.lista_torres, cmp_torre_string, id);
+        t = search_lista(torres, cmp_semaforo_string, id);
         if (t != NULL) {
           p = new_ponto(torre_get_x(t), torre_get_y(t));
         }
@@ -1559,19 +1566,38 @@ int main(int argc, char *argv[]) {
         } else {
           cidade_insert_register(city, reg, 'p', p);
         }
+
+        while(length_lista(hidrantes) > 0) {
+          remove_first(hidrantes);
+        }
+        free(hidrantes);
+
+        while(length_lista(semaforos) > 0) {
+          remove_first(semaforos);
+        }
+        free(semaforos);
+
+        while(length_lista(torres) > 0) {
+          remove_first(torres);
+        }
+        free(torres);
         
         fclose(file_txt);
 
-      } else if (buffer[0] == '@' && buffer[1] == 'x' && buffer[2] == 'y') {
+      } else if (buffer[0] == '@' && buffer[1] == 'x' && buffer[2] == 'y' && buffer[3] == '?') {
         char reg[100];
         double x, y;
         Ponto p;
 
-        sscanf(buffer, "@xy %s %lf %lf", reg, &x, &y);
+        sscanf(buffer, "@xy? %s %lf %lf", reg, &x, &y);
 
         p = new_ponto(x, y);
 
         cidade_insert_register(city, reg, 'p', p);
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+        fclose(file_txt);
 
       } else if (buffer[0] == '@' && buffer[1] == 't' && buffer[2] == 'p' && buffer[3] == '?') {
         char r1[100], r2[100], tp[100];
@@ -1670,6 +1696,7 @@ int main(int argc, char *argv[]) {
 
         if (opt_pic) {
           cor = strtok(NULL, " ");
+          cor[strlen(cor) - 2] = 0; 
         }
 
         rota = vias_calcular_rota(city.vias, inicio, fim, opt_dist);
@@ -1682,24 +1709,32 @@ int main(int argc, char *argv[]) {
           nome_sufixo = concatena(nome_sufixo, "-");
           nome_sufixo = concatena(nome_sufixo, sufixo);
           full_sufixo = monta_arquivo(bsd, nome_sufixo, "svg");
-          print_svg_rota(full_sufixo, city, rota, cor);
+          if (length_lista(rota) > 0) {
+            print_svg_rota(full_sufixo, city, rota, cor);
+          } else {
+            fprintf(file_txt, "aparentemente inalcançável\n");
+          }
         } else {
           Rua r;
           char *anterior, *atual;
 
-          r = remove_first(rota);
-          anterior = rua_get_nome(r);
-          fprintf(file_txt, "Comece seguindo pela rua %s, ", anterior);
-
-          while (length_lista(rota) > 0) {
+          if (length_lista(rota) > 0) {
             r = remove_first(rota);
-            atual = rua_get_nome(r);
-            if (strcmp(anterior, atual) != 0) {
-              fprintf(file_txt, "vire na rua %s, ", atual);
+            anterior = rua_get_nome(r);
+            fprintf(file_txt, "Comece seguindo pela rua %s, ", anterior);
+
+            while (length_lista(rota) > 0) {
+              r = remove_first(rota);
+              atual = rua_get_nome(r);
+              if (strcmp(anterior, atual) != 0) {
+                fprintf(file_txt, "vire na rua %s, ", atual);
+              }
+              anterior = atual;
             }
-            anterior = atual;
+            fprintf(file_txt, "Trajeto completo!\n");
+          } else {
+            fprintf(file_txt, "aparentemente inalcançável\n");
           }
-          fprintf(file_txt, "Trajeto completo!\n");
         }
 
         fclose(file_txt);

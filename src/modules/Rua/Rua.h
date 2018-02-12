@@ -11,6 +11,7 @@ de percurso, um comprimento e o nome das quadras à direita e
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 typedef void* Rua;
 

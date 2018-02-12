@@ -55,15 +55,20 @@ int cmp_djik_v(void* a, void* b) {
 
 Djik djik_low_cost(Lista list) {
   Node n;
-  Djik lowest = get(list, get_first(list));
-  double menor = lowest->cost;
+  Djik lowest = NULL;
+  double menor;
 
-  for (n = get_first(list); n != NULL; n = get_next(list, n)) {
-    Djik d = get(list, n);
-    double cost = d->cost;
-    if (cost < menor) {
-      lowest = d;
-      menor = cost;
+  if (length_lista(list) > 0) {  
+    lowest = get(list, get_first(list));
+    menor = lowest->cost;
+
+    for (n = get_first(list); n != NULL; n = get_next(list, n)) {
+      Djik d = get(list, n);
+      double cost = d->cost;
+      if (cost < menor) {
+        lowest = d;
+        menor = cost;
+      }
     }
   }
 
@@ -91,7 +96,7 @@ Lista vias_calcular_rota(Vias v, Ponto inicio, Ponto fim, int option) {
   }
   free(vertices);
 
-  while (last->cost == INF && length_lista(unvisited) > 0) {
+  while (last->cost == INF && current != NULL) {
     Node n;
     seek_and_destroy_lista(unvisited, cmp_djik_v, current);
     insert_first(visited, current);
@@ -112,9 +117,9 @@ Lista vias_calcular_rota(Vias v, Ponto inicio, Ponto fim, int option) {
           double calculated_cost;
 
           if (option == 2) {
-            calculated_cost += rua_get_tempo(r);
+            calculated_cost = d->cost + rua_get_tempo(r);
           } else {
-            calculated_cost += rua_get_comprimento(r);
+            calculated_cost = d->cost + rua_get_comprimento(r);
           }
 
           if (calculated_cost < d->cost) {
