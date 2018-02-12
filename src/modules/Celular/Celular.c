@@ -5,6 +5,7 @@ typedef struct celular {
   char numero[100];
   char operadora;
   char torre[100];
+  Address a;
 }* StCelular;
 
 Celular new_celular(char *dono, char *numero, char operadora) {
@@ -41,9 +42,15 @@ char* celular_get_torre(Celular c) {
   return celular->torre;
 }
 
-void celular_conecta(Celular c, char *id_torre) {
+Address celular_get_address(Celular c) {
+  StCelular celular = (StCelular) c;
+  return celular->a;
+}
+
+void celular_conecta(Celular c, char *id_torre, Address a) {
   StCelular celular = (StCelular) c;
   strcpy(celular->torre, id_torre);
+  celular->a = a;
 }
 
 void celular_disconecta(Celular c) {

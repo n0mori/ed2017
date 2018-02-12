@@ -177,5 +177,8 @@ teste_vias.o: $(unit)/teste_vias.c
 teste_vias: teste_vias.o Vias.o Grafo.o Lista.o Hash.o Rua.o Nick_string.o Ponto.o $(deps_geo) Pilha.o
 	$(cc) teste_vias.o Vias.o Grafo.o Lista.o Hash.o Rua.o Nick_string.o Ponto.o $(deps_geo) Pilha.o -o teste_vias
 
+teste_strtok: $(unit)/teste_strtok.c 
+	$(cc) $(unit)/teste_strtok.c -o teste_strtok
+
 clean:
 	rm -f *.o

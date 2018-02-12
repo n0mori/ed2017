@@ -23,6 +23,7 @@ void print_sobreposto(FILE *svg, double *extremidades);
 void print_circ_points(FILE *fsvg, Circ *c, char *cor);
 void print_rect_points(FILE *fsvg, Rect *r, char *cor);
 void print_svg_cidade(char *svg, Cidade c);
+void print_svg_rota(char *svg, Cidade c, Lista rota, char *cor);
 void print_svg_elemento(FILE *file_svg, void *elemento);
 void print_svg_point_stack(FILE *file_svg, Pilha p);
 void print_svg_torre_range(FILE *fsvg, Torre t);

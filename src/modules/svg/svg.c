@@ -74,7 +74,6 @@ void print_rect_points(FILE *fsvg, Rect *r, char *cor) {
 void print_svg_cidade(char *svg, Cidade c) {
   Node n;
   Lista ruas = grafo_all_edges(c.vias);
-  printf("%d\n", length_lista(ruas));
 
   FILE *file_svg = fopen(svg, "w");
   fprintf(file_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
@@ -175,7 +174,31 @@ void print_svg_cidade(char *svg, Cidade c) {
 
     fprintf(file_svg, "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" stroke=\"black\" stroke-width=\"3\"></line>\n",
              get_x(a), get_y(a), get_x(b), get_y(b));
-    puts("");
+  }
+
+  fprintf(file_svg, "</svg>");
+  fclose(file_svg);
+}
+
+void print_svg_rota(char *svg, Cidade c, Lista rota, char *cor) {
+  Node n;
+
+  FILE *file_svg = fopen(svg, "w");
+  fprintf(file_svg, "<svg xmlns=\"http://www.w3.org/2000/svg\">\n");
+
+  quadtree_percorre_print(quadtree_root(c.qt_quadras), file_svg, print_svg_quadra);
+  quadtree_percorre_print(quadtree_root(c.qt_hidrantes), file_svg, print_svg_hidrante);
+  quadtree_percorre_print(quadtree_root(c.qt_semaforos), file_svg, print_svg_semaforo);
+  quadtree_percorre_print(quadtree_root(c.qt_torres), file_svg, print_svg_torre);
+  quadtree_percorre_print(quadtree_root(c.qt_formas), file_svg, print_svg_elemento);
+
+  for (n = get_first(rota); n != NULL; n = get_next(rota, n)) {
+    Rua r = get(rota, n);
+    Ponto a = grafo_get_vertex_data(c.vias, rua_get_from(r));
+    Ponto b = grafo_get_vertex_data(c.vias, rua_get_to(r));
+
+    fprintf(file_svg, "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" stroke=\"%s\" stroke-width=\"3\"></line>\n",
+             get_x(a), get_y(a), get_x(b), get_y(b), cor);
   }
 
   fprintf(file_svg, "</svg>");

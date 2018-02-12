@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
   char *ec = alloc_inicial();
   char *tm = alloc_inicial();
   char *pm = alloc_inicial();
+  char *via = alloc_inicial();
   FILE *in, *file_txt, *file_qry, *file_svg, *file_ec, *file_pm, *file_tm, *file_via;
   Cidade city = new_cidade();
 
@@ -125,6 +126,13 @@ int main(int argc, char *argv[]) {
     retira_path(tm);
     geo_saida = concatena(geo_saida, "-");
     geo_saida = concatena(geo_saida, tm);
+    retira_extensao(geo_saida);
+  }
+  if (bool_via) {
+    via = concatena(via, via_name);
+    retira_path(via);
+    geo_saida = concatena(geo_saida, "-");
+    geo_saida = concatena(geo_saida, via);
     retira_extensao(geo_saida);
   }
 
@@ -496,7 +504,7 @@ int main(int argc, char *argv[]) {
         char i[100], j[100], lesq[100], ldir[100], nome[100];
         double comprimento, velocidade;
 
-        sscanf(buffer, "v %s %s %s %s %lf %lf %s", i, j, ldir, lesq, &comprimento, &velocidade, nome);
+        sscanf(buffer, "e %s %s %s %s %lf %lf %s", i, j, ldir, lesq, &comprimento, &velocidade, nome);
 
         vias_insert_rua(city.vias, i, j, ldir, lesq, comprimento, velocidade, nome);
 
@@ -1459,9 +1467,9 @@ int main(int argc, char *argv[]) {
 
         sscanf(buffer, "@f? %s %s", reg, fone);
 
-        c = hash_get(city.sercomtuel, reg);
+        c = hash_get(city.sercomtuel, fone);
         if (c == NULL) {
-          c = hash_get(city.uelmobile, reg);
+          c = hash_get(city.uelmobile, fone);
         }
 
         file_txt = fopen(txt, "a+");
@@ -1470,9 +1478,7 @@ int main(int argc, char *argv[]) {
         if (c == NULL) {
           fputs("celular não encontrado\n", file_txt);
         } else {
-          Morador m = hash_get(city.moradores, hash_get(city.numcel_pessoa, fone));
-          Ponto p = cidade_get_ponto_address(city, morador_get_address(m));
-          
+          Ponto p = cidade_get_ponto_address(city, celular_get_address(c));
           cidade_insert_register(city, reg, 'p', p);
         }
 
@@ -1568,18 +1574,21 @@ int main(int argc, char *argv[]) {
         cidade_insert_register(city, reg, 'p', p);
 
       } else if (buffer[0] == '@' && buffer[1] == 't' && buffer[2] == 'p' && buffer[3] == '?') {
-        /*
         char r1[100], r2[100], tp[100];
         Comercio c;
+        Lista coms = create_lista();
+        double near, dist;
         Register r;
         Ponto p = NULL;
+        Ponto aux;
 
         sscanf(buffer, "@tp? %s %s %s", r1, tp, r2);
 
-        c = hash_get(city.estabelecimentos, tp);
+        hash_filter(city.estabelecimentos, coms, cmp_comercio_codt, tp);
         r = hash_get(city.registradores, r2);
 
-        if (c == NULL || r == NULL) {
+        if (length_lista(coms) == 0 || r == NULL) {
+          free(coms);
           buffer[0] = 0;
           continue;
         }
@@ -1593,13 +1602,107 @@ int main(int argc, char *argv[]) {
           continue;
         }
 
-        c = cidade_comercio_proximo(city, p);
+        c = remove_first(coms);
+        aux = cidade_get_ponto_address(city, comercio_get_address(c));
+        near = distancia(get_x(p), get_y(p), get_x(aux), get_y(aux));
+        free(aux);
 
-        if (c != NULL) {
-
+        while(length_lista(coms) > 0) {
+          Comercio t = remove_first(coms);
+          aux = cidade_get_ponto_address(city, comercio_get_address(t));
+          dist = distancia(get_x(p), get_y(p), get_x(aux), get_y(aux));
+          free(aux);
+          if (dist < near) {
+            near = dist;
+            c = t;
+          }
         }
-        */
+
+        cidade_insert_register(city, r1, 'c', c);
+
       } else if (buffer[0] == 'p' && buffer[1] == '?') {
+        char *sufixo, *r1, *r2, *cor, *token;
+        int opt_pic, opt_dist;
+        Register r;
+        Ponto inicio, fim;
+        Lista rota;
+
+        file_txt = fopen(txt, "a+");
+        fputs(buffer, file_txt);
+
+        token = strtok(buffer, " ");
+
+        token = strtok(NULL, " ");
+
+        if (token[0] == 'p') {
+          opt_pic = 1;
+          sufixo = strtok(NULL, " ");
+        } else {
+          opt_pic = 0;
+        }
+
+        token = strtok(NULL, " ");
+        if (token[0] == 'D') {
+          opt_dist = 1;
+        } else {
+          opt_dist = 2;
+        }
+
+        r1 = strtok(NULL, " ");
+        r2 = strtok(NULL, " ");
+
+        r = hash_get(city.registradores, r1);
+        if (register_get_type(r) == 'p') {
+          inicio = register_get_data(r);
+        } else if (register_get_type(r) == 'c') {
+          inicio = cidade_get_ponto_address(city, comercio_get_address(register_get_data(r)));
+        }
+
+        if (!opt_pic) {
+          r2[strlen(r2) - 2] = 0;
+        }
+        r = hash_get(city.registradores, r2);
+        if (register_get_type(r) == 'p') {
+          fim = register_get_data(r);
+        } else if (register_get_type(r) == 'c') {
+          fim = cidade_get_ponto_address(city, comercio_get_address(register_get_data(r)));
+        }
+
+        if (opt_pic) {
+          cor = strtok(NULL, " ");
+        }
+
+        rota = vias_calcular_rota(city.vias, inicio, fim, opt_dist);
+
+        if (opt_pic == 1) {
+          char *nome_sufixo, *full_sufixo;
+          nome_sufixo = alloc_inicial();
+          nome_sufixo = concatena(nome_sufixo, geo_saida);
+          retira_extensao(nome_sufixo);
+          nome_sufixo = concatena(nome_sufixo, "-");
+          nome_sufixo = concatena(nome_sufixo, sufixo);
+          full_sufixo = monta_arquivo(bsd, nome_sufixo, "svg");
+          print_svg_rota(full_sufixo, city, rota, cor);
+        } else {
+          Rua r;
+          char *anterior, *atual;
+
+          r = remove_first(rota);
+          anterior = rua_get_nome(r);
+          fprintf(file_txt, "Comece seguindo pela rua %s, ", anterior);
+
+          while (length_lista(rota) > 0) {
+            r = remove_first(rota);
+            atual = rua_get_nome(r);
+            if (strcmp(anterior, atual) != 0) {
+              fprintf(file_txt, "vire na rua %s, ", atual);
+            }
+            anterior = atual;
+          }
+          fprintf(file_txt, "Trajeto completo!\n");
+        }
+
+        fclose(file_txt);
       }
 
       buffer[0] = 0;

@@ -388,7 +388,7 @@ Torre conectar_celular(Cidade c, Celular celular, Address a) {
   }
   free(torres);
 
-  celular_conecta(celular, torre_get_id(near));
+  celular_conecta(celular, torre_get_id(near), a);
 
   return near;
 }

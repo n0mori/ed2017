@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "../Address/Address.h"
 
 /* Um celular é um aparelho utilizado para efetuar chamadas telefonicas com o 
 intuito de comunicar pessoas. O aparelho se conecta a uma radio-base para que
@@ -17,7 +18,8 @@ char* celular_get_numero(Celular c);
 char celular_get_operadora(Celular c);
 void celular_set_operadora(Celular c, char opdest);
 char* celular_get_torre(Celular c);
-void celular_conecta(Celular c, char *id_torre);
+Address celular_get_address(Celular c);
+void celular_conecta(Celular c, char *id_torre, Address a);
 void celular_disconecta(Celular c);
 int cmp_celular_torre(Celular c, void *id);
 
