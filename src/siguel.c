@@ -1647,7 +1647,7 @@ int main(int argc, char *argv[]) {
         cidade_insert_register(city, r1, 'c', c);
 
       } else if (buffer[0] == 'p' && buffer[1] == '?') {
-        char *sufixo, *r1, *r2, *cor, *token;
+        char *sufixo, *r1, r2[15], *cor, *token;
         int opt_pic, opt_dist;
         Register r;
         Ponto inicio, fim;
@@ -1675,7 +1675,8 @@ int main(int argc, char *argv[]) {
         }
 
         r1 = strtok(NULL, " ");
-        r2 = strtok(NULL, " ");
+        token = strtok(NULL, " ");
+        sscanf(token, "%s", r2);
 
         r = hash_get(city.registradores, r1);
         if (register_get_type(r) == 'p') {
@@ -1684,9 +1685,6 @@ int main(int argc, char *argv[]) {
           inicio = cidade_get_ponto_address(city, comercio_get_address(register_get_data(r)));
         }
 
-        if (!opt_pic) {
-          r2[strlen(r2) - 2] = 0;
-        }
         r = hash_get(city.registradores, r2);
         if (register_get_type(r) == 'p') {
           fim = register_get_data(r);
